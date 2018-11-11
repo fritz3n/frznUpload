@@ -3,7 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.28010.2048
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "frznUpload", "frznUpload\frznUpload.csproj", "{56630600-0F21-4909-8AAF-B63C6418F9FF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "frznUpload.Server", "frznUpload\frznUpload.Server.csproj", "{56630600-0F21-4909-8AAF-B63C6418F9FF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "frznUpload.Client", "frznUploadClient\frznUpload.Client.csproj", "{B25EA5B9-06E0-48A1-A664-8639A021F067}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "frznUpload.Shared", "frznUploadShared\frznUpload.Shared.csproj", "{8E412547-9F7E-4755-B2C7-FFCF9170F8D8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +19,14 @@ Global
 		{56630600-0F21-4909-8AAF-B63C6418F9FF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{56630600-0F21-4909-8AAF-B63C6418F9FF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{56630600-0F21-4909-8AAF-B63C6418F9FF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B25EA5B9-06E0-48A1-A664-8639A021F067}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B25EA5B9-06E0-48A1-A664-8639A021F067}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B25EA5B9-06E0-48A1-A664-8639A021F067}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B25EA5B9-06E0-48A1-A664-8639A021F067}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8E412547-9F7E-4755-B2C7-FFCF9170F8D8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8E412547-9F7E-4755-B2C7-FFCF9170F8D8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8E412547-9F7E-4755-B2C7-FFCF9170F8D8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8E412547-9F7E-4755-B2C7-FFCF9170F8D8}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
