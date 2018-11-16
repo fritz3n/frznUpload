@@ -153,6 +153,11 @@ namespace frznUpload.Shared
             return data;
         }
 
+        //private byte[] KeyToByte(RSAParameters key)
+        //{
+        //
+        //}
+
         public void Dispose()
         {
             LocalKey.Dispose();

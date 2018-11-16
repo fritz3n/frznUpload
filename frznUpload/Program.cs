@@ -12,26 +12,37 @@ namespace frznUpload.Server
     {
         static void Main(string[] args)
         {
-            IPAddress address = IPAddress.Parse("127.0.0.1");
+            IPAddress address = IPAddress.Any;
             var listener = new TcpListener(address, 22340);
             
 
             listener.Start();
 
-            
+            ConnectionAcceptor(listener).Wait();
         }
 
-        private async Task ConnectionAcceptor(TcpListener tcp)
+        static private async Task ConnectionAcceptor(TcpListener tcp)
         {
             while (true)
             {
+
                 var cli = await tcp.AcceptTcpClientAsync();
+
+                Console.WriteLine("Connection established");
+
+
                 EncryptionProvider enc = new EncryptionProvider();
                 MessageHandler mes = new MessageHandler(cli.GetStream(), enc);
                 byte[] localKey = enc.GetLocalKey();
+                mes.Start();
+
+                Console.WriteLine("encryption established");
+
 
                 await mes.SendMessage(new Message(Message.MessageType.KeyExchange, new List<object> { localKey }));
                 Message message = mes.WaitForMessage();
+
+                Console.WriteLine("got package");
 
 
             }
