@@ -78,5 +78,11 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\frznUpload.Shared\frznUpload.Shared.csproj">
+      <Project>{2f168e78-afd2-4242-87c7-f2f4a9deada7}</Project>
+      <Name>frznUpload.Shared</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

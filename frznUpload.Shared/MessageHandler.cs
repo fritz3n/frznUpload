@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using System.Net.Sockets;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -58,6 +55,19 @@ namespace frznUpload.Shared
 
                 IncomingQueue.Enqueue(new Message(dec));
             }
+        }
+
+        public async Task SendMessage(Message message, bool encrypt = true)
+        {
+            byte[] data = message.ToByte();
+
+            if (encrypt)
+                data = encryption.EncryptRemote(data);
+
+            byte[] length = BitConverter.GetBytes(data.Length);
+
+            await stream.WriteAsync(length, 0, 4);
+            await stream.WriteAsync(data, 0, data.Length);
         }
 
         public Message WaitForMessage()

@@ -1,9 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
 using System.Security.Cryptography;
 using System.Threading.Tasks;
-using frznUpload.
+using frznUpload.Shared;
 
 namespace frznUpload.Server
 {
@@ -25,7 +26,13 @@ namespace frznUpload.Server
             while (true)
             {
                 var cli = await tcp.AcceptTcpClientAsync();
-                Encryption
+                EncryptionProvider enc = new EncryptionProvider();
+                MessageHandler mes = new MessageHandler(cli.GetStream(), enc);
+                byte[] localKey = enc.GetLocalKey();
+
+                await mes.SendMessage(new Message(Message.MessageType.KeyExchange, new List<object> { localKey }));
+                Message message = mes.WaitForMessage();
+
 
             }
         }

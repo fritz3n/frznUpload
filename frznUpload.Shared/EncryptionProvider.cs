@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Security.Cryptography;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace frznUpload.Shared
 {
@@ -116,9 +114,12 @@ namespace frznUpload.Shared
         public void SetRemoteKey(byte[] data)
         {
             var deSerializer = new BinaryFormatter();
-            Stream stream = new MemoryStream(data);
+            RSAParameters param;
 
-            RSAParameters param = (RSAParameters)deSerializer.Deserialize(stream);
+            using (Stream stream = new MemoryStream(data))
+            {
+                param = (RSAParameters)deSerializer.Deserialize(stream);
+            }
 
             RemoteKey.ImportParameters(param);
         }
@@ -126,11 +127,30 @@ namespace frznUpload.Shared
         public void SetLocalKey(byte[] data)
         {
             var deSerializer = new BinaryFormatter();
-            Stream stream = new MemoryStream(data);
+            RSAParameters param;
+            using (Stream stream = new MemoryStream(data))
+            {
 
-            RSAParameters param = (RSAParameters)deSerializer.Deserialize(stream);
-
+                param = (RSAParameters)deSerializer.Deserialize(stream);
+            }
             LocalKey.ImportParameters(param);
+        }
+
+        public byte[] GetLocalKey(bool exportPrivate = false)
+        {
+            var deSerializer = new BinaryFormatter();
+            byte[] data;
+
+            using (Stream stream = new MemoryStream())
+            {
+                deSerializer.Serialize(stream, LocalKey.ExportParameters(exportPrivate));
+
+                data = new byte[stream.Length];
+
+                stream.Read(data, 0, (int)stream.Length);
+            }
+
+            return data;
         }
 
         public void Dispose()
