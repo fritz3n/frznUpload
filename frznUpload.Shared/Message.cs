@@ -109,7 +109,7 @@ namespace frznUpload.Shared
 
             byte[] bytes = new byte[totalLength];
 
-
+            bytes[0] = (byte)Type;
 
             int copied = 1;
             for (int i = 0; i < Fields.Count; i++)
