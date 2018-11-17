@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Net.Security;
 using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
@@ -9,16 +10,14 @@ namespace frznUpload.Shared
     public class MessageHandler
     {
         Queue<Message> IncomingQueue = new Queue<Message>();
-        NetworkStream stream;
+        SslStream stream;
         byte[] headerBuffer = new byte[4];
-        EncryptionProvider encryption;
         CancellationTokenSource tokenSource;
         ManualResetEvent mre = new ManualResetEvent(false);
 
-        public MessageHandler(NetworkStream stream, EncryptionProvider encryption)
+        public MessageHandler(SslStream stream)
         {
             this.stream = stream;
-            this.encryption = encryption;
         }
 
         public void Start()
@@ -50,20 +49,17 @@ namespace frznUpload.Shared
 
                 int length = BitConverter.ToInt32(headerBuffer, 0);
                 byte[] bytes = new byte[length];
-                await stream.ReadAsync(bytes, 0, 0);
-                byte[] dec = encryption.DecryptLocal(bytes);
+                await stream.ReadAsync(bytes, 0, length);
 
-                IncomingQueue.Enqueue(new Message(dec));
+                IncomingQueue.Enqueue(new Message(bytes));
+                mre.Set();
             }
         }
 
         public async Task SendMessage(Message message, bool encrypt = true)
         {
             byte[] data = message.ToByte();
-
-            if (encrypt)
-                data = encryption.EncryptRemote(data);
-
+            
             byte[] length = BitConverter.GetBytes(data.Length);
 
             await stream.WriteAsync(length, 0, 4);

@@ -10,16 +10,14 @@ namespace frznUpload.Shared
     {
         public enum MessageType : byte
         {
-            Error = 1,
-            AuthRequest = 2,
-            Auth = 4,
-            KeyExchange = 6,
-            AuthSuccess = 8,
-            FileUploadRequest = 10,
-            FileUploadApproved = 12,
-            FileUpload = 14,
-            FileUploadFinished = 16,
-            FileUploadSuccess = 18,
+            AuthRequest,
+            Auth,
+            AuthSuccess,
+            FileUploadRequest,
+            FileUploadApproved,
+            FileUpload,
+            FileUploadFinished,
+            FileUploadSuccess,
         }
 
         public enum FieldType
@@ -33,18 +31,36 @@ namespace frznUpload.Shared
         public bool IsError { get; private set; }
         public List<object> Fields { get; private set; }
 
-        public Message(MessageType type, IEnumerable<object> fields)
+        public Message(MessageType type, IEnumerable<object> fields, bool isError = false)
         {
             Type = type;
             Fields = fields.ToList();
+            IsError = isError;
+        }
+
+        public Message(MessageType type, params object[] fields)
+        {
+            Type = type;
+            Fields = fields.ToList();
+            IsError = false;
+        }
+
+        public Message(MessageType type, bool isError, params object[] fields)
+        {
+            Type = type;
+            Fields = fields.ToList();
+            IsError = isError;
         }
 
         public Message(byte[] bytes)
         {
             var mem = new MemoryStream(bytes);
 
-            Type = (MessageType)mem.ReadByte();
-            IsError = (Type & MessageType.Error) == MessageType.Error;
+            byte typeByte = (byte)mem.ReadByte();
+
+            Type = (MessageType)(typeByte & 0b0111_1111);
+            IsError = (typeByte & 0b1000_0000) > 0;
+            Fields = new List<object>();
 
             byte[] headBuffer = new byte[2];
 
@@ -54,7 +70,7 @@ namespace frznUpload.Shared
                 int length = 0b0011111111111111 & head;
                 FieldType type = (FieldType)((0b1100000000000000 & head) / 0b0100000000000000);
 
-                byte[] data = new byte[length == 0 ? int.MaxValue : length];
+                byte[] data = new byte[length == 0 ? mem.Length - mem.Position : length];
                 length = mem.Read(data, 0, data.Length);
 
 
@@ -84,7 +100,7 @@ namespace frznUpload.Shared
 
         public byte[] ToByte()
         {
-            int totalLength = 0;
+            int totalLength = 1;
 
             foreach(object o in Fields)
             {
@@ -94,7 +110,8 @@ namespace frznUpload.Shared
             byte[] bytes = new byte[totalLength];
 
 
-            int copied = 0;
+
+            int copied = 1;
             for (int i = 0; i < Fields.Count; i++)
             {
                 object obj = Fields[i];
@@ -166,7 +183,18 @@ namespace frznUpload.Shared
             }
         }
 
+        public override string ToString()
+        {
+            string str = IsError ? "Error!\n" : "";
 
+            str += Type + "\n";
 
+            foreach(object obj in Fields)
+            {
+                str += obj + "\n";
+            }
+
+            return str;
+        }
     }
 }
