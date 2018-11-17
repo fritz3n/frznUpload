@@ -36,7 +36,7 @@ namespace frznUpload.Shared
         public Message(MessageType type, IEnumerable<object> fields)
         {
             Type = type;
-            fields = fields.ToList();
+            Fields = fields.ToList();
         }
 
         public Message(byte[] bytes)
@@ -84,8 +84,17 @@ namespace frznUpload.Shared
 
         public byte[] ToByte()
         {
-            byte[][] fieldBytes = new byte[Fields.Count][];
+            int totalLength = 0;
 
+            foreach(object o in Fields)
+            {
+                totalLength += GetFieldLength(o);
+            }
+
+            byte[] bytes = new byte[totalLength];
+
+
+            int copied = 0;
             for (int i = 0; i < Fields.Count; i++)
             {
                 object obj = Fields[i];
@@ -126,25 +135,38 @@ namespace frznUpload.Shared
 
                 length = (short)(length & ((int)fieldType * 0b0100000000000000));
                 var lengthArray = BitConverter.GetBytes(length);
+                
+                Array.Copy(lengthArray, 0, bytes, copied, 2);
+                Array.Copy(data, 0, bytes, 2 + copied, data.Length);
 
-                fieldBytes[i] = new byte[data.Length + 2];
-                Array.Copy(lengthArray, fieldBytes[i], 2);
-                Array.Copy(data, 0, fieldBytes[i], 2, data.Length);
+                copied += 2 + data.Length;
             }
 
-            byte[] final = new byte[fieldBytes.Length + 1];
-            final[0] = (byte)Type;
-
-            int copied = 0;
-
-            for (int i = 0, l = fieldBytes.Count(); i < l; i++)
-            {
-                Array.Copy(fieldBytes[i], 0, final, copied + 1, fieldBytes[i].Length);
-                copied += fieldBytes[i].Length;
-            }
-
-            return final;
+            return bytes;
         }
+
+        private int GetFieldLength(object obj)
+        {
+
+            if (obj is int)
+            {
+                return 6;
+            }
+            else if (obj is string)
+            {
+                return 2 + Encoding.UTF8.GetByteCount((string)obj);
+            }
+            else if (obj is byte[])
+            {
+                return ((byte[])obj).Length;
+            }
+            else
+            {
+                throw new ArgumentException("Only int, byte[] and string are valid Fields");
+            }
+        }
+
+
 
     }
 }

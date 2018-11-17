@@ -33,13 +33,13 @@ namespace frznUpload.Server
 
                 EncryptionProvider enc = new EncryptionProvider();
                 MessageHandler mes = new MessageHandler(cli.GetStream(), enc);
-                byte[] localKey = enc.GetLocalKey();
+                byte[] localKey = EncryptionProvider.KeyToByte(enc.LocalKey.ExportParameters(false));
                 mes.Start();
 
                 Console.WriteLine("encryption established");
 
 
-                await mes.SendMessage(new Message(Message.MessageType.KeyExchange, new List<object> { localKey }));
+                await mes.SendMessage(new Message(Message.MessageType.KeyExchange, new List<IField> { (StringField)"test" }));
                 Message message = mes.WaitForMessage();
 
                 Console.WriteLine("got package");

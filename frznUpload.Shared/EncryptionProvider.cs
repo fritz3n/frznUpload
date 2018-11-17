@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Reflection;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Security.Cryptography;
 using System.Text;
+using System.Linq;
 
 namespace frznUpload.Shared
 {
@@ -153,10 +155,45 @@ namespace frznUpload.Shared
             return data;
         }
 
-        //private byte[] KeyToByte(RSAParameters key)
-        //{
-        //
-        //}
+        static public byte[] KeyToByte(RSAParameters key)
+        {
+            
+            FieldInfo[] members = typeof(RSAParameters).GetFields();
+
+            int totalLength = 0;
+
+            foreach()
+
+            int i = 0;
+            foreach(FieldInfo inf in members)
+            {
+                byte[] cur = (byte[])(inf.GetValue(key) == null ? new byte[0] : inf.GetValue(key));
+                data[i] = new byte[cur.Length + 2];
+                byte[] l = BitConverter.GetBytes((short)cur.Length);
+
+                Array.Copy(l, data[i], 2);
+                Array.Copy(cur, 0, data[i], 2, cur.Length);
+                i++;
+            }
+
+            int length = 0;
+
+            foreach(byte[] b in data)
+            {
+                length += b.Length;
+            }
+
+            byte[] final = new byte[length];
+
+            int copied = 0;
+            for(int j = 0; j < data.Count(); j++)
+            {
+                Array.Copy(data[j], 0, final, copied, data[j].Length);
+                copied += data[j].Length;
+            }
+
+            return final;
+        }
 
         public void Dispose()
         {
