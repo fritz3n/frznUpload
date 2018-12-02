@@ -78,5 +78,48 @@ namespace frznUpload.Shared
                 return IncomingQueue.Dequeue();
             }
         }
+
+        public Message WaitForMessage(bool throwIfError, Message.MessageType? expected = null)
+        {
+            Message m;
+
+            if (expected != null)
+                m = WaitForMessage((Message.MessageType)expected);
+            else
+                m = WaitForMessage();
+
+            if (m.IsError & throwIfError)
+                throw new Exception("Remote error was encountered");
+
+            return m;
+        }
+
+        public Message WaitForMessage(Message.MessageType expected)
+        {
+            var m = WaitForMessage();
+
+            if (m.Type != expected)
+                throw new SequenceBreakException(expected, m.Type);
+
+            return m;
+        }
     }
+
+    public class SequenceBreakException : Exception
+    {
+        public Message.MessageType ExpectedType {get; private set;}
+        public Message.MessageType ReceivedType {get; private set;}
+
+        public SequenceBreakException(Message.MessageType expectedType, Message.MessageType receivedType)
+        {
+            ExpectedType = expectedType;
+            ReceivedType = receivedType;
+        }
+
+        public override string ToString()
+        {
+            return $"Expected {ExpectedType}, received {ReceivedType}";
+        }
+    }
+
 }

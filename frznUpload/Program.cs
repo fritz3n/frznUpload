@@ -23,7 +23,7 @@ namespace frznUpload.Server
             Cert = new X509Certificate2("cert.pfx", "password");
 
             listener.Start();
-
+            
             ConnectionAcceptor(listener).Wait();
         }
 
@@ -36,22 +36,7 @@ namespace frznUpload.Server
 
                 Console.WriteLine("Connection established");
 
-                SslStream stream = new SslStream(cli.GetStream(), false);
-
-                stream.AuthenticateAsServer(Cert, false, true);
-
-
-                MessageHandler mes = new MessageHandler(stream);
-                mes.Start();
-
-                Console.WriteLine("encryption established");
-
-
-                await mes.SendMessage(new Message(Message.MessageType.Auth, "test" ));
-                while(true)
-                    Console.WriteLine(mes.WaitForMessage());
-
-                Console.WriteLine("got package");
+                
 
 
             }

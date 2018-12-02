@@ -1,42 +1,47 @@
-﻿using System;
+﻿using frznUpload.Shared;
+using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net.Security;
 using System.Net.Sockets;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
-using frznUpload.Shared;
 
 namespace frznUpload.Test
 {
-    class Program
+    class Client
     {
-        static void Main(string[] args)
+        private TcpClient Tcp;
+        private SslStream stream;
+        private MessageHandler mes;
+
+        public Client(string url, int port)
         {
-            TcpClient tcpclnt = new TcpClient();
+            Tcp = new TcpClient();
 
-            tcpclnt.Connect("192.168.2.175", 22340);
+            Tcp.Connect(url, port);
 
-            var stream = new SslStream(tcpclnt.GetStream(), false, new RemoteCertificateValidationCallback(ValidateServerCertificate));
+            stream = new SslStream(Tcp.GetStream(), false, new RemoteCertificateValidationCallback(ValidateServerCertificate));
 
             stream.AuthenticateAsClient("fritzen.tk");
 
             Console.WriteLine("encryption established");
 
-            var hand = new MessageHandler(stream);
-            hand.Start();
+            mes = new MessageHandler(stream);
+            mes.Start();
+        }
 
-            hand.SendMessage(new Message(Message.MessageType.Auth, true, "test")).Wait();
+        public async bool AuthWithKey(string file)
+        {
+            if (!File.Exists(file))
+                return false;
 
-            while (true)
-            {
-                Console.WriteLine(hand.WaitForMessage());
-            }
 
         }
 
-        public static bool ValidateServerCertificate(
+        private static bool ValidateServerCertificate(
               object sender,
               X509Certificate certificate,
               X509Chain chain,

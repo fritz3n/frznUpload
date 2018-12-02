@@ -10,6 +10,10 @@ namespace frznUpload.Shared
     {
         public enum MessageType : byte
         {
+            ChallengeRequest,
+            Challenge,
+            ChallengeResponse,
+            ChallengeApproved,
             AuthRequest,
             Auth,
             AuthSuccess,
@@ -18,6 +22,7 @@ namespace frznUpload.Shared
             FileUpload,
             FileUploadFinished,
             FileUploadSuccess,
+            Sequence
         }
 
         public enum FieldType
@@ -31,6 +36,8 @@ namespace frznUpload.Shared
         public bool IsError { get; private set; }
         public List<object> Fields { get; private set; }
 
+        public object this[int i] => Fields[i];
+
         public Message(MessageType type, IEnumerable<object> fields, bool isError = false)
         {
             Type = type;
@@ -38,12 +45,12 @@ namespace frznUpload.Shared
             IsError = isError;
         }
 
-        public Message(MessageType type, params object[] fields)
+        /*public Message(MessageType type, params object[] fields)
         {
             Type = type;
             Fields = fields.ToList();
             IsError = false;
-        }
+        }*/
 
         public Message(MessageType type, bool isError, params object[] fields)
         {
@@ -109,7 +116,7 @@ namespace frznUpload.Shared
 
             byte[] bytes = new byte[totalLength];
 
-            bytes[0] = (byte)Type;
+            bytes[0] = (byte)((byte)Type | (IsError ? 0b1000_0000 : 0));
 
             int copied = 1;
             for (int i = 0; i < Fields.Count; i++)
