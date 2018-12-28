@@ -85,6 +85,7 @@ namespace frznUpload.Server
             lock (writer)
             {
                 writer.WriteLine(write);
+                writer.Flush();
             }
         }
 
