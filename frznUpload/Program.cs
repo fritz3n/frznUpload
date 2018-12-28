@@ -41,8 +41,6 @@ namespace frznUpload.Server
             {
 
                 var cli = await tcp.AcceptTcpClientAsync();
-
-
                 
                 Logger.WriteLineStatic("Connection established with " + cli.Client.RemoteEndPoint);
 
