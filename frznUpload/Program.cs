@@ -22,13 +22,13 @@ namespace frznUpload.Server
             Console.WriteLine("Starting Logger");
 
             Logger.Open();
-            Console.SetOut(Logger.TextWriter);
             Console.SetError(Logger.TextWriter);
 
             Logger.WriteLineStatic("Logger Online");
 
             IPAddress address = IPAddress.Any;
             var listener = new TcpListener(address, 22340);
+            
 
             string certdir = "cert.pfx";
              
@@ -36,13 +36,12 @@ namespace frznUpload.Server
             certdir = "../certs/cert.pfx";
 #endif
             Logger.WriteLineStatic("Loading keyfile: " + certdir);
-            Thread.Sleep(1000);
 
             Cert = new X509Certificate2(certdir, "FECBA15DE2919B0FF055E2C0A513261399B894691F208FE8AD54878824390902B2FC2753354FF173747F8B8079353ABCA10DEAED03482E419087CD044A5868F6");
 
             listener.Start();
 
-            Logger.WriteLineStatic("Started the Listener");
+            Logger.WriteLineStatic("Server initialized");
 
             var v = ConnectionAcceptor(listener).Result;
         }
