@@ -50,7 +50,6 @@ namespace frznUpload.Server
                 Client.OnDispose += Client_OnDispose;
                 
                 Client.Start();
-
             }
             
         }
