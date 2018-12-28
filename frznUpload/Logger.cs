@@ -10,7 +10,7 @@ namespace frznUpload.Server
     {
         const string seperator = "   ";
         const string staticId = "~";
-        const string dateFormat = "H:m_d.M.yy";
+        const string dateFormat = "H:m d.M.yy";
 
         static FileStream file;
         static StreamWriter writer;
