@@ -16,8 +16,7 @@ namespace frznUpload.Server
     {
         static X509Certificate2 Cert;
         static List<Client> clients = new List<Client>();
-
-
+        
         static void Main(string[] args)
         {
             Logger.Open();
