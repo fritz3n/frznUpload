@@ -1,4 +1,4 @@
 #!/bin/bash
 cd /home/frznuploadserver/source
 
-dotnet publish frznUpload/frznUpload.Server.csproj -o ../server -c Release
+dotnet publish frznUpload/frznUpload.Server.csproj -o ~/server -c Release
