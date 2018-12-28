@@ -25,7 +25,7 @@ namespace frznUpload.Server
 
             IPAddress address = IPAddress.Any;
             var listener = new TcpListener(address, 22340);
-
+            
             Cert = new X509Certificate2("cert.pfx", "password");
 
             listener.Start();
