@@ -28,12 +28,12 @@ namespace frznUpload.Server
 
             IPAddress address = IPAddress.Any;
             var listener = new TcpListener(address, 22340);
-            
 
-            string certdir = "cert.pfx";
-             
-#if Release 
-            certdir = "../certs/cert.pfx";
+
+            string certdir = "../certs/cert.pfx;";
+
+#if DEBUG
+            certdir = "cert.pfx";
 #endif
             Logger.WriteLineStatic("Loading keyfile: " + certdir);
 

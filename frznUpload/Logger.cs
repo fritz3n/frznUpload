@@ -9,7 +9,7 @@ namespace frznUpload.Server
     class Logger
     {
         const string seperator = "   ";
-        const string staticId = "->";
+        const string staticId = "~";
         const string dateFormat = "H:m_d.M.yy";
 
         static FileStream file;
