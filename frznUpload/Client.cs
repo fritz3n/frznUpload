@@ -1,6 +1,8 @@
 ﻿using frznUpload.Shared;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
 using System.Net.Security;
 using System.Net.Sockets;
 using System.Security.Cryptography.X509Certificates;
@@ -10,21 +12,25 @@ using System.Threading.Tasks;
 
 namespace frznUpload.Server
 {
-    class Client
+    class Client : IDisposable
     {
-        static X509Certificate2 Cert = new X509Certificate2("cert.pfx", "password");
-
         private TcpClient Tcp;
         private SslStream stream;
         private MessageHandler mes;
         private CancellationTokenSource tokenSource;
         private DataBase db;
+        private Logger log;
 
         public bool IsAuthenticated { get; private set; }
 
+        public event EventHandler OnDispose;
 
-        public Client(TcpClient tcp)
+        public Client(TcpClient tcp, X509Certificate2 Cert)
         {
+            log = new Logger();
+
+            log.WriteLine("initializing client...");
+
             Tcp = tcp;
             db = new DataBase();
 
@@ -32,10 +38,12 @@ namespace frznUpload.Server
 
             stream.AuthenticateAsServer(Cert, false, true);
 
+            log.WriteLine("Encryption established");
+
             mes = new MessageHandler(stream);
             mes.Start();
 
-            Console.WriteLine("encryption established");
+            log.WriteLine("Client initialized");
         }
 
         public void Start()
@@ -44,7 +52,7 @@ namespace frznUpload.Server
             tokenSource = new CancellationTokenSource();
 
 #pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
-            ClientLoop(tokenSource.Token);
+            new Thread(() => ClientLoop(tokenSource.Token)).Start();
 #pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
         }
         
@@ -59,11 +67,33 @@ namespace frznUpload.Server
             {
                 while (true)
                 {
-                    var message = await new Task<Message>(() => mes.WaitForMessage(), token);
+                    Message message;
+                    try
+                    {
+                        Task<Message> t = new Task<Message>(() => mes.WaitForMessage(), token);
+                        t.Start();
+
+                        message = await t;
+                    }
+                    catch (Exception e)
+                    {
+                        log.WriteLine(e);
+                        try
+                        {
+                            await mes.SendMessage(new Message(Message.MessageType.None, true, e.ToString()));
+                        }
+                        catch { }
+
+                        stream.Close();
+                        
+                        return;
+                    }
+
+                    
 
                     if (message.IsError)
                     {
-                        Console.WriteLine(message);
+                        log.WriteLine(message);
                         stream.Close();
                     }
 
@@ -75,26 +105,25 @@ namespace frznUpload.Server
                             case Message.MessageType.ChallengeRequest:
 
                                 var chal = new Challenge();
-                                chal.SetPublicComponents((byte[])message[0], (byte[])message[1]);
+                                chal.SetPublicComponents(message[0], message[1]);
                                 if (!db.CheckTokenExists(chal.GetThumbprint()))
                                 {
-                                    await mes.SendMessage(new Message(Message.MessageType.Challenge, true));
+                                    await mes.SendMessage(new Message(Message.MessageType.Challenge, true, "Token not registered"));
                                     break;
                                 }
-
+                                
                                 await mes.SendMessage(new Message(Message.MessageType.Challenge, false, chal.GenerateChallenge(8)));
-
                                 var m = mes.WaitForMessage(true, Message.MessageType.ChallengeResponse);
-
-                                bool auth = chal.ValidateChallenge((byte[])m[0]);
+                                
+                                bool auth = chal.ValidateChallenge(m[0]);
 
                                 if(auth == false)
                                 {
-                                    await mes.SendMessage(new Message(Message.MessageType.ChallengeApproved, true));
+                                    await mes.SendMessage(new Message(Message.MessageType.ChallengeApproved, true, "Challenge failed"));
                                     break;
                                 }
 
-                                db.SetUser((byte[])m[0]);
+                                db.SetUser(chal.GetThumbprint());
                                 IsAuthenticated = true;
 
                                 await mes.SendMessage(new Message(Message.MessageType.ChallengeApproved, false, db.Name));
@@ -102,7 +131,18 @@ namespace frznUpload.Server
 
                             case Message.MessageType.Auth:
 
+                                chal = new Challenge();
 
+                                chal.SetPublicComponents(message[2], message[3]);
+
+                                if(db.SetToken(message[0], message[1], chal.GetThumbprint()))
+                                {
+                                    await mes.SendMessage(new Message(Message.MessageType.AuthSuccess));
+                                }
+                                else
+                                {
+                                    await mes.SendMessage(new Message(Message.MessageType.AuthSuccess, true, "Login data not correct"));
+                                }
 
                                 break;
 
@@ -111,17 +151,75 @@ namespace frznUpload.Server
                                 break;
                         }
                     }
+                    else
+                    {
+                        switch (message.Type)
+                        {
+                            case Message.MessageType.FileUploadRequest:
+
+                                await FileHandler.ReceiveFile(message, mes, db);
+
+                                break;
+
+                            case Message.MessageType.FileListRequest:
+
+                                var list = db.GetFiles();
+
+                                dynamic[] Fields = new dynamic[1 + list.Count];
+                                Fields[0] = list.Count;
+
+                                for(int i = 0; i < list.Count; i++)
+                                {
+                                    Fields[i + 1] = new Message(Message.MessageType.FileInfo, false, list[i].Filename, list[i].File_extension, list[i].Identifier, list[i].Size, BitConverter.GetBytes(list[i].Tags));
+                                }
+
+                                await mes.SendMessage(new Message(Message.MessageType.FileList, false, Fields));
+
+                                break;
+
+                            default:
+                                await mes.SendMessage(new Message(Message.MessageType.Sequence, true, "Not expected"));
+                                break;
+                        }
+                    }
                 }
             }catch(SequenceBreakException e)
             {
-                Console.WriteLine(e);
-                await mes.SendMessage(new Message(Message.MessageType.Sequence, true, e.ToString()));
-                stream.Close();
-            }catch(Exception e)
+                log.WriteLine(e);
+                try
+                {
+                    await mes.SendMessage(new Message(Message.MessageType.Sequence, true, e.ToString()));
+                }
+                catch { }
+
+                Dispose();
+            } catch(Exception e)
             {
-                Console.WriteLine(e);
-                stream.Close();
+                log.WriteLine(e);
+                try
+                {
+                    await mes.SendMessage(new Message(Message.MessageType.None, true, e.ToString()));
+                }
+                catch { }
+
+                Dispose();
             }
         }
+        
+        public void Dispose()
+        {
+            stream?.Dispose();
+            stream = null;
+
+            db?.Dispose();
+            db = null;
+
+            mes?.Dispose();
+            mes = null;
+
+            OnDispose?.Invoke(this, null);
+        }
+
+        ~Client() => Dispose();
     }
 }

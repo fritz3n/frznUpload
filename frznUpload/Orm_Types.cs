@@ -22,7 +22,7 @@ namespace frznUpload.Server
         public DateTime Last_used { get; set; }
     }
 
-    class File
+    class Sql_File
     {
         public int Id { get; set; }
         public int? UserId { get; set; }
@@ -30,5 +30,6 @@ namespace frznUpload.Server
         public string Filename { get; set; }
         public string File_extension { get; set; }
         public int Size { get; set; }
+        public long Tags { get; set; }
     }
 }

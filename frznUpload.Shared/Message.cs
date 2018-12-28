@@ -22,7 +22,11 @@ namespace frznUpload.Shared
             FileUpload,
             FileUploadFinished,
             FileUploadSuccess,
-            Sequence
+            FileListRequest,
+            FileList,
+            FileInfo,
+            Sequence,
+            None
         }
 
         public enum FieldType
@@ -30,37 +34,95 @@ namespace frznUpload.Shared
             String,
             Int,
             Raw,
+            Message,
         }
 
         public MessageType Type { get; private set; }
         public bool IsError { get; private set; }
-        public List<object> Fields { get; private set; }
+        public List<dynamic> Fields { get; private set; }
 
-        public object this[int i] => Fields[i];
+        public int BinaryLength { get
+            {
+                int totalLength = 1;
+
+                foreach (object o in Fields)
+                {
+                    totalLength += GetFieldLength(o);
+                }
+
+                return totalLength;
+            } }
+
+        public int Count { get => Fields.Count; }
+
+        public dynamic this[int i] => Fields[i];
+
+        public List<FieldType> FieldTypes { get; private set; }
 
         public Message(MessageType type, IEnumerable<object> fields, bool isError = false)
         {
             Type = type;
             Fields = fields.ToList();
             IsError = isError;
+
+            IndexTypes();
         }
 
-        /*public Message(MessageType type, params object[] fields)
-        {
-            Type = type;
-            Fields = fields.ToList();
-            IsError = false;
-        }*/
-
-        public Message(MessageType type, bool isError, params object[] fields)
+        public Message(MessageType type, bool isError, params dynamic[] fields)
         {
             Type = type;
             Fields = fields.ToList();
             IsError = isError;
+
+            IndexTypes();
+        }
+
+        public Message(MessageType type, bool isError = false)
+        {
+            Type = type;
+            Fields = new List<dynamic>();
+            IsError = isError;
+
+            IndexTypes();
+        }
+
+        private void IndexTypes()
+        {
+            FieldTypes = new List<FieldType>();
+
+            for (int i = 0; i < Fields.Count; i++)
+            {
+                object obj = Fields[i];
+                FieldType fieldType;
+
+                if (obj is int)
+                {
+                    fieldType = FieldType.Int;
+                }
+                else if (obj is string)
+                {
+                    fieldType = FieldType.String;
+                }
+                else if (obj is byte[])
+                {
+                    fieldType = FieldType.Raw;
+                }
+                else if (obj is Message)
+                {
+                    fieldType = FieldType.Message;
+                }
+                else
+                {
+                    throw new ArgumentException("Only int, byte[], string and Message are valid Fields");
+                }
+
+                FieldTypes.Add(fieldType);
+            }
         }
 
         public Message(byte[] bytes)
         {
+            FieldTypes = new List<FieldType>();
             var mem = new MemoryStream(bytes);
 
             byte typeByte = (byte)mem.ReadByte();
@@ -77,7 +139,7 @@ namespace frznUpload.Shared
                 int length = 0b0011111111111111 & head;
                 FieldType type = (FieldType)((0b1100000000000000 & head) / 0b0100000000000000);
 
-                byte[] data = new byte[length == 0 ? mem.Length - mem.Position : length];
+                byte[] data = new byte[length == 0b0011111111111111 ? mem.Length - mem.Position : length];
                 length = mem.Read(data, 0, data.Length);
 
 
@@ -97,24 +159,22 @@ namespace frznUpload.Shared
                         field = data;
                         break;
 
+                    case FieldType.Message:
+                        field = new Message(data);
+                        break;
+
                     default:
                         throw new Exception("Type not recognized");
                 }
 
                 Fields.Add(field);
+                FieldTypes.Add(type);
             }
         }
 
         public byte[] ToByte()
         {
-            int totalLength = 1;
-
-            foreach(object o in Fields)
-            {
-                totalLength += GetFieldLength(o);
-            }
-
-            byte[] bytes = new byte[totalLength];
+            byte[] bytes = new byte[BinaryLength];
 
             bytes[0] = (byte)((byte)Type | (IsError ? 0b1000_0000 : 0));
 
@@ -122,42 +182,43 @@ namespace frznUpload.Shared
             for (int i = 0; i < Fields.Count; i++)
             {
                 object obj = Fields[i];
-                FieldType fieldType;
+                FieldType fieldType = FieldTypes[i];
                 byte[] data;
 
-                if (obj is int)
-                {
-                    fieldType = FieldType.Int;
-                    data = BitConverter.GetBytes((int)obj);
-                }
-                else if (obj is string)
-                {
-                    fieldType = FieldType.String;
-                    data = Encoding.UTF8.GetBytes((string)obj);
-                }
-                else if (obj is byte[])
-                {
-                    fieldType = FieldType.Raw;
-                    data = (byte[])obj;
-                }
-                else
-                {
-                    throw new ArgumentException("Only int, byte[] and string are valid Fields");
+                switch (fieldType) {
+                    case FieldType.Int:
+                        data = BitConverter.GetBytes((int)obj);
+                        break;
+
+                    case FieldType.String:
+                        data = Encoding.UTF8.GetBytes((string)obj);
+                        break;
+
+                    case FieldType.Raw:
+                        data = (byte[])obj;
+                        break;
+
+                    case FieldType.Message:
+                        data = (obj as Message).ToByte();
+                        break;
+
+                    default:
+                        throw new ArgumentException("Type of Field " + i + " is undefined:\n" + obj.ToString());
                 }
 
-                short length;
+                ushort length;
                 if (i == Fields.Count - 1)
                 {
-                    length = 0;
+                    length = 0b0011111111111111;
                 }
                 else
                 {
-                    if (data.Length > 0b0011111111111111)
+                    if (data.Length > 0b0011111111111110)
                         throw new ArgumentException("Field " + i + " too big!");
-                    length = (short)data.Length;
+                    length = (ushort)data.Length;
                 }
-
-                length = (short)(length & ((int)fieldType * 0b0100000000000000));
+                
+                length = (ushort)(length | ((int)fieldType * 0b0100000000000000));
                 var lengthArray = BitConverter.GetBytes(length);
                 
                 Array.Copy(lengthArray, 0, bytes, copied, 2);
@@ -169,7 +230,7 @@ namespace frznUpload.Shared
             return bytes;
         }
 
-        private int GetFieldLength(object obj)
+        private static int GetFieldLength(object obj)
         {
 
             if (obj is int)
@@ -182,23 +243,27 @@ namespace frznUpload.Shared
             }
             else if (obj is byte[])
             {
-                return ((byte[])obj).Length;
+                return 2 + ((byte[])obj).Length;
+            }
+            else if (obj is Message)
+            {
+                return 2 + (obj as Message).BinaryLength;
             }
             else
             {
-                throw new ArgumentException("Only int, byte[] and string are valid Fields");
+                throw new ArgumentException("Only int, byte[], string and Message are valid Fields");
             }
         }
 
         public override string ToString()
         {
-            string str = IsError ? "Error!\n" : "";
+            string str = IsError ? "Error: \n" : "";
 
-            str += Type + "\n";
+            str += Type + ": \n";
 
             foreach(object obj in Fields)
             {
-                str += obj + "\n";
+                str += obj + "; \n";
             }
 
             return str;

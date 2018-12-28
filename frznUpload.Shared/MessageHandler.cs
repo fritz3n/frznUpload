@@ -7,13 +7,24 @@ using System.Threading.Tasks;
 
 namespace frznUpload.Shared
 {
-    public class MessageHandler
+    public class MessageHandler : IDisposable
     {
         Queue<Message> IncomingQueue = new Queue<Message>();
         SslStream stream;
+#pragma warning disable IDE0044 // Add readonly modifier
         byte[] headerBuffer = new byte[4];
+#pragma warning restore IDE0044 // Add readonly modifier
         CancellationTokenSource tokenSource;
         ManualResetEvent mre = new ManualResetEvent(false);
+
+        bool disposed = false;
+
+        public bool Running { get; private set; } = false;
+        ManualResetEvent ErrorEvent = new ManualResetEvent(true);
+
+#if LOGMESSAGES
+        List<(bool, Message)> Log = new List<(bool, Message)>();
+#endif
 
         public MessageHandler(SslStream stream)
         {
@@ -22,6 +33,9 @@ namespace frznUpload.Shared
 
         public void Start()
         {
+            if (Running)
+                return;
+
             tokenSource?.Cancel();
             tokenSource = new CancellationTokenSource();
 
@@ -38,43 +52,78 @@ namespace frznUpload.Shared
         public async Task ReadFromStream(CancellationToken token)
         //public async void AsyncCallback(IAsyncResult ar)
         {
-            while (true)
+            try
             {
-                token.ThrowIfCancellationRequested();
+                Running = true;
+                ErrorEvent.Reset();
+                while (true)
+                {
+                    token.ThrowIfCancellationRequested();
 
-                int l = await stream.ReadAsync(headerBuffer, 0, 4);
+                    int l = await stream.ReadAsync(headerBuffer, 0, 4, token);
 
-                if (l != 4)
-                    throw new Exception("Omae Wa Mou Shindeiru");
+                    if (l != 4)
+                        throw new Exception("Omae Wa Mou Shindeiru");
 
-                int length = BitConverter.ToInt32(headerBuffer, 0);
-                byte[] bytes = new byte[length];
-                await stream.ReadAsync(bytes, 0, length);
+                    uint length = BitConverter.ToUInt32(headerBuffer, 0);
+                    byte[] bytes = new byte[length];
 
-                IncomingQueue.Enqueue(new Message(bytes));
-                mre.Set();
+                    int read = 0;
+                    while (read != length)
+                    {
+                        read += await stream.ReadAsync(bytes, read, (int)length - read);
+                    }
+                    
+                    var m = new Message(bytes);
+
+                    IncomingQueue.Enqueue(m);
+#if LOGMESSAGES
+                    Log.Add((false, m));
+#endif
+                    mre.Set();
+                }
+            }catch(Exception e)
+            {
+                Running = false;
+                ErrorEvent.Set();
+
+                Console.WriteLine(e);
             }
         }
 
         public async Task SendMessage(Message message, bool encrypt = true)
         {
+#if LOGMESSAGES
+            Log.Add((true, message));
+#endif
+
             byte[] data = message.ToByte();
-            
+
             byte[] length = BitConverter.GetBytes(data.Length);
 
-            await stream.WriteAsync(length, 0, 4);
-            await stream.WriteAsync(data, 0, data.Length);
+            try
+            {
+                await stream.WriteAsync(length, 0, 4);
+                await stream.WriteAsync(data, 0, data.Length);
+            }catch(Exception e)
+            {
+                Console.WriteLine(e);
+            }
         }
 
         public Message WaitForMessage()
         {
-            if (IncomingQueue.Count != 0)
-                return IncomingQueue.Dequeue();
-
             lock (mre)
             {
+                if (IncomingQueue.Count != 0)
+                    return IncomingQueue.Dequeue();
                 mre.Reset();
-                mre.WaitOne();
+            
+                WaitHandle.WaitAny(new WaitHandle[] { ErrorEvent, mre });
+
+                if (!Running)
+                    throw new Exception();
+
                 return IncomingQueue.Dequeue();
             }
         }
@@ -88,8 +137,13 @@ namespace frznUpload.Shared
             else
                 m = WaitForMessage();
 
+            var checkResult = MessagePatterns.CheckMessage(m);
+
+            if (!checkResult.Item1)
+                throw new MessageMatchException(m, checkResult.Item2);
+
             if (m.IsError & throwIfError)
-                throw new Exception("Remote error was encountered");
+                throw new ErrorMessageException(m);
 
             return m;
         }
@@ -103,12 +157,29 @@ namespace frznUpload.Shared
 
             return m;
         }
+
+        public void Dispose()
+        {
+            if (disposed)
+                return;
+
+            Stop();
+            tokenSource.Dispose();
+            mre.Dispose();
+            ErrorEvent.Dispose();
+            IncomingQueue = null;
+
+            disposed = true;
+        }
+
+        ~MessageHandler() => Dispose();
     }
 
     public class SequenceBreakException : Exception
     {
         public Message.MessageType ExpectedType {get; private set;}
         public Message.MessageType ReceivedType {get; private set;}
+        public override string Message => ToString();
 
         public SequenceBreakException(Message.MessageType expectedType, Message.MessageType receivedType)
         {
@@ -122,4 +193,35 @@ namespace frznUpload.Shared
         }
     }
 
+    public class ErrorMessageException : Exception
+    {
+        public Message BadMessage { get; private set; }
+
+        public ErrorMessageException(Message m)
+        {
+            BadMessage = m;
+        }
+
+        public override string ToString()
+        {
+            return BadMessage + "\nis an error!";
+        }
+    }
+
+    public class MessageMatchException : Exception
+    {
+        public Message BadMessage { get; private set; }
+        public string Reason { get; private set; }
+
+        public MessageMatchException(Message m, string reason)
+        {
+            BadMessage = m;
+            Reason = reason;
+        }
+
+        public override string ToString()
+        {
+            return BadMessage + "\ndidnt match its saved pattern with reason: " + Reason;
+        }
+    }
 }

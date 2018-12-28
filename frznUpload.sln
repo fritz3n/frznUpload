@@ -14,23 +14,32 @@ EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
+		Logged|Any CPU = Logged|Any CPU
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{56630600-0F21-4909-8AAF-B63C6418F9FF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{56630600-0F21-4909-8AAF-B63C6418F9FF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{56630600-0F21-4909-8AAF-B63C6418F9FF}.Logged|Any CPU.ActiveCfg = Logged|Any CPU
+		{56630600-0F21-4909-8AAF-B63C6418F9FF}.Logged|Any CPU.Build.0 = Logged|Any CPU
 		{56630600-0F21-4909-8AAF-B63C6418F9FF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{56630600-0F21-4909-8AAF-B63C6418F9FF}.Release|Any CPU.Build.0 = Release|Any CPU
 		{B25EA5B9-06E0-48A1-A664-8639A021F067}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{B25EA5B9-06E0-48A1-A664-8639A021F067}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B25EA5B9-06E0-48A1-A664-8639A021F067}.Logged|Any CPU.ActiveCfg = Logged|Any CPU
+		{B25EA5B9-06E0-48A1-A664-8639A021F067}.Logged|Any CPU.Build.0 = Logged|Any CPU
 		{B25EA5B9-06E0-48A1-A664-8639A021F067}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B25EA5B9-06E0-48A1-A664-8639A021F067}.Release|Any CPU.Build.0 = Release|Any CPU
 		{3376FB36-39F9-4EEA-A9F8-157E77707E43}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{3376FB36-39F9-4EEA-A9F8-157E77707E43}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3376FB36-39F9-4EEA-A9F8-157E77707E43}.Logged|Any CPU.ActiveCfg = Logged|Any CPU
+		{3376FB36-39F9-4EEA-A9F8-157E77707E43}.Logged|Any CPU.Build.0 = Logged|Any CPU
 		{3376FB36-39F9-4EEA-A9F8-157E77707E43}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3376FB36-39F9-4EEA-A9F8-157E77707E43}.Release|Any CPU.Build.0 = Release|Any CPU
 		{2E7648C8-B107-420F-A75A-DBE1CC763C09}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{2E7648C8-B107-420F-A75A-DBE1CC763C09}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2E7648C8-B107-420F-A75A-DBE1CC763C09}.Logged|Any CPU.ActiveCfg = Logged|Any CPU
+		{2E7648C8-B107-420F-A75A-DBE1CC763C09}.Logged|Any CPU.Build.0 = Logged|Any CPU
 		{2E7648C8-B107-420F-A75A-DBE1CC763C09}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2E7648C8-B107-420F-A75A-DBE1CC763C09}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection

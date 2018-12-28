@@ -8,7 +8,7 @@ using System.Security.Cryptography;
 
 namespace frznUpload.Server
 {
-    class DataBase
+    class DataBase : IDisposable
     {
         MySqlConnection conn;
         int userId;
@@ -16,30 +16,65 @@ namespace frznUpload.Server
 
         public DataBase()
         {
-            string connStr = "server=192.168.2.187;user=frznUpload;database=frznupload;port=3306;password=BLANKCHRIS";
-            
+            string connStr = "server=192.168.2.187;user=frznUpload;database=frznUpload;port=3306;password=BLANKCHRIS";
+
 
             conn = new MySqlConnection(connStr);
             conn.Open();
         }
 
-        public bool CheckTokenExists(byte[] token)
+        public List<Sql_File> GetFiles()
         {
-            return (int)conn.QueryFirst("SELECT COUNT(*) FROM tokens WHERE signature = @tp", new { tp = token }) >= 1;
+            ThrowIfNotAuthenticated();
+
+            return conn.Query<Sql_File>("SELECT * FROM files WHERE user_id = @userId", new { userId }).AsList();
         }
 
+        public bool CheckTokenExists(byte[] token)
+        {
+            return conn.QuerySingle<int>("SELECT COUNT(*) FROM tokens WHERE signature = @tp", new { tp = token }) >= 1;
+        }
 
+        public string CreateFile(string identifier, string filename, string extension, int size)
+        {
+            ThrowIfNotAuthenticated();
+
+            conn.Execute("INSERT INTO files (user_id, identifier, filename, file_extension, size) VALUES (@userId, @identifier, @filename, @extension, @size)", new { userId, identifier, filename, extension, size });
+
+            return identifier;
+        }
+
+        public string GetAvailableIdentifier()
+        {
+            string identifier = "";
+
+            do
+            {
+                identifier = GenerateFileIdentifier();
+            } while (conn.QuerySingle<int>("SELECT COUNT(*) FROM files WHERE identifier = @ident", new { ident = identifier }) != 0);
+
+            return identifier;
+        }
+
+        private string GenerateFileIdentifier()
+        {
+            Random rnd = new Random();
+            byte[] rndBytes = new byte[96];
+            rnd.NextBytes(rndBytes);
+
+            return Convert.ToBase64String(rndBytes).Replace('/', '-');
+        }
 
         public void SetUser(byte[] token)
         {
-            userId = (int)conn.QueryFirst("SELECT user_id FROM tokens WHERE signature = @tp", new { tp = token });
+            userId = conn.QuerySingle<int>("SELECT user_id FROM tokens WHERE signature = @tp", new { tp = token });
             conn.Execute("UPDATE tokens SET last_used = now() WHERE signature = @tp", new { tp = token });
             IsAuthenticated = true;
         }
 
         public string HashPassword(string password, int id)
         {
-            User User = conn.QueryFirst<User>("SELECT * WHERE id=@id", new { id });
+            User User = conn.QueryFirst<User>("SELECT * FROM users WHERE id=@id", new { id });
 
             if (string.IsNullOrEmpty(User.Hash))
             {
@@ -56,132 +91,71 @@ namespace frznUpload.Server
 
             string HashString = User.Name + password + User.Salt;
 
-            using(SHA512CryptoServiceProvider sha = new SHA512CryptoServiceProvider())
+            using (var sha = new SHA512CryptoServiceProvider())
             {
-                return Convert.ToBase64String(sha.ComputeHash(Encoding.UTF8.GetBytes(HashString)));
+                return Convert.ToBase64String(sha.ComputeHash(Encoding.Default.GetBytes(HashString)));
             }
 
         }
 
-        public string Name { get
+        public bool SetToken(string username, string password, byte[] token)
+        {
+            bool exists = conn.QuerySingle<int>("SELECT COUNT(*) FROM tokens WHERE signature = @sig", new { sig = token }) > 0;
+
+            if (exists)
+            {
+                Token dbToken = conn.QuerySingle<Token>("SELECT * FROM tokens WHERE signature = @sig", new { sig = token });
+
+                if (dbToken != null)
+                {
+                    if (conn.QuerySingle<string>("SELECT name FROM users WHERE id = @id", new { id = dbToken.UserId }) == username)
+                    {
+                        return true;
+                    }
+                    return false;
+                }
+            }
+
+            if (conn.QuerySingle<int>("SELECT COUNT(*) FROM users WHERE name = @name", new { name = username }) != 1)
+                return false;
+
+            User User = conn.QuerySingle<User>("SELECT * FROM users WHERE name = @name", new { name = username });
+
+            if (User.Name != username)
+                return false;
+
+            if (User.Hash != HashPassword(password, User.Id))
+                return false;
+
+            conn.Execute("INSERT INTO tokens (user_id, signature) VALUES(@id, @sig)", new { id = User.Id, sig = token });
+
+            return true;
+        }
+
+        private void ThrowIfNotAuthenticated()
+        {
+            if (!IsAuthenticated)
+                throw new ArgumentException("Not Authenticated");
+        }
+
+        public void Dispose()
+        {
+            conn.Dispose();
+        }
+
+        ~DataBase() => Dispose();
+
+        public string Name
+        {
+            get
             {
                 if (!IsAuthenticated)
                     throw new Exception("not authenticated");
 
-                return (string)QuerySingle("SELECT name FROM users WHERE id = @id", "id", userId);
-                    } }
-
-        private IEnumerable<MySqlDataReader> Query(string query)
-        {
-            MySqlCommand cmd = new MySqlCommand(query, conn);
-            MySqlDataReader rdr = cmd.ExecuteReader();
-            
-            while (rdr.Read())
-            {
-                yield return rdr;
+                return conn.QuerySingle<string>("SELECT name FROM users WHERE id = @id", new { id = userId });
             }
-            rdr.Close();
-            
         }
 
-        private IEnumerable<MySqlDataReader> Query(string query, IDictionary<string, object> parameters)
-        {
-            MySqlCommand cmd = new MySqlCommand(query, conn);
 
-            foreach(var parameter in parameters)
-            {
-                cmd.Parameters.AddWithValue("@" + parameter.Key, parameter.Value);
-            }
-
-            MySqlDataReader rdr = cmd.ExecuteReader();
-
-            while (rdr.Read())
-            {
-                yield return rdr;
-            }
-            rdr.Close();
-        }
-
-        private object Query(string query, string parameterName, object parameter)
-        {
-            return Query(query, new Dictionary<string, object> { { parameterName, parameter } });
-        }
-
-        private MySqlDataReader QueryFirst(string query)
-        {
-            MySqlCommand cmd = new MySqlCommand(query, conn);
-            MySqlDataReader rdr = cmd.ExecuteReader();
-
-            rdr.Read();
-            return rdr;
-        }
-
-        private MySqlDataReader QueryFirst(string query, IDictionary<string, object> parameters)
-        {
-            MySqlCommand cmd = new MySqlCommand(query, conn);
-
-            foreach (var parameter in parameters)
-            {
-                cmd.Parameters.AddWithValue("@" + parameter.Key, parameter.Value);
-            }
-
-            MySqlDataReader rdr = cmd.ExecuteReader();
-
-            rdr.Read();
-            return rdr;
-        }
-
-        private MySqlDataReader QueryFirst(string query, string parameterName, object parameter)
-        {
-            return QueryFirst(query, new Dictionary<string, object> { { parameterName, parameter } });
-        }
-
-        private object QuerySingle(string query)
-        {
-            MySqlCommand cmd = new MySqlCommand(query, conn);
-
-            return cmd.ExecuteScalar();
-        }
-
-        private object QuerySingle(string query, IDictionary<string, object> parameters)
-        {
-            MySqlCommand cmd = new MySqlCommand(query, conn);
-
-            foreach (var parameter in parameters)
-            {
-                cmd.Parameters.AddWithValue("@" + parameter.Key, parameter.Value);
-            }
-
-            return cmd.ExecuteScalar();
-        }
-
-        private object QuerySingle(string query, string parameterName, object parameter)
-        {
-            return QuerySingle(query, new Dictionary<string, object> { { parameterName, parameter } });
-        }
-
-        private void QueryInert(string query)
-        {
-            MySqlCommand cmd = new MySqlCommand(query, conn);
-
-            cmd.ExecuteNonQuery();
-        }
-
-        private void QueryInert(string query, IDictionary<string, object> parameters)
-        {
-            MySqlCommand cmd = new MySqlCommand(query, conn);
-
-            foreach (var parameter in parameters)
-            {
-                cmd.Parameters.AddWithValue("@" + parameter.Key, parameter.Value);
-            }
-
-            cmd.ExecuteNonQuery();
-        }
-
-        private void QueryInert(string query, string parameterName, object parameter)
-        {
-            QueryInert(query, new Dictionary<string, object> { { parameterName, parameter } });
-        }
-    }
+    }       
 }

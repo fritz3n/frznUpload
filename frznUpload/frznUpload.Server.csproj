@@ -1,8 +1,13 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp2.1</TargetFramework>
+    <Configurations>Debug;Release;Logged</Configurations>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Logged|AnyCPU'">
+    <DefineConstants>TRACE;LOGMESSAGES</DefineConstants>
   </PropertyGroup>
 
   <ItemGroup>
@@ -11,7 +16,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\frznUpload.Shared\frznUpload.Shared.csproj" />
+    <ProjectReference Include="..\frznUpload.Shared\frznUpload.Shared.csproj">
+      <Private>true</Private>
+    </ProjectReference>
   </ItemGroup>
 
 </Project>

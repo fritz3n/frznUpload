@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
+using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Security.Cryptography;
 using System.Text;
@@ -56,8 +58,7 @@ namespace frznUpload.Shared
         {
             var bin = new BinaryFormatter();
             
-            Key = (RSAParameters)bin.Deserialize(keyStream);
-            
+            Key = ((RsaParametersSerializable)bin.Deserialize(keyStream)).RsaParameters;
         }
 
         public void GenerateKey(int bits)
@@ -72,7 +73,7 @@ namespace frznUpload.Shared
         {
             var bin = new BinaryFormatter();
 
-            bin.Serialize(keyStream, Key);
+            bin.Serialize(keyStream, Key.Value.ToSerializable());
         }
 
         public byte[] GenerateChallenge(int randomBytes)
@@ -109,8 +110,10 @@ namespace frznUpload.Shared
                 crypt.ImportParameters((RSAParameters)Key);
                 if (crypt.PublicOnly)
                     throw new ArgumentException("The loaded key is not suitable for this operation");
+                
+                var ou = crypt.SignHash(challenge, CryptoConfig.MapNameToOID("SHA512"));
 
-                return crypt.SignHash(challenge, CryptoConfig.MapNameToOID("SHA512"));
+                return ou;
             }
         }
 
