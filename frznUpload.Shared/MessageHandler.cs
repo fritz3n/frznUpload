@@ -11,6 +11,7 @@ namespace frznUpload.Shared
     {
         Queue<Message> IncomingQueue = new Queue<Message>();
         SslStream stream;
+        TcpClient tcp;
 #pragma warning disable IDE0044 // Add readonly modifier
         byte[] headerBuffer = new byte[4];
 #pragma warning restore IDE0044 // Add readonly modifier
@@ -21,14 +22,20 @@ namespace frznUpload.Shared
 
         public bool Running { get; private set; } = false;
         ManualResetEvent ErrorEvent = new ManualResetEvent(true);
+        public Exception ShutdownException { get; private set; }
+
+        private bool graceful = false;
+
+        public event EventHandler OnDisconnect;
 
 #if LOGMESSAGES
         List<(bool, Message)> Log = new List<(bool, Message)>();
 #endif
 
-        public MessageHandler(SslStream stream)
+        public MessageHandler(TcpClient cli, SslStream stream)
         {
             this.stream = stream;
+            this.tcp = cli;
         }
 
         public void Start()
@@ -60,7 +67,20 @@ namespace frznUpload.Shared
                 {
                     token.ThrowIfCancellationRequested();
 
-                    int l = await stream.ReadAsync(headerBuffer, 0, 4, token);
+                    int l;
+
+                    try
+                    {
+                        l = await stream.ReadAsync(headerBuffer, 0, 4, token);
+                    }
+                    catch(Exception e)
+                    {
+                        graceful = !tcp.Connected;
+                        ShutdownException = e;
+                        Running = false;
+                        ErrorEvent.Set();
+                        return;
+                    }
 
                     if (l != 4)
                         throw new Exception("Omae Wa Mou Shindeiru");
@@ -84,6 +104,7 @@ namespace frznUpload.Shared
                 }
             }catch(Exception e)
             {
+                ShutdownException = e;
                 Running = false;
                 ErrorEvent.Set();
 
@@ -101,14 +122,10 @@ namespace frznUpload.Shared
 
             byte[] length = BitConverter.GetBytes(data.Length);
 
-            try
-            {
-                await stream.WriteAsync(length, 0, 4);
-                await stream.WriteAsync(data, 0, data.Length);
-            }catch(Exception e)
-            {
-                Console.WriteLine(e);
-            }
+            
+            await stream.WriteAsync(length, 0, 4);
+            await stream.WriteAsync(data, 0, data.Length);
+            
         }
 
         public Message WaitForMessage()
@@ -122,7 +139,12 @@ namespace frznUpload.Shared
                 WaitHandle.WaitAny(new WaitHandle[] { ErrorEvent, mre });
 
                 if (!Running)
-                    throw new Exception();
+                {
+                    if (graceful)
+                        throw new GracefulShutdownException(ShutdownException);
+                    else
+                        throw ShutdownException;
+                }
 
                 return IncomingQueue.Dequeue();
             }
@@ -223,5 +245,11 @@ namespace frznUpload.Shared
         {
             return BadMessage + "\ndidnt match its saved pattern with reason: " + Reason;
         }
+    }
+    
+    public class GracefulShutdownException : Exception
+    {
+        public GracefulShutdownException(Exception innerException)
+       : base("A 'graceful' shutdown occured", innerException) { }
     }
 }

@@ -29,7 +29,7 @@ namespace frznUpload.Server
         {
             log = new Logger();
 
-            log.WriteLine("initializing client...");
+            log.WriteLine("Client born");
 
             Tcp = tcp;
             db = new DataBase();
@@ -40,7 +40,7 @@ namespace frznUpload.Server
 
             log.WriteLine("Encryption established");
 
-            mes = new MessageHandler(stream);
+            mes = new MessageHandler(tcp, stream);
             mes.Start();
 
             log.WriteLine("Client initialized");
@@ -74,6 +74,12 @@ namespace frznUpload.Server
                         t.Start();
 
                         message = await t;
+                    }catch(GracefulShutdownException)
+                    {
+                        log.WriteLine("Client disconnected");
+
+                        Dispose();
+                        return;
                     }
                     catch (Exception e)
                     {
@@ -83,9 +89,8 @@ namespace frznUpload.Server
                             await mes.SendMessage(new Message(Message.MessageType.None, true, e.ToString()));
                         }
                         catch { }
-
-                        stream.Close();
                         
+                        Dispose();
                         return;
                     }
 
