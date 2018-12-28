@@ -1,4 +1,12 @@
 #!/bin/bash
 cd /home/frznuploadserver/source
+
+echo "Stopping service..."
+sudo systemctl stop frznUpload
 rm -rf /home/frznuploadserver/server/*
+
+echo "Building..."
 dotnet publish frznUpload/frznUpload.Server.csproj -o ~/server -c Release
+
+echo "Starting service..."
+sudo systemctl start frznUpload
