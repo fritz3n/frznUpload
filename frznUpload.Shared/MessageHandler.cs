@@ -25,8 +25,7 @@ namespace frznUpload.Shared
         public Exception ShutdownException { get; private set; }
 
         private bool graceful = false;
-
-        public event EventHandler OnDisconnect;
+        
 
 #if LOGMESSAGES
         List<(bool, Message)> Log = new List<(bool, Message)>();

@@ -39,7 +39,7 @@ namespace frznUpload.Test
 
             Console.WriteLine("encryption established: " + stp.ElapsedMilliseconds);
 
-            mes = new MessageHandler(stream);
+            mes = new MessageHandler(Tcp, stream);
             mes.Start();
         }
 
