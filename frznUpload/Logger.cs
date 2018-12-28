@@ -81,6 +81,7 @@ namespace frznUpload.Server
             string write = $"[{date}]{seperator}{id}{seperator}{str}";
 
             Console.WriteLine(write);
+
             lock (writer)
             {
                 writer.WriteLine(write);
