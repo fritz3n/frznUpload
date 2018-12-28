@@ -1,1 +1,4 @@
 #!/bin/bash
+cd /home/frznuploadserver/source
+
+dotnet build frznUpload/frznUpload.Server.csproj -o ../server
