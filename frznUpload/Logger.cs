@@ -16,7 +16,7 @@ namespace frznUpload.Server
         static StreamWriter writer;
         public static TextWriter TextWriter { get => writer; }
 
-        static string _filename = RuntimeInformation.IsOSPlatform(OSPlatform.Linux) ? "/var/log/frznupload/frznUpload.log" : "log.txt";
+        static string _filename = RuntimeInformation.IsOSPlatform(OSPlatform.Linux) ? "/var/log/frznUpload/frznUpload.log" : "log.txt";
         static public string FileName { get => _filename; set
             {
                 bool wasOpen = Opened;

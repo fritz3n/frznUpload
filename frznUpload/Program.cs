@@ -24,7 +24,7 @@ namespace frznUpload.Server
             Logger.Open();
             Console.SetError(Logger.TextWriter);
 
-            Logger.WriteLineStatic("Logger Online");
+            Logger.WriteLineStatic("Logger Online: " + Logger.FileName);
             Logger.WriteLineStatic("Working directory: " + System.Environment.CurrentDirectory);
 
             IPAddress address = IPAddress.Any;
