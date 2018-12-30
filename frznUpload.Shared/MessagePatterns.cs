@@ -17,7 +17,8 @@ namespace frznUpload.Shared
         private class Control
         {
             public const int Indexer = 16;
-            public const int Idk = 32;
+            public const int Optional = 32;
+            public const int Idk = 64;
         }
 
         static Dictionary<Message.MessageType, List<int>> patterns = new Dictionary<Message.MessageType, List<int>>
@@ -34,6 +35,9 @@ namespace frznUpload.Shared
             {Message.MessageType.FileUpload, new List<int>{ Types.Int, Types.Raw } },
             {Message.MessageType.FileUploadFinished, new List<int>{} },
             {Message.MessageType.FileUploadSuccess, new List<int>{} },
+            //                                              file_identifier, First_view,Public,Public_registered,Whitelisted,Whitelist
+            {Message.MessageType.ShareRequest, new List<int>{ Types.String, Types.Int, Types.Int, Types.Int, Types.Int, Types.String} },
+            {Message.MessageType.ShareResponse, new List<int>{ Types.String } },
 
             {Message.MessageType.FileListRequest, new List<int>() },
             {Message.MessageType.FileList, new List<int>{ Types.Int | Control.Indexer ,  Types.Message | (int)Message.MessageType.FileInfo << 4} },
@@ -50,10 +54,15 @@ namespace frznUpload.Shared
 
             var fields = patterns[m.Type];
 
+            bool optional = false;
+
             int pi = 0;
 
             for(int i = 0; i < m.Count; i++)
             {
+                if(pi > fields.Count - 1)
+                    return (true, "There are too many Message fields");
+
                 var curField = fields[pi];
                 var options = curField & 0xf0;
 
@@ -79,6 +88,10 @@ namespace frznUpload.Shared
                     case Control.Idk:
                         return (true, null);
 
+                    case Control.Optional:
+                        optional = true;
+                        goto default;
+
                     default:
                         if (!TypesMatch(m.FieldTypes[i], curField, m[i]))
                             return (false, $"Field {i}: {m.FieldTypes[i]} doesn´t match {curField}");
@@ -87,6 +100,15 @@ namespace frznUpload.Shared
                 }
 
             }
+
+            if(!optional & pi < fields.Count - 1)
+            {
+                if((fields[pi + 1] & Control.Optional) > 0)
+                    return (true, null);
+
+                return (false, "There are to few Message fields!");
+            }
+
             return (true, null);
         }
 

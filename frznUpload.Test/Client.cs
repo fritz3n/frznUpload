@@ -149,6 +149,15 @@ namespace frznUpload.Test
             }
         }
 
+        public async Task<string> ShareFile(string fileIdentifier, bool firstView = false, bool isPublic = true, bool publicRegistered = true, bool whitelisted = false, string whitelist = null)
+        {
+            await mes.SendMessage(new Message(Message.MessageType.ShareRequest, false, firstView, isPublic, publicRegistered, whitelisted, whitelist));
+
+            var m = mes.WaitForMessage(true, Message.MessageType.ShareResponse);
+
+            return m[0];
+        }
+
         public async Task<List<Remote_File>> GetFiles()
         {
             await mes.SendMessage(new Message(Message.MessageType.FileListRequest));
@@ -174,6 +183,7 @@ namespace frznUpload.Test
 
             return list;
         }
+
 
         private static bool ValidateServerCertificate(
               object sender,

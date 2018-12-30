@@ -162,7 +162,7 @@ namespace frznUpload.Server
                         {
                             case Message.MessageType.FileUploadRequest:
 
-                                await FileHandler.ReceiveFile(message, mes, db);
+                                await FileHandler.ReceiveFile(message, mes, db, log);
 
                                 break;
 
@@ -179,6 +179,21 @@ namespace frznUpload.Server
                                 }
 
                                 await mes.SendMessage(new Message(Message.MessageType.FileList, false, Fields));
+
+                                break;
+
+                            case Message.MessageType.ShareRequest:
+
+                                string id = db.SetFileShare(
+                                    message[0],
+                                    message[1],
+                                    message[2],
+                                    message[3],
+                                    message[4],
+                                    message[5]
+                                    );
+
+                                await mes.SendMessage(new Message(Message.MessageType.ShareResponse, false, id));
 
                                 break;
 

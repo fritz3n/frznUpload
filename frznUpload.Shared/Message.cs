@@ -10,23 +10,25 @@ namespace frznUpload.Shared
     {
         public enum MessageType : byte
         {
-            ChallengeRequest,
-            Challenge,
-            ChallengeResponse,
-            ChallengeApproved,
-            AuthRequest,
-            Auth,
-            AuthSuccess,
+            ChallengeRequest, // client requests a challenge to prove ownership of an authenticated public key
+            Challenge, // server sends a challenge to the client to prove ownership of an authenticated public key
+            ChallengeResponse, // client sends the signed challenge to the server
+            ChallengeApproved, // server approves of the challengeresponse, or doesnt if the error flag is set. Also sends username
+            AuthRequest, // server asks the client to authenticate a public key //NOT YET USED//
+            Auth, // client authenticates a public key with a username and password
+            AuthSuccess, // server approves of the authentication, the pub key is now authenticated but the client isnt yet
             FileUploadRequest,
             FileUploadApproved,
             FileUpload,
             FileUploadFinished,
             FileUploadSuccess,
+            ShareRequest, // client requests a fileshare to be made
+            ShareResponse, // server sends the fileshare id
             FileListRequest,
-            FileList,
+            FileList, // A list of Fileinfo Messages
             FileInfo,
-            Sequence,
-            None
+            Sequence, // Used for a sequence error message, when the wrong message type is received
+            None // General Message type, Mainly used for Errors
         }
 
         public enum FieldType

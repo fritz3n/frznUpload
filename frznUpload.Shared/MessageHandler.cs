@@ -9,6 +9,8 @@ namespace frznUpload.Shared
 {
     public class MessageHandler : IDisposable
     {
+        public int Version { get => HashEnum(typeof(Message.MessageType)); }
+
         Queue<Message> IncomingQueue = new Queue<Message>();
         SslStream stream;
         TcpClient tcp;
@@ -177,6 +179,21 @@ namespace frznUpload.Shared
                 throw new SequenceBreakException(expected, m.Type);
 
             return m;
+        }
+
+        private int HashEnum(Type T)
+        {
+            unchecked {
+                int h = 37;
+                h *= 392;
+
+                h ^= Enum.GetNames(T).GetHashCode();
+                h *= 392;
+
+                h ^= Enum.GetValues(T).GetHashCode();
+
+                return h;
+            }
         }
 
         public void Dispose()

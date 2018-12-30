@@ -12,7 +12,7 @@ namespace frznUpload.Server
         const string directory = "../files/";
         const int chunksSize = 16384;
 
-        static public async Task ReceiveFile(Message message, MessageHandler mes, DataBase db)
+        static public async Task ReceiveFile(Message message, MessageHandler mes, DataBase db, Logger log)
         {
             int size = message[2];
             int written = 0;
@@ -20,7 +20,7 @@ namespace frznUpload.Server
             string filename = message[0];
             string extension = message[1];
 
-            string identifier = db.GetAvailableIdentifier();
+            string identifier = db.GetAvailableFileIdentifier();
 
             await mes.SendMessage(new Message(Message.MessageType.FileUploadApproved, false, identifier));
 

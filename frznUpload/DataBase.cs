@@ -44,7 +44,7 @@ namespace frznUpload.Server
             return identifier;
         }
 
-        public string GetAvailableIdentifier()
+        public string GetAvailableFileIdentifier()
         {
             string identifier = "";
 
@@ -63,6 +63,29 @@ namespace frznUpload.Server
             rnd.NextBytes(rndBytes);
 
             return Convert.ToBase64String(rndBytes).Replace('/', '-');
+        }
+
+        public string GetAvailableShareIdentifier()
+        {
+            string identifier = "";
+
+            do
+            {
+                identifier = GenerateShareIdentifier();
+            } while (conn.QuerySingle<int>("SELECT COUNT(*) FROM shares WHERE share_id = @ident", new { ident = identifier }) != 0);
+
+            return identifier;
+        }
+
+        private string GenerateShareIdentifier()
+        {
+            Random rnd = new Random();
+            byte[] rndBytes = new byte[5];
+            rnd.NextBytes(rndBytes);
+
+            string s = Convert.ToBase64String(rndBytes).Replace('/', '-');
+
+            return s.Substring(0, 6);
         }
 
         public void SetUser(byte[] token)
@@ -128,8 +151,26 @@ namespace frznUpload.Server
                 return false;
 
             conn.Execute("INSERT INTO tokens (user_id, signature) VALUES(@id, @sig)", new { id = User.Id, sig = token });
-
             return true;
+        }
+
+        public string SetFileShare(string fileIdentifier, bool firstView = false, bool isPublic = true, bool publicRegistered = true, bool whitelisted = false, string whitelist = null)
+        {
+            ThrowIfNotAuthenticated();
+            if (conn.QuerySingle<int>("SELECT COUNT(*) FROM files WHERE identifier = @ident;", new { ident = fileIdentifier }) != 1)
+                return null;
+
+            if (conn.QuerySingle<int>("SELECT user_id FROM files WHERE identifier = @ident", new { ident = fileIdentifier }) != userId)
+                return null;
+
+            string shareId = GetAvailableShareIdentifier();
+
+            conn.Execute(
+                "INSERT INTO shares (file_identifier, share_id, first_view, public, public_registered, whitelisted, whitelit) " +
+                "VALUES(@fileIdentifier, @shareId, @firstView, @idPublic, @publicRegistered, @whitelisted, @whitelist)",
+                new { fileIdentifier, shareId, firstView, isPublic, publicRegistered, whitelisted, whitelist });
+
+            return shareId;
         }
 
         private void ThrowIfNotAuthenticated()
