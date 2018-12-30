@@ -59,7 +59,7 @@ namespace frznUpload.Server
                 if (Opened)
                     return;
 
-                file = File.OpenWrite(_filename);
+                file = File.Open(_filename, FileMode.Append, FileAccess.Write);
                 writer = new StreamWriter(file);
                 Opened = true;
             }
