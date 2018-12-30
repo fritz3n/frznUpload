@@ -167,7 +167,7 @@ namespace frznUpload.Server
 
             conn.Execute(
                 "INSERT INTO shares (file_identifier, share_id, first_view, public, public_registered, whitelisted, whitelit) " +
-                "VALUES(@fileIdentifier, @shareId, @firstView, @idPublic, @publicRegistered, @whitelisted, @whitelist)",
+                "VALUES(@fileIdentifier, @shareId, @firstView, @isPublic, @publicRegistered, @whitelisted, @whitelist)",
                 new { fileIdentifier, shareId, firstView, isPublic, publicRegistered, whitelisted, whitelist });
 
             return shareId;
