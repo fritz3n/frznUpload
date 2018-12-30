@@ -89,7 +89,8 @@ namespace frznUpload.Server
                             await mes.SendMessage(new Message(Message.MessageType.None, true, e.ToString()));
                         }
                         catch { }
-                        
+
+                        log.WriteLine("Shutting down because of a non-recoverable error");
                         Dispose();
                         return;
                     }
@@ -125,7 +126,7 @@ namespace frznUpload.Server
                                 if(auth == false)
                                 {
                                     await mes.SendMessage(new Message(Message.MessageType.ChallengeApproved, true, "Challenge failed"));
-                                    log.WriteLine("Client failed to authenticate using Public Key");
+                                    log.WriteLine("Failed to authenticate using Public Key");
                                     break;
                                 }
 
@@ -134,7 +135,7 @@ namespace frznUpload.Server
 
                                 await mes.SendMessage(new Message(Message.MessageType.ChallengeApproved, false, db.Name));
 
-                                log.WriteLine("Client authenticated using Public Key");
+                                log.WriteLine("Authenticated using Public Key");
                                 log.WriteLine("Username: ", db.Name);
                                 log.Id = db.Name;
                                 break;
@@ -148,12 +149,12 @@ namespace frznUpload.Server
                                 if(db.SetToken(message[0], message[1], chal.GetThumbprint()))
                                 {
                                     await mes.SendMessage(new Message(Message.MessageType.AuthSuccess));
-                                    log.WriteLine("Client authenticated a Public Key");
+                                    log.WriteLine("Authenticated a Public Key");
                                 }
                                 else
                                 {
                                     await mes.SendMessage(new Message(Message.MessageType.AuthSuccess, true, "Login data not correct"));
-                                    log.WriteLine("Client failed to authenticate a Public Key");
+                                    log.WriteLine("Failed to authenticate a Public Key");
                                 }
 
                                 break;
@@ -172,9 +173,9 @@ namespace frznUpload.Server
                                 (bool, string) returned = await FileHandler.ReceiveFile(message, mes, db, log);
 
                                 if (returned.Item1)
-                                    log.WriteLine("Client uploaded a file: ", returned.Item2.Substring(0, 10));
+                                    log.WriteLine("Uploaded a file: ", returned.Item2.Substring(0, 10));
                                 else
-                                    log.WriteLine("Client failed to upload a file");
+                                    log.WriteLine("Failed to upload a file");
 
                                 break;
 
@@ -192,7 +193,7 @@ namespace frznUpload.Server
 
                                 await mes.SendMessage(new Message(Message.MessageType.FileList, false, Fields));
 
-                                log.WriteLine("Client listed his files");
+                                log.WriteLine("Listed files");
 
                                 break;
 
@@ -209,7 +210,7 @@ namespace frznUpload.Server
 
                                 await mes.SendMessage(new Message(Message.MessageType.ShareResponse, false, id));
 
-                                log.WriteLine("Client created a share: " + id);
+                                log.WriteLine("Created a share: " + id);
 
                                 break;
 
@@ -228,6 +229,7 @@ namespace frznUpload.Server
                 }
                 catch { }
 
+                log.WriteLine("Shutting down because of a non-recoverable error");
                 Dispose();
             } catch(Exception e)
             {
@@ -238,6 +240,7 @@ namespace frznUpload.Server
                 }
                 catch { }
 
+                log.WriteLine("Shutting down because of a non-recoverable error");
                 Dispose();
             }
         }
