@@ -33,7 +33,7 @@ namespace frznUpload.Server
             get => id;
             set
             {
-                WriteLineStatic("", id + " -> " + value);
+                WriteLineStatic("Changed Id", id + "->" + value);
                 id = value;
             }
         }
