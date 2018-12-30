@@ -43,6 +43,8 @@ namespace frznUpload.Shared
             {Message.MessageType.FileList, new List<int>{ Types.Int | Control.Indexer ,  Types.Message | (int)Message.MessageType.FileInfo << 4} },
             {Message.MessageType.FileInfo, new List<int>{ Types.String, Types.String, Types.String, Types.Int, Types.Raw} },
 
+            {Message.MessageType.Version, new List<int>{Types.Int} },
+
             {Message.MessageType.Sequence, new List<int>{ Control.Idk } },
             {Message.MessageType.None, new List<int>{ Control.Idk } },
         };

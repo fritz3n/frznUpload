@@ -27,6 +27,7 @@ namespace frznUpload.Shared
             FileListRequest,
             FileList, // A list of Fileinfo Messages
             FileInfo,
+            Version,
             Sequence, // Used for a sequence error message, when the wrong message type is received
             None // General Message type, Mainly used for Errors
         }

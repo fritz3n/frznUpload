@@ -113,7 +113,7 @@ namespace frznUpload.Shared
             }
         }
 
-        public async Task SendMessage(Message message, bool encrypt = true)
+        public async Task SendMessage(Message message)
         {
 #if LOGMESSAGES
             Log.Add((true, message));

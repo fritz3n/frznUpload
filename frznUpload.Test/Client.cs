@@ -42,7 +42,7 @@ namespace frznUpload.Test
             mes = new MessageHandler(Tcp, stream);
             mes.Start();
         }
-
+        
         public async Task<bool> AuthWithKey(string file)
         {
             try
