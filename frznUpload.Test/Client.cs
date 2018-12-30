@@ -149,9 +149,11 @@ namespace frznUpload.Test
             }
         }
 
-        public async Task<string> ShareFile(string fileIdentifier, bool firstView = false, bool isPublic = true, bool publicRegistered = true, bool whitelisted = false, string whitelist = null)
+        public async Task<string> ShareFile(string fileIdentifier, bool firstView = false, bool isPublic = true, bool publicRegistered = true, bool whitelisted = false, string whitelist = "")
         {
-            await mes.SendMessage(new Message(Message.MessageType.ShareRequest, false, firstView, isPublic, publicRegistered, whitelisted, whitelist));
+
+
+            await mes.SendMessage(new Message(Message.MessageType.ShareRequest, false, fileIdentifier, firstView ? 1 : 0, isPublic ? 1 : 0, publicRegistered ? 1 : 0, whitelisted ? 1 : 0, whitelist));
 
             var m = mes.WaitForMessage(true, Message.MessageType.ShareResponse);
 

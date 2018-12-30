@@ -186,10 +186,10 @@ namespace frznUpload.Server
 
                                 string id = db.SetFileShare(
                                     message[0],
-                                    message[1],
-                                    message[2],
-                                    message[3],
-                                    message[4],
+                                    message[1] == 1,
+                                    message[2] == 1,
+                                    message[3] == 1,
+                                    message[4] == 1,
                                     message[5]
                                     );
 

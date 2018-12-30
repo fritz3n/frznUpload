@@ -54,24 +54,31 @@ namespace frznUpload.Test
 
             //while (true)
             //{
-                var up = await cli.UploadFile(path);
+            string fileId = null;
 
-                while (true)
+            var up = await cli.UploadFile(path);
+
+            while (true)
+            {
+                if (up.Finished)
                 {
-                    if (up.Finished)
-                    {
-                        Console.WriteLine("Finish: " + up.Identifier);
-                        break;
-                    }
-
-                    Console.WriteLine(Math.Round(up.Progress * 100, 2));
-
-                    await Task.Delay(100);
+                    Console.WriteLine("Finish: " + up.Identifier);
+                    fileId = up.Identifier;
+                    break;
                 }
 
-                var files = await cli.GetFiles();
+                Console.WriteLine(Math.Round(up.Progress * 100, 2));
 
-                Console.WriteLine(string.Join("\n", files));
+                await Task.Delay(100);
+            }
+
+            string shareId = await cli.ShareFile(fileId);
+
+            var files = await cli.GetFiles();
+
+            Console.WriteLine(string.Join("\n", files));
+
+            Console.WriteLine(shareId);
 
             //}
         }
