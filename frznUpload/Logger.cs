@@ -15,7 +15,7 @@ namespace frznUpload.Server
         static FileStream file;
         static StreamWriter writer;
         public static TextWriter TextWriter { get => writer; }
-        
+
         static string _filename = RuntimeInformation.IsOSPlatform(OSPlatform.Linux) ? "/var/log/frznupload/frznUpload.log" : "log.txt";
         static public string FileName { get => _filename; set
             {
@@ -28,6 +28,15 @@ namespace frznUpload.Server
             }
         }
         static public bool Opened { get; set; }
+
+        public string  Id {
+            get => id;
+            set
+            {
+                WriteLineStatic("->" + seperator + value, id);
+                id = value;
+            }
+        }
 
         string id;
 

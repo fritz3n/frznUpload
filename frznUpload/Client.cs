@@ -125,6 +125,7 @@ namespace frznUpload.Server
                                 if(auth == false)
                                 {
                                     await mes.SendMessage(new Message(Message.MessageType.ChallengeApproved, true, "Challenge failed"));
+                                    log.WriteLine("Client failed to authenticate using Public Key");
                                     break;
                                 }
 
@@ -132,6 +133,10 @@ namespace frznUpload.Server
                                 IsAuthenticated = true;
 
                                 await mes.SendMessage(new Message(Message.MessageType.ChallengeApproved, false, db.Name));
+
+                                log.WriteLine("Client authenticated using Public Key");
+                                log.WriteLine("Username: ", db.Name);
+                                log.Id = db.Name;
                                 break;
 
                             case Message.MessageType.Auth:
@@ -143,10 +148,12 @@ namespace frznUpload.Server
                                 if(db.SetToken(message[0], message[1], chal.GetThumbprint()))
                                 {
                                     await mes.SendMessage(new Message(Message.MessageType.AuthSuccess));
+                                    log.WriteLine("Client authenticated a Public Key");
                                 }
                                 else
                                 {
                                     await mes.SendMessage(new Message(Message.MessageType.AuthSuccess, true, "Login data not correct"));
+                                    log.WriteLine("Client failed to authenticate a Public Key");
                                 }
 
                                 break;
@@ -162,7 +169,12 @@ namespace frznUpload.Server
                         {
                             case Message.MessageType.FileUploadRequest:
 
-                                await FileHandler.ReceiveFile(message, mes, db, log);
+                                (bool, string) returned = await FileHandler.ReceiveFile(message, mes, db, log);
+
+                                if (returned.Item1)
+                                    log.WriteLine("Client uploaded a file: ", returned.Item2.Substring(0, 10));
+                                else
+                                    log.WriteLine("Client failed to upload a file");
 
                                 break;
 
@@ -180,6 +192,8 @@ namespace frznUpload.Server
 
                                 await mes.SendMessage(new Message(Message.MessageType.FileList, false, Fields));
 
+                                log.WriteLine("Client listed his files");
+
                                 break;
 
                             case Message.MessageType.ShareRequest:
@@ -194,6 +208,8 @@ namespace frznUpload.Server
                                     );
 
                                 await mes.SendMessage(new Message(Message.MessageType.ShareResponse, false, id));
+
+                                log.WriteLine("Client created a share: " + id);
 
                                 break;
 
