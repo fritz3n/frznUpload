@@ -24,7 +24,7 @@ namespace frznUpload.Test
 
         static async Task Meth()
         {
-            while (true) { 
+            //while (true) { 
                 Stopwatch stp = new Stopwatch();
                 stp.Start();
                 Client cli = new Client("fritzen.tk", 22340);
@@ -46,11 +46,11 @@ namespace frznUpload.Test
 
                 stp.Stop();
 
-                //Console.WriteLine(cli.Name);
-                Console.WriteLine(stp.ElapsedMilliseconds);
-                cli.Disconnect();
-            }
-            /*Console.WriteLine("Upload a File:");
+                Console.WriteLine(cli.Name);
+                //Console.WriteLine(stp.ElapsedMilliseconds);
+                //cli.Disconnect();
+            //}
+            Console.WriteLine("Upload a File:");
             //string path = @"C:\Users\fritzen\Downloads\DSC_0138.JPG";//
             string path = Console.ReadLine();
 
@@ -81,7 +81,7 @@ namespace frznUpload.Test
             Console.WriteLine(string.Join("\n", files));
 
             Console.WriteLine(shareId);
-            */
+            
             //}
         }
     }

@@ -41,9 +41,9 @@ namespace frznUpload.Shared
                 Timeout?.Invoke(this, null);
             }
 
-            TimeSpan time = LastActivity - DateTime.Now;
+            TimeSpan time =  DateTime.Now - LastActivity;
 
-            if (time.Milliseconds >= TurnaoroundTimes.Average() * 10)
+            if (time.TotalMilliseconds >= AverageTurnaround * 10)
             {
                 LastActivity = DateTime.Now;
                 var p = new Ping();
