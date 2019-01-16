@@ -10,6 +10,8 @@ namespace frznUpload.Shared
     {
         public enum MessageType : byte
         {
+            Ping,
+            Pong,
             ChallengeRequest, // client requests a challenge to prove ownership of an authenticated public key
             Challenge, // server sends a challenge to the client to prove ownership of an authenticated public key
             ChallengeResponse, // client sends the signed challenge to the server

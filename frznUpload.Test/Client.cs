@@ -20,10 +20,15 @@ namespace frznUpload.Test
 
         public string Name { get; private set; }
         public bool IsAuthenticated { get; private set; }
-
+        public bool Connected { get => Tcp.Connected; }
 
 
         public Client(string url, int port)
+        {
+            Connect(url, port);
+        }
+
+        public void Connect(string url, int port)
         {
             Stopwatch stp = new Stopwatch();
             stp.Start();
@@ -43,6 +48,11 @@ namespace frznUpload.Test
             mes.Start();
         }
         
+        public void Disconnect()
+        {
+            Tcp.Close();
+        }
+
         public async Task<bool> AuthWithKey(string file)
         {
             try

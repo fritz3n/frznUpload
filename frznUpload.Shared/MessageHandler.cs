@@ -4,12 +4,13 @@ using System.Net.Security;
 using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Linq;
 
 namespace frznUpload.Shared
 {
     public class MessageHandler : IDisposable
     {
-        public int Version { get => HashEnum(typeof(Message.MessageType)); }
+        public static int Version { get; } = HashEnum(typeof(Message.MessageType));
 
         Queue<Message> IncomingQueue = new Queue<Message>();
         SslStream stream;
@@ -26,8 +27,11 @@ namespace frznUpload.Shared
         ManualResetEvent ErrorEvent = new ManualResetEvent(true);
         public Exception ShutdownException { get; private set; }
 
+
+
         private bool graceful = false;
-        
+
+        PingPongHandler PingPong;
 
 #if LOGMESSAGES
         List<(bool, Message)> Log = new List<(bool, Message)>();
@@ -36,13 +40,23 @@ namespace frznUpload.Shared
         public MessageHandler(TcpClient cli, SslStream stream)
         {
             this.stream = stream;
-            this.tcp = cli;
+            tcp = cli;
+            PingPong = new PingPongHandler(this);
+            PingPong.Timeout += TimeoutHandler;
+        }
+
+        private void TimeoutHandler(object sender, EventArgs e)
+        {
+            Stop();
+            ShutdownException = new TimeoutException();
         }
 
         public void Start()
         {
             if (Running)
                 return;
+
+            PingPong.Start();
 
             tokenSource?.Cancel();
             tokenSource = new CancellationTokenSource();
@@ -54,6 +68,7 @@ namespace frznUpload.Shared
 
         public void Stop()
         {
+            PingPong.Stop();
             tokenSource?.Cancel();
         }
 
@@ -82,7 +97,8 @@ namespace frznUpload.Shared
                         ErrorEvent.Set();
                         return;
                     }
-
+                    
+                    
                     if (l != 4)
                         throw new Exception("Omae Wa Mou Shindeiru");
 
@@ -97,7 +113,11 @@ namespace frznUpload.Shared
                     
                     var m = new Message(bytes);
 
-                    IncomingQueue.Enqueue(m);
+                    if (!PingPong.HandleMessage(m))
+                    {
+                        IncomingQueue.Enqueue(m);
+                    }
+                    
 #if LOGMESSAGES
                     Log.Add((false, m));
 #endif
@@ -112,7 +132,7 @@ namespace frznUpload.Shared
                 Console.WriteLine(e);
             }
         }
-
+        
         public async Task SendMessage(Message message)
         {
 #if LOGMESSAGES
@@ -181,7 +201,7 @@ namespace frznUpload.Shared
             return m;
         }
 
-        private int HashEnum(Type T)
+        static private int HashEnum(Type T)
         {
             unchecked {
                 int h = 37;
@@ -268,4 +288,6 @@ namespace frznUpload.Shared
         public GracefulShutdownException(Exception innerException)
        : base("A 'graceful' shutdown occured", innerException) { }
     }
+
+    
 }

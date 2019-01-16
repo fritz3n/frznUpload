@@ -16,39 +16,41 @@ namespace frznUpload.Test
     {
         static void Main(string[] args)
         {
-            meth().Wait();
+            Meth().Wait();
 
             Console.ReadLine();
 
         }
 
-        static async Task meth()
+        static async Task Meth()
         {
-            Stopwatch stp = new Stopwatch();
-            stp.Start();
-            Client cli = new Client("fritzen.tk", 22340);
+            while (true) { 
+                Stopwatch stp = new Stopwatch();
+                stp.Start();
+                Client cli = new Client("fritzen.tk", 22340);
 
-            string file = "key.key";
+                string file = "key.key";
 
-            if (!await cli.AuthWithKey(file))
-            {
-                while (!cli.IsAuthenticated)
+                if (!await cli.AuthWithKey(file))
                 {
-                    Console.WriteLine("name:");
-                    string name = Console.ReadLine();
-                    Console.WriteLine("pass:");
-                    string password = Console.ReadLine();
-                    await cli.AuthWithPass(name, password, file);
+                    while (!cli.IsAuthenticated)
+                    {
+                        Console.WriteLine("name:");
+                        string name = Console.ReadLine();
+                        Console.WriteLine("pass:");
+                        string password = Console.ReadLine();
+                        await cli.AuthWithPass(name, password, file);
+                    }
+
                 }
 
+                stp.Stop();
+
+                //Console.WriteLine(cli.Name);
+                Console.WriteLine(stp.ElapsedMilliseconds);
+                cli.Disconnect();
             }
-
-            stp.Stop();
-
-            Console.WriteLine(cli.Name);
-            Console.WriteLine(stp.ElapsedMilliseconds);
-
-            Console.WriteLine("Upload a File:");
+            /*Console.WriteLine("Upload a File:");
             //string path = @"C:\Users\fritzen\Downloads\DSC_0138.JPG";//
             string path = Console.ReadLine();
 
@@ -79,7 +81,7 @@ namespace frznUpload.Test
             Console.WriteLine(string.Join("\n", files));
 
             Console.WriteLine(shareId);
-
+            */
             //}
         }
     }
