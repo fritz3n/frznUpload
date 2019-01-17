@@ -20,6 +20,7 @@ namespace frznUpload.Shared
             Stopped,
             Graceful,
             Timeout,
+            Error,
         }
 
         Queue<Message> IncomingQueue = new Queue<Message>();
@@ -81,6 +82,7 @@ namespace frznUpload.Shared
 
             PingPong.Stop();
             tokenSource?.Cancel();
+            Running = false;
             OnDisconnect?.Invoke(this, reason);
         }
 
@@ -138,8 +140,9 @@ namespace frznUpload.Shared
             }catch(Exception e)
             {
                 ShutdownException = e;
-                Running = false;
                 ErrorEvent.Set();
+
+                Stop(DisconnectReason.Error);
 
                 Console.WriteLine(e);
             }

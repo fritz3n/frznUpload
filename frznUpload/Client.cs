@@ -58,6 +58,7 @@ namespace frznUpload.Server
         
         public void Stop()
         {
+            log.WriteLine("Stopping...");
             tokenSource?.Cancel();
         }
 
