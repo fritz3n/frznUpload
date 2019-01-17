@@ -26,6 +26,13 @@ namespace frznUpload.Test
         public Client(string url, int port)
         {
             Connect(url, port);
+            mes.OnDisconnect += OnDisconnect;
+        }
+
+        private void OnDisconnect(object sender, MessageHandler.DisconnectReason disconnectReason)
+        {
+            Console.WriteLine("Disconnected: " + disconnectReason);
+            Disconnect();
         }
 
         public void Connect(string url, int port)

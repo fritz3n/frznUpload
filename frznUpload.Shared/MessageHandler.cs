@@ -12,6 +12,16 @@ namespace frznUpload.Shared
     {
         public static int Version { get; } = HashEnum(typeof(Message.MessageType));
 
+        public delegate void DisconnectHandler(object sender, DisconnectReason disconnectReason);
+        public event DisconnectHandler OnDisconnect;
+
+        public enum DisconnectReason
+        {
+            Stopped,
+            Graceful,
+            Timeout,
+        }
+
         Queue<Message> IncomingQueue = new Queue<Message>();
         SslStream stream;
         TcpClient tcp;
@@ -26,9 +36,7 @@ namespace frznUpload.Shared
         public bool Running { get; private set; } = false;
         ManualResetEvent ErrorEvent = new ManualResetEvent(true);
         public Exception ShutdownException { get; private set; }
-
-
-
+        
         private bool graceful = false;
 
         PingPongHandler PingPong;
@@ -66,10 +74,14 @@ namespace frznUpload.Shared
 #pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
         }
 
-        public void Stop()
+        public void Stop(DisconnectReason reason = DisconnectReason.Stopped)
         {
+            if (!Running)
+                return;
+
             PingPong.Stop();
             tokenSource?.Cancel();
+            OnDisconnect?.Invoke(this, reason);
         }
 
         public async Task ReadFromStream(CancellationToken token)
@@ -116,12 +128,12 @@ namespace frznUpload.Shared
                     if (!PingPong.HandleMessage(m))
                     {
                         IncomingQueue.Enqueue(m);
+                        mre.Set();
                     }
                     
 #if LOGMESSAGES
                     Log.Add((false, m));
 #endif
-                    mre.Set();
                 }
             }catch(Exception e)
             {

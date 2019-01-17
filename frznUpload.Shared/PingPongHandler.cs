@@ -37,7 +37,7 @@ namespace frznUpload.Shared
 
             if (WaitingPings.Count > 10)
             {
-                Stop();
+                mes.Stop(MessageHandler.DisconnectReason.Timeout);
                 Timeout?.Invoke(this, null);
             }
 
@@ -49,6 +49,9 @@ namespace frznUpload.Shared
                 var p = new Ping();
                 WaitingPings.Add(p);
                 var t = mes.SendMessage(p.Send());
+#if DEBUG
+                Console.WriteLine("<Ping");
+#endif
             }
         }
 
@@ -58,8 +61,14 @@ namespace frznUpload.Shared
             
             if (m.Type == Message.MessageType.Ping)
             {
+#if DEBUG
+                Console.WriteLine(">Ping");
+#endif
                 if (MessagePatterns.CheckMessage(m).Item1)
                 {
+#if DEBUG
+                    Console.WriteLine("<Pong");
+#endif
                     var t = mes.SendMessage(new Message(Message.MessageType.Pong, false, m[0], MessageHandler.Version));
                 }
                 return true;
@@ -67,6 +76,9 @@ namespace frznUpload.Shared
 
             if (m.Type == Message.MessageType.Pong)
             {
+#if DEBUG
+                Console.WriteLine(">Pong");
+#endif
                 if (MessagePatterns.CheckMessage(m).Item1)
                 {
                     var t = HandlePong(m);
@@ -88,7 +100,7 @@ namespace frznUpload.Shared
             var List = WaitingPings.Where((p) => p.Id == m[0]).ToList();
 
             if (List.Count != 1)
-            {
+            { 
                 await mes.SendMessage(new Message(Message.MessageType.None, true));
                 return;
             }
