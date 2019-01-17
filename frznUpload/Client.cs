@@ -27,6 +27,8 @@ namespace frznUpload.Server
 
         public Client(TcpClient tcp, X509Certificate2 Cert)
         {
+            mes.OnDisconnect += OnDisconnect;
+
             log = new Logger();
 
             log.WriteLine("Client born");
@@ -46,6 +48,11 @@ namespace frznUpload.Server
             log.WriteLine("Client initialized");
         }
 
+        private void OnDisconnect(object sender, MessageHandler.DisconnectReason disconnectReason)
+        {
+            log.WriteLine("Disconnected: " + disconnectReason);
+        }
+
         public void Start()
         {
             tokenSource?.Cancel();
@@ -58,7 +65,6 @@ namespace frznUpload.Server
         
         public void Stop()
         {
-            log.WriteLine("Stopping...");
             tokenSource?.Cancel();
         }
 
