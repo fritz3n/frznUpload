@@ -26,6 +26,7 @@ namespace frznUpload.Server
 
             Logger.WriteLineStatic("Logger Online: " + Logger.FileName);
             Logger.WriteLineStatic("Working directory: " + System.Environment.CurrentDirectory);
+            Logger.WriteLineStatic("Version: " + MessageHandler.Version);
 
             IPAddress address = IPAddress.Any;
             var listener = new TcpListener(address, 22340);
