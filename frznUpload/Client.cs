@@ -27,8 +27,6 @@ namespace frznUpload.Server
 
         public Client(TcpClient tcp, X509Certificate2 Cert)
         {
-            mes.OnDisconnect += OnDisconnect;
-
             log = new Logger();
 
             log.WriteLine("Client born");
@@ -43,6 +41,7 @@ namespace frznUpload.Server
             log.WriteLine("Encryption established");
 
             mes = new MessageHandler(tcp, stream);
+            mes.OnDisconnect += OnDisconnect;
             mes.Start();
 
             log.WriteLine("Client initialized");
