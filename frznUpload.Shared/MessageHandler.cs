@@ -218,6 +218,8 @@ namespace frznUpload.Shared
 
         static private int HashEnum(Type T)
         {
+            //TODO: Fix enum hashing
+            return 187;
             unchecked {
                 int h = 37;
                 h *= 392;
