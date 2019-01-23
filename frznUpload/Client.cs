@@ -65,7 +65,7 @@ namespace frznUpload.Server
         public void Stop()
         {
             tokenSource?.Cancel();
-            mes.Stop();
+            mes?.Stop();
         }
 
         private async Task ClientLoop(CancellationToken token)

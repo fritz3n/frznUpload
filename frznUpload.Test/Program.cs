@@ -27,7 +27,7 @@ namespace frznUpload.Test
             //while (true) { 
                 Stopwatch stp = new Stopwatch();
                 stp.Start();
-                Client cli = new Client("localhost", 22340);
+                Client cli = new Client("fritzen.tk", 22340);
 
                 string file = "key.key";
 
