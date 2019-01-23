@@ -116,7 +116,7 @@ namespace frznUpload.Shared
                     {
                         graceful = !tcp.Connected;
                         ShutdownException = e;
-                        Running = false;
+                        Stop();
                         ErrorEvent.Set();
                         return;
                     }
