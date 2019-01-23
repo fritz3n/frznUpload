@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Text;
+using frznUpload.Shared;
 
 namespace frznUpload.Server
 {
@@ -15,6 +16,22 @@ namespace frznUpload.Server
         static FileStream file;
         static StreamWriter writer;
         public static TextWriter TextWriter { get => writer; }
+        public MessageLogger VerboseMessageLogger { get; private set; }
+
+        public class MessageLogger : IMessageLogger
+        {
+            private Logger Logger;
+
+            public MessageLogger(Logger logger)
+            {
+                Logger = logger;
+            }
+
+            public void LogMessage(bool outBound, Message message)
+            {
+                Logger.WriteLine((outBound ? "<- " : "-> ") + message);
+            }
+        }
 
         static string _filename = RuntimeInformation.IsOSPlatform(OSPlatform.Linux) ? "/var/log/frznUpload/frznUpload.log" : "log.txt";
         static public string FileName { get => _filename; set
@@ -42,7 +59,9 @@ namespace frznUpload.Server
 
         public Logger(string id = null)
         {
-            if(id == null)
+            VerboseMessageLogger = new MessageLogger(this);
+
+            if (id == null)
             {
                 long ms = DateTime.Now.Minute;
                 long ms2 = DateTime.Now.Second;

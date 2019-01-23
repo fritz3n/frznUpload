@@ -5,6 +5,7 @@ using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Linq;
+using System.IO;
 
 namespace frznUpload.Shared
 {
@@ -23,6 +24,8 @@ namespace frznUpload.Shared
             Error,
         }
 
+        private bool Verbose = false;
+        IMessageLogger VerboseLogger;
         Queue<Message> IncomingQueue = new Queue<Message>();
         SslStream stream;
         TcpClient tcp;
@@ -46,12 +49,20 @@ namespace frznUpload.Shared
         List<(bool, Message)> Log = new List<(bool, Message)>();
 #endif
 
-        public MessageHandler(TcpClient cli, SslStream stream)
+        public MessageHandler(TcpClient cli, SslStream stream, bool verbose = false, IMessageLogger verboseLogger = null)
         {
             this.stream = stream;
             tcp = cli;
             PingPong = new PingPongHandler(this);
             PingPong.Timeout += TimeoutHandler;
+
+            Verbose = verbose;
+            if (Verbose)
+            {
+                if (verboseLogger == null)
+                    verboseLogger = new ConsoleLogger();
+                VerboseLogger = verboseLogger;
+            }
         }
 
         private void TimeoutHandler(object sender, EventArgs e)
@@ -125,6 +136,9 @@ namespace frznUpload.Shared
                     
                     var m = new Message(bytes);
 
+                    if (Verbose)
+                        VerboseLogger.LogMessage(false, m);
+
                     if (!PingPong.HandleMessage(m))
                     {
                         IncomingQueue.Enqueue(m);
@@ -151,15 +165,15 @@ namespace frznUpload.Shared
 #if LOGMESSAGES
             Log.Add((true, message));
 #endif
+            if (Verbose)
+                VerboseLogger.LogMessage(true, message);
 
             byte[] data = message.ToByte();
 
             byte[] length = BitConverter.GetBytes(data.Length);
-
             
             await stream.WriteAsync(length, 0, 4);
             await stream.WriteAsync(data, 0, data.Length);
-            
         }
 
         public Message WaitForMessage()

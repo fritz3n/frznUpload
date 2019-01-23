@@ -16,13 +16,20 @@ namespace frznUpload.Server
     {
         static X509Certificate2 Cert;
         static List<Client> clients = new List<Client>();
-        
+        static bool Verbose = false;
+
         static void Main(string[] args)
         {
             Console.WriteLine("Starting Logger");
 
             Logger.Open();
             Console.SetError(Logger.TextWriter);
+
+            if (args.Length > 1 && args[1] == "v")
+            {
+                Verbose = true;
+                Logger.WriteLineStatic("!!VERBOSE MODE!!", "fuck");
+            }
 
             Logger.WriteLineStatic("Logger Online: " + Logger.FileName);
             Logger.WriteLineStatic("Working directory: " + System.Environment.CurrentDirectory);
@@ -56,7 +63,7 @@ namespace frznUpload.Server
                 
                 Logger.WriteLineStatic("Connection established with " + cli.Client.RemoteEndPoint);
 
-                var Client = new Client(cli, Cert);
+                var Client = new Client(cli, Cert, Verbose);
 
                 clients.Add(Client);
 

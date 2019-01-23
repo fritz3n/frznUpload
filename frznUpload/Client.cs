@@ -25,7 +25,7 @@ namespace frznUpload.Server
 
         public event EventHandler OnDispose;
 
-        public Client(TcpClient tcp, X509Certificate2 Cert)
+        public Client(TcpClient tcp, X509Certificate2 Cert, bool verbose = false)
         {
             log = new Logger();
 
@@ -40,7 +40,7 @@ namespace frznUpload.Server
 
             log.WriteLine("Encryption established");
 
-            mes = new MessageHandler(tcp, stream);
+            mes = new MessageHandler(tcp, stream, verbose, log.VerboseMessageLogger);
             mes.OnDisconnect += OnDisconnect;
             mes.Start();
 
