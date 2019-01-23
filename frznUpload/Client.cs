@@ -272,6 +272,7 @@ namespace frznUpload.Server
         
         public void Dispose()
         {
+            Stop();
             stream?.Dispose();
             stream = null;
 
