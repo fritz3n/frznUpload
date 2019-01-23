@@ -28,7 +28,7 @@ namespace frznUpload.Server
             Logger.Open();
             Console.SetError(Logger.TextWriter);
 
-            if (args.Length > 1 && args[1] == "v")
+            if (args.Length > 0 && args[0] == "v")
             {
                 Verbose = true;
                 Logger.WriteLineStatic("!!VERBOSE MODE!!", "fuck");
