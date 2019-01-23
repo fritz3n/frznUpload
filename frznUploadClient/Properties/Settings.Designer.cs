@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace frznUploadClient.Properties {
+namespace frznUpload.Client.Properties {
     
     
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
@@ -20,6 +20,42 @@ namespace frznUploadClient.Properties {
         public static Settings Default {
             get {
                 return defaultInstance;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("key.key")]
+        public string KeyFile {
+            get {
+                return ((string)(this["KeyFile"]));
+            }
+            set {
+                this["KeyFile"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("fritzen.tk")]
+        public string Url {
+            get {
+                return ((string)(this["Url"]));
+            }
+            set {
+                this["Url"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("22340")]
+        public short Port {
+            get {
+                return ((short)(this["Port"]));
+            }
+            set {
+                this["Port"] = value;
             }
         }
     }

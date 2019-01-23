@@ -46,6 +46,12 @@ namespace frznUpload.Shared
             {Message.MessageType.FileList, new List<int>{ Types.Int | Control.Indexer ,  Types.Message | (int)Message.MessageType.FileInfo << 4} },
             {Message.MessageType.FileInfo, new List<int>{ Types.String, Types.String, Types.String, Types.Int, Types.Raw} },
 
+            {Message.MessageType.ShareListRequest, new List<int>( Types.String ) },
+            {Message.MessageType.ShareList, new List<int>{ Types.String, Types.Int | Control.Indexer ,  Types.Message | (int)Message.MessageType.ShareInfo << 4} },
+
+            //                                                        file_identifier, First_view,Public,Public_registered,Whitelisted,Whitelist
+            {Message.MessageType.ShareInfo, new List<int>{Types.String, Types.String, Types.Int, Types.Int, Types.Int, Types.Int, Types.String} },
+
             {Message.MessageType.Version, new List<int>{Types.Int} },
 
             {Message.MessageType.Sequence, new List<int>{ Control.Idk } },

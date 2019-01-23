@@ -6,8 +6,8 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{B25EA5B9-06E0-48A1-A664-8639A021F067}</ProjectGuid>
     <OutputType>WinExe</OutputType>
-    <RootNamespace>frznUploadClient</RootNamespace>
-    <AssemblyName>frznUploadClient</AssemblyName>
+    <RootNamespace>frznUpload.Client</RootNamespace>
+    <AssemblyName>frznUpload.Client</AssemblyName>
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
@@ -43,6 +43,9 @@
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
     <Prefer32Bit>true</Prefer32Bit>
   </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>upload_Wr5_icon.ico</ApplicationIcon>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -57,18 +60,31 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include=".cs">
+    <Compile Include="Client.cs" />
+    <Compile Include="ClientManager.cs" />
+    <Compile Include="FileUploader.cs" />
+    <Compile Include="Login.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Login.Designer.cs">
+      <DependentUpon>Login.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Main.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include=".Designer.cs">
-      <DependentUpon>.cs</DependentUpon>
+      <DependentUpon>Main.cs</DependentUpon>
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="IconHandler.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <EmbeddedResource Include=".resx">
-      <DependentUpon>.cs</DependentUpon>
+    <Compile Include="RemoteFile.cs" />
+    <EmbeddedResource Include="Login.resx">
+      <DependentUpon>Login.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Main.resx">
+      <DependentUpon>Main.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
@@ -98,6 +114,9 @@
       <Project>{2e7648c8-b107-420f-a75a-dbe1cc763c09}</Project>
       <Name>frznUpload.Shared</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="upload_Wr5_icon.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -2,15 +2,17 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace frznUploadClient
+namespace frznUpload.Client
 {
     class IconHandler : ApplicationContext
     {
         NotifyIcon notifyIcon = new NotifyIcon();
+        MainForm mainForm;
 
         public IconHandler()
         {
@@ -24,7 +26,9 @@ namespace frznUploadClient
                 { consoleMenuItem, configMenuItem, exitMenuItem });
             notifyIcon.MouseClick += new MouseEventHandler(LeftClick);
             notifyIcon.Visible = true;
+
             
+            mainForm = new MainForm();
         }
 
         void ShowConfig(object sender, EventArgs e)
@@ -46,7 +50,7 @@ namespace frznUploadClient
         {
             if (e.Button == MouseButtons.Left)
             {
-                
+                mainForm.Show();
             }
         }
     }

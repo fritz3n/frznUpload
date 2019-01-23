@@ -187,19 +187,37 @@ namespace frznUpload.Server
 
                             case Message.MessageType.FileListRequest:
 
-                                var list = db.GetFiles();
+                                var fileList = db.GetFiles();
 
-                                dynamic[] Fields = new dynamic[1 + list.Count];
-                                Fields[0] = list.Count;
+                                dynamic[] Fields = new dynamic[1 + fileList.Count];
+                                Fields[0] = fileList.Count;
 
-                                for(int i = 0; i < list.Count; i++)
+                                for(int i = 0; i < fileList.Count; i++)
                                 {
-                                    Fields[i + 1] = new Message(Message.MessageType.FileInfo, false, list[i].Filename, list[i].File_extension, list[i].Identifier, list[i].Size, BitConverter.GetBytes(list[i].Tags));
+                                    Fields[i + 1] = new Message(Message.MessageType.FileInfo, false, fileList[i].Filename, fileList[i].File_extension, fileList[i].Identifier, fileList[i].Size, BitConverter.GetBytes(fileList[i].Tags));
                                 }
 
                                 await mes.SendMessage(new Message(Message.MessageType.FileList, false, Fields));
 
                                 log.WriteLine("Listed files");
+
+                                break;
+
+                            case Message.MessageType.ShareListRequest:
+
+                                List<Share> shareList = db.GetShares(message[0]);
+
+                                Fields = new dynamic[1 + shareList.Count];
+                                Fields[0] = shareList.Count;
+
+                                for (int i = 0; i < shareList.Count; i++)
+                                {
+                                    Fields[i + 1] = new Message(Message.MessageType.FileInfo, false, shareList[i].Share_id, shareList[i].File_identifier, shareList[i].First_view, shareList[i].Public, shareList[i].Public_registered, shareList[i].Whitelisted, shareList[i].Whitelist);
+                                }
+
+                                await mes.SendMessage(new Message(Message.MessageType.FileList, false, Fields));
+
+                                log.WriteLine("Listed shares for file: " + message[0]);
 
                                 break;
 

@@ -30,6 +30,13 @@ namespace frznUpload.Server
             return conn.Query<Sql_File>("SELECT * FROM files WHERE user_id = @userId", new { userId }).AsList();
         }
 
+        public List<Share> GetShares(string fileIdentifier)
+        {
+            ThrowIfNotAuthenticated();
+
+            return conn.Query<Share>("SELECT * FROM shares WHERE file_identifier = @fileIdentifier", new { fileIdentifier }).AsList();
+        }
+
         public bool CheckTokenExists(byte[] token)
         {
             return conn.QuerySingle<int>("SELECT COUNT(*) FROM tokens WHERE signature = @tp", new { tp = token }) >= 1;
