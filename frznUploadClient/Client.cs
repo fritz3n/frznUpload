@@ -22,7 +22,6 @@ namespace frznUpload.Client
         public bool IsAuthenticated { get; private set; }
         public bool Connected { get => Tcp.Connected; }
 
-
         public Client(string url, int port)
         {
             Connect(url, port);

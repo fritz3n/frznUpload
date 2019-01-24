@@ -10,17 +10,18 @@ namespace frznUpload.Client
     class ClientManager
     {
         Client ActiveClient;
-        DateTime ActivationTime;
+        DateTime ActiveTime;
+        TimeSpan cachedTime = new TimeSpan(0, 10, 0);
         public bool LoggedIn { get; private set; } = false;
 
         public ClientManager()
         {
-            Retry(() => ActivateClient()).Wait();
+            Retry(() => { return true; });
         }
 
         public async Task Login(string username, string password)
         {
-            await Retry(() => ActiveClient.AuthWithPass(username, password, Properties.Settings.Default.KeyFile));
+            await Retry(async () => await ActiveClient.AuthWithPass(username, password, Properties.Settings.Default.KeyFile));
         }
 
         public async Task Logout()
@@ -31,7 +32,7 @@ namespace frznUpload.Client
 
         public async Task<FileUploader> UploadFile(string path)
         {
-            return await Retry(() => ActiveClient.UploadFile(path));
+            return await Retry(async () => await ActiveClient.UploadFile(path));
         }
 
         public async Task<string> ShareFile(string fileIdentifier, bool firstView = false, bool isPublic = true, bool publicRegistered = true, bool whitelisted = false, string whitelist = "")
@@ -60,6 +61,7 @@ namespace frznUpload.Client
 
         private T Retry<T>(Func<T> func, int maxRetry = 5)
         {
+            ActiveTime = DateTime.Now;
             List<Exception> exceptions = new List<Exception>();
 
             for (int i = 0; i < maxRetry; i++)

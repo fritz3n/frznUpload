@@ -40,7 +40,7 @@ namespace frznUpload.Server
 
             log.WriteLine("Encryption established");
 
-            mes = new MessageHandler(tcp, stream, verbose, log.VerboseMessageLogger);
+            mes = new MessageHandler(tcp, stream, false, verbose, log.VerboseMessageLogger);
             mes.OnDisconnect += OnDisconnect;
             mes.Start();
 

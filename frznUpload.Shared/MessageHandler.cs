@@ -6,11 +6,14 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Linq;
 using System.IO;
+using System.Diagnostics;
 
 namespace frznUpload.Shared
 {
     public class MessageHandler : IDisposable
     {
+        Stopwatch testWatch = new Stopwatch();
+
         public static int Version { get; } = HashEnum(typeof(Message.MessageType));
 
         public delegate void DisconnectHandler(object sender, DisconnectReason disconnectReason);
@@ -24,16 +27,19 @@ namespace frznUpload.Shared
             Error,
         }
 
+        public bool Synchronous { get; set; }
         private bool Verbose = false;
         IMessageLogger VerboseLogger;
         Queue<Message> IncomingQueue = new Queue<Message>();
+        Queue<Message> OutgoingQueue = new Queue<Message>();
         SslStream stream;
         TcpClient tcp;
 #pragma warning disable IDE0044 // Add readonly modifier
         byte[] headerBuffer = new byte[4];
 #pragma warning restore IDE0044 // Add readonly modifier
         CancellationTokenSource tokenSource;
-        ManualResetEvent mre = new ManualResetEvent(false);
+        ManualResetEvent readEvent = new ManualResetEvent(false);
+        ManualResetEvent writeEvent = new ManualResetEvent(false);
 
         bool disposed = false;
 
@@ -49,8 +55,9 @@ namespace frznUpload.Shared
         List<(bool, Message)> Log = new List<(bool, Message)>();
 #endif
 
-        public MessageHandler(TcpClient cli, SslStream stream, bool verbose = false, IMessageLogger verboseLogger = null)
+        public MessageHandler(TcpClient cli, SslStream stream, bool synchronous = false,  bool verbose = false, IMessageLogger verboseLogger = null)
         {
+            Synchronous = synchronous;
             this.stream = stream;
             tcp = cli;
             PingPong = new PingPongHandler(this);
@@ -81,18 +88,82 @@ namespace frznUpload.Shared
             tokenSource?.Cancel();
             tokenSource = new CancellationTokenSource();
             
-            var t = ReadFromStream(tokenSource.Token);
+            new Thread(() => ReadFromStream(tokenSource.Token)).Start();
+            new Thread(() => WriteToStream(tokenSource.Token)).Start();
+            Running = true;
         }
 
         public void Stop(DisconnectReason reason = DisconnectReason.Stopped)
         {
             if (!Running)
                 return;
-
+            
             PingPong.Stop();
             tokenSource?.Cancel();
             Running = false;
             OnDisconnect?.Invoke(this, reason);
+        }
+
+        public async Task WriteToStream(CancellationToken token)
+        {
+            try
+            {
+                ErrorEvent.Reset();
+                while (true)
+                {
+                    token.ThrowIfCancellationRequested();
+
+                    writeEvent.WaitOne();
+
+                    while (OutgoingQueue.Count > 0) {
+                        token.ThrowIfCancellationRequested();
+
+                        Message m = OutgoingQueue.Dequeue();
+
+                        testWatch.Stop();
+
+                        if (Verbose)
+                            VerboseLogger.LogMessage(true, m);
+
+                        byte[] data = m.ToByte();
+
+                        byte[] length = BitConverter.GetBytes(data.Length);
+
+                        try { 
+                            if (Synchronous)
+                            {
+                                stream.Write(length, 0, 4);
+                                stream.Write(data, 0, data.Length);
+                            }
+                            else
+                            {
+                                await stream.WriteAsync(length, 0, 4, token);
+                                await stream.WriteAsync(data, 0, data.Length, token);
+                            }
+                        }
+                        catch (Exception e)
+                        {
+                            graceful = !tcp.Connected;
+                            ShutdownException = e;
+                            Stop(graceful ? DisconnectReason.Graceful : DisconnectReason.Error);
+                            ErrorEvent.Set();
+                            return;
+                        }
+                    }
+
+                    writeEvent.Reset();
+                }
+            }
+            catch (Exception e)
+            {
+                ShutdownException = e;
+                Stop(DisconnectReason.Error);
+
+                ErrorEvent.Set();
+
+
+                Console.WriteLine(e);
+            }
         }
 
         public async Task ReadFromStream(CancellationToken token)
@@ -100,23 +171,32 @@ namespace frznUpload.Shared
         {
             try
             {
-                Running = true;
                 ErrorEvent.Reset();
                 while (true)
                 {
                     token.ThrowIfCancellationRequested();
 
-                    int l;
+                    int l = 0;
 
                     try
                     {
-                        l = await stream.ReadAsync(headerBuffer, 0, 4, token);
+                        while (l < 4)
+                        {
+                            if (Synchronous)
+                            {
+                                l += stream.Read(headerBuffer, l, 4 - l);
+                            }
+                            else
+                            {
+                                l += await stream.ReadAsync(headerBuffer, l, 4 - l, token);
+                            }
+                        }
                     }
                     catch(Exception e)
                     {
                         graceful = !tcp.Connected;
                         ShutdownException = e;
-                        Stop();
+                        Stop(graceful ? DisconnectReason.Graceful : DisconnectReason.Error);
                         ErrorEvent.Set();
                         return;
                     }
@@ -131,7 +211,14 @@ namespace frznUpload.Shared
                     int read = 0;
                     while (read != length)
                     {
-                        read += await stream.ReadAsync(bytes, read, (int)length - read);
+                        if (Synchronous)
+                        {
+                            read += stream.Read(bytes, read, (int)length - read);
+                        }
+                        else
+                        {
+                            read += await stream.ReadAsync(bytes, read, (int)length - read);
+                        }
                     }
                     
                     var m = new Message(bytes);
@@ -142,7 +229,7 @@ namespace frznUpload.Shared
                     if (!PingPong.HandleMessage(m))
                     {
                         IncomingQueue.Enqueue(m);
-                        mre.Set();
+                        readEvent.Set();
                     }
                     
 #if LOGMESSAGES
@@ -152,46 +239,41 @@ namespace frznUpload.Shared
             }catch(Exception e)
             {
                 ShutdownException = e;
+                Stop(DisconnectReason.Error);
+
                 ErrorEvent.Set();
 
-                Stop(DisconnectReason.Error);
 
                 Console.WriteLine(e);
             }
         }
         
-        public async Task SendMessage(Message message)
+        public void SendMessage(Message message)
         {
 #if LOGMESSAGES
             Log.Add((true, message));
 #endif
-            if (Verbose)
-                VerboseLogger.LogMessage(true, message);
-
-            byte[] data = message.ToByte();
-
-            byte[] length = BitConverter.GetBytes(data.Length);
-            
-            await stream.WriteAsync(length, 0, 4);
-            await stream.WriteAsync(data, 0, data.Length);
+            testWatch.Restart();
+            OutgoingQueue.Enqueue(message);
+            writeEvent.Set();
         }
 
         public Message WaitForMessage()
         {
-            lock (mre)
+            lock (readEvent)
             {
                 if (IncomingQueue.Count != 0)
                     return IncomingQueue.Dequeue();
-                mre.Reset();
+                readEvent.Reset();
             
-                WaitHandle.WaitAny(new WaitHandle[] { ErrorEvent, mre });
+                WaitHandle.WaitAny(new WaitHandle[] { ErrorEvent, readEvent });
 
                 if (!Running)
                 {
                     if (graceful)
                         throw new GracefulShutdownException(ShutdownException);
                     else
-                        throw ShutdownException;
+                         throw ShutdownException;
                 }
 
                 return IncomingQueue.Dequeue();
@@ -252,7 +334,7 @@ namespace frznUpload.Shared
 
             Stop();
             tokenSource.Dispose();
-            mre.Dispose();
+            readEvent.Dispose();
             ErrorEvent.Dispose();
             IncomingQueue = null;
 

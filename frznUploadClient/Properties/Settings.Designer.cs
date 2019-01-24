@@ -37,7 +37,7 @@ namespace frznUpload.Client.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("fritzen.tk")]
+        [global::System.Configuration.DefaultSettingValueAttribute("localhost")]
         public string Url {
             get {
                 return ((string)(this["Url"]));

@@ -33,9 +33,9 @@ namespace frznUpload.Shared
         
         private void HandlePing(object sender, System.Timers.ElapsedEventArgs e)
         {
-            PingTimer.Interval = TurnaoroundTimes.Average() * 10;
+            PingTimer.Interval = Math.Max(100, TurnaoroundTimes.Average() * 10);
 
-            if (WaitingPings.Count > 10)
+            if (WaitingPings.Count > 1000)
             {
                 mes.Stop(MessageHandler.DisconnectReason.Timeout);
                 Timeout?.Invoke(this, null);
@@ -48,7 +48,7 @@ namespace frznUpload.Shared
                 LastActivity = DateTime.Now;
                 var p = new Ping();
                 WaitingPings.Add(p);
-                var t = mes.SendMessage(p.Send());
+                 mes.SendMessage(p.Send());
 #if DEBUG
                 Console.WriteLine("<Ping");
 #endif
@@ -69,7 +69,7 @@ namespace frznUpload.Shared
 #if DEBUG
                     Console.WriteLine("<Pong");
 #endif
-                    var t = mes.SendMessage(new Message(Message.MessageType.Pong, false, m[0], MessageHandler.Version));
+                    mes.SendMessage(new Message(Message.MessageType.Pong, false, m[0], MessageHandler.Version));
                 }
                 return true;
             }
@@ -93,7 +93,7 @@ namespace frznUpload.Shared
         {
             if (m[1] != MessageHandler.Version)
             {
-                await mes.SendMessage(new Message(Message.MessageType.Version, true, MessageHandler.Version));
+                mes.SendMessage(new Message(Message.MessageType.Version, true, MessageHandler.Version));
                 return;
             }
 
@@ -101,7 +101,7 @@ namespace frznUpload.Shared
 
             if (List.Count != 1)
             { 
-                await mes.SendMessage(new Message(Message.MessageType.None, true));
+                mes.SendMessage(new Message(Message.MessageType.None, true));
                 return;
             }
 
