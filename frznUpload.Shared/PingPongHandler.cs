@@ -7,6 +7,9 @@ using System.Threading.Tasks;
 
 namespace frznUpload.Shared
 {
+    /// <summary>
+    /// Handles PingPong MEssages for MessageHandler
+    /// </summary>
     class PingPongHandler
     {
         public int AverageTurnaround { get => (int)TurnaoroundTimes.Average(); }
@@ -15,7 +18,7 @@ namespace frznUpload.Shared
         private List<Ping> WaitingPings = new List<Ping>();
         private Queue<int> TurnaoroundTimes = new Queue<int>();
 
-        private System.Timers.Timer PingTimer = new System.Timers.Timer();
+        private Timer PingTimer = new System.Timers.Timer();
 
         private MessageHandler mes;
 
@@ -50,7 +53,7 @@ namespace frznUpload.Shared
                 WaitingPings.Add(p);
                  mes.SendMessage(p.Send());
 #if DEBUG
-                Console.WriteLine("<Ping");
+                //Console.WriteLine("<Ping");
 #endif
             }
         }
@@ -62,12 +65,12 @@ namespace frznUpload.Shared
             if (m.Type == Message.MessageType.Ping)
             {
 #if DEBUG
-                Console.WriteLine(">Ping");
+                //Console.WriteLine(">Ping");
 #endif
                 if (MessagePatterns.CheckMessage(m).Item1)
                 {
 #if DEBUG
-                    Console.WriteLine("<Pong");
+                    //Console.WriteLine("<Pong");
 #endif
                     mes.SendMessage(new Message(Message.MessageType.Pong, false, m[0], MessageHandler.Version));
                 }
@@ -77,11 +80,11 @@ namespace frznUpload.Shared
             if (m.Type == Message.MessageType.Pong)
             {
 #if DEBUG
-                Console.WriteLine(">Pong");
+                //Console.WriteLine(">Pong");
 #endif
                 if (MessagePatterns.CheckMessage(m).Item1)
                 {
-                    var t = HandlePong(m);
+                    HandlePong(m);
                 }
                 return true;
             }
@@ -89,7 +92,7 @@ namespace frznUpload.Shared
             return false;
         }
 
-        private async Task HandlePong(Message m)
+        private void HandlePong(Message m)
         {
             if (m[1] != MessageHandler.Version)
             {

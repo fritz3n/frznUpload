@@ -56,6 +56,7 @@ namespace frznUpload.Client
 
         public void Disconnect()
         {
+            mes.Stop();
             Tcp.Close();
         }
 
@@ -79,13 +80,13 @@ namespace frznUpload.Client
 
                 byte[][] pub = chal.GetPublicComponents();
 
-                await mes.SendMessage(new Message(Message.MessageType.ChallengeRequest, false, pub[0], pub[1]));
+                mes.SendMessage(new Message(Message.MessageType.ChallengeRequest, false, pub[0], pub[1]));
 
-                var m = mes.WaitForMessage(true, Message.MessageType.Challenge);
+                var m = await mes.WaitForMessageAsync(true, Message.MessageType.Challenge);
 
-                await mes.SendMessage(new Message(Message.MessageType.ChallengeResponse, false, chal.SignChallenge(m[0])));
+                mes.SendMessage(new Message(Message.MessageType.ChallengeResponse, false, chal.SignChallenge(m[0])));
 
-                m = mes.WaitForMessage(true, Message.MessageType.ChallengeApproved);
+                m = await mes.WaitForMessageAsync(true, Message.MessageType.ChallengeApproved);
 
                 Name = m[0];
                 IsAuthenticated = true;
@@ -95,7 +96,7 @@ namespace frznUpload.Client
             }
             catch (SequenceBreakException e)
             {
-                await mes.SendMessage(new Message(Message.MessageType.Sequence, true));
+                mes.SendMessage(new Message(Message.MessageType.Sequence, true));
                 Console.WriteLine(e);
                 return false;
             }
@@ -126,15 +127,15 @@ namespace frznUpload.Client
 
                 byte[][] pub = chal.GetPublicComponents();
 
-                await mes.SendMessage(new Message(Message.MessageType.Auth, false, username, password, pub[0], pub[1]));
+                mes.SendMessage(new Message(Message.MessageType.Auth, false, username, password, pub[0], pub[1]));
 
-                mes.WaitForMessage(true, Message.MessageType.AuthSuccess);
+                await mes.WaitForMessageAsync(true, Message.MessageType.AuthSuccess);
 
                 return await AuthWithKey(file);
             }
             catch (SequenceBreakException e)
             {
-                await mes.SendMessage(new Message(Message.MessageType.Sequence, true));
+                mes.SendMessage(new Message(Message.MessageType.Sequence, true));
                 Console.WriteLine(e);
                 return false;
             }
@@ -145,7 +146,12 @@ namespace frznUpload.Client
             }
         }
 
-        public async Task<FileUploader> UploadFile(string path)
+        /// <summary>
+        /// Starts the upload of a file
+        /// </summary>
+        /// <param name="path"></param>
+        /// <returns>The Fileuploader uploading the File</returns>
+        public FileUploader UploadFile(string path)
         {
             try
             {
@@ -155,7 +161,7 @@ namespace frznUpload.Client
             }
             catch (SequenceBreakException e)
             {
-                await mes.SendMessage(new Message(Message.MessageType.Sequence, true));
+                mes.SendMessage(new Message(Message.MessageType.Sequence, true));
                 Console.WriteLine(e);
                 throw new AggregateException(e);
             }
@@ -170,17 +176,17 @@ namespace frznUpload.Client
         {
 
 
-            await mes.SendMessage(new Message(Message.MessageType.ShareRequest, false, fileIdentifier, firstView ? 1 : 0, isPublic ? 1 : 0, publicRegistered ? 1 : 0, whitelisted ? 1 : 0, whitelist));
+            mes.SendMessage(new Message(Message.MessageType.ShareRequest, false, fileIdentifier, firstView ? 1 : 0, isPublic ? 1 : 0, publicRegistered ? 1 : 0, whitelisted ? 1 : 0, whitelist));
 
-            var m = mes.WaitForMessage(true, Message.MessageType.ShareResponse);
+            var m = await mes.WaitForMessageAsync(true, Message.MessageType.ShareResponse);
 
             return m[0];
         }
 
         public async Task<List<RemoteFile>> GetFiles()
         {
-            await mes.SendMessage(new Message(Message.MessageType.FileListRequest));
-            var m = mes.WaitForMessage(true, Message.MessageType.FileList);
+            mes.SendMessage(new Message(Message.MessageType.FileListRequest));
+            var m = await mes.WaitForMessageAsync(true, Message.MessageType.FileList);
 
             var list = new List<RemoteFile>();
 
@@ -205,8 +211,8 @@ namespace frznUpload.Client
 
         public async Task<List<RemoteFile>> GetShares(string fileIdentifier)
         {
-            await mes.SendMessage(new Message(Message.MessageType.FileListRequest));
-            var m = mes.WaitForMessage(true, Message.MessageType.FileList);
+            mes.SendMessage(new Message(Message.MessageType.FileListRequest));
+            var m = await mes.WaitForMessageAsync(true, Message.MessageType.FileList);
 
             var list = new List<RemoteFile>();
 
@@ -248,9 +254,9 @@ namespace frznUpload.Client
         public void Dispose()
         {
             Disconnect();
-            Tcp.Dispose();
-            stream.Dispose();
-            mes.Dispose();
+            Tcp?.Dispose();
+            stream?.Dispose();
+            mes?.Dispose();
         }
 
         ~Client()

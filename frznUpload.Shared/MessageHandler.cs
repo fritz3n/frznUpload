@@ -12,8 +12,6 @@ namespace frznUpload.Shared
 {
     public class MessageHandler : IDisposable
     {
-        Stopwatch testWatch = new Stopwatch();
-
         public static int Version { get; } = HashEnum(typeof(Message.MessageType));
 
         public delegate void DisconnectHandler(object sender, DisconnectReason disconnectReason);
@@ -40,6 +38,7 @@ namespace frznUpload.Shared
         CancellationTokenSource tokenSource;
         ManualResetEvent readEvent = new ManualResetEvent(false);
         ManualResetEvent writeEvent = new ManualResetEvent(false);
+        ManualResetEvent flushEvent = new ManualResetEvent(true);
 
         bool disposed = false;
 
@@ -77,7 +76,9 @@ namespace frznUpload.Shared
             Stop();
             ShutdownException = new TimeoutException();
         }
-
+        /// <summary>
+        /// If the Handler isnt Running; start the threads for read and write Handling
+        /// </summary>
         public void Start()
         {
             if (Running)
@@ -88,8 +89,8 @@ namespace frznUpload.Shared
             tokenSource?.Cancel();
             tokenSource = new CancellationTokenSource();
             
-            new Thread(() => ReadFromStream(tokenSource.Token)).Start();
-            new Thread(() => WriteToStream(tokenSource.Token)).Start();
+            new Thread(async () => await ReadFromStream(tokenSource.Token)).Start();
+            new Thread(async () => await WriteToStream(tokenSource.Token)).Start();
             Running = true;
         }
 
@@ -104,7 +105,7 @@ namespace frznUpload.Shared
             OnDisconnect?.Invoke(this, reason);
         }
 
-        public async Task WriteToStream(CancellationToken token)
+        private async Task WriteToStream(CancellationToken token)
         {
             try
             {
@@ -119,8 +120,6 @@ namespace frznUpload.Shared
                         token.ThrowIfCancellationRequested();
 
                         Message m = OutgoingQueue.Dequeue();
-
-                        testWatch.Stop();
 
                         if (Verbose)
                             VerboseLogger.LogMessage(true, m);
@@ -150,8 +149,11 @@ namespace frznUpload.Shared
                             return;
                         }
                     }
-
-                    writeEvent.Reset();
+                    if (OutgoingQueue.Count == 0)
+                    {
+                        writeEvent.Reset();
+                        flushEvent.Set();
+                    }
                 }
             }
             catch (Exception e)
@@ -248,16 +250,35 @@ namespace frznUpload.Shared
             }
         }
         
+        /// <summary>
+        /// Add a Message to the outgoing queue
+        /// </summary>
+        /// <param name="message">The Messages to be added</param>
         public void SendMessage(Message message)
         {
 #if LOGMESSAGES
             Log.Add((true, message));
 #endif
-            testWatch.Restart();
+            if (!Running)
+                throw new NotSupportedException("Not Running");
+
+            flushEvent.Reset();
             OutgoingQueue.Enqueue(message);
             writeEvent.Set();
         }
 
+        /// <summary>
+        /// Wait for all messages in the queue to be sent
+        /// </summary>
+        public void Flush()
+        {
+            flushEvent.WaitOne();
+        }
+
+        /// <summary>
+        /// Wait for a Message to be received
+        /// </summary>
+        /// <returns>The first message from the queue, or the first one to be received</returns>
         public Message WaitForMessage()
         {
             lock (readEvent)
@@ -280,6 +301,28 @@ namespace frznUpload.Shared
             }
         }
 
+        public async Task<Message> WaitForMessageAsync()
+        {
+            
+            if (IncomingQueue.Count != 0)
+                return IncomingQueue.Dequeue();
+            readEvent.Reset();
+
+            int i = await Task.Run(() => WaitHandle.WaitAny(new WaitHandle[] { ErrorEvent, readEvent }));
+
+            if (i == 0 || !Running)
+            {
+                if (graceful)
+                    throw new GracefulShutdownException(ShutdownException);
+                else
+                    throw ShutdownException;
+            }
+
+            return IncomingQueue.Dequeue();
+            
+        }
+
+        
         public Message WaitForMessage(bool throwIfError, Message.MessageType? expected = null)
         {
             Message m;
@@ -310,11 +353,41 @@ namespace frznUpload.Shared
             return m;
         }
 
+        public async Task<Message> WaitForMessageAsync(bool throwIfError, Message.MessageType? expected = null)
+        {
+            Message m;
+
+            if (expected != null)
+                m = await WaitForMessageAsync((Message.MessageType)expected);
+            else
+                m = await WaitForMessageAsync();
+
+            var checkResult = MessagePatterns.CheckMessage(m);
+
+            if (!checkResult.Item1)
+                throw new MessageMatchException(m, checkResult.Item2);
+
+            if (m.IsError & throwIfError)
+                throw new ErrorMessageException(m);
+
+            return m;
+        }
+
+        public async Task<Message> WaitForMessageAsync(Message.MessageType expected)
+        {
+            var m = await WaitForMessageAsync();
+
+            if (m.Type != expected)
+                throw new SequenceBreakException(expected, m.Type);
+
+            return m;
+        }
+
         static private int HashEnum(Type T)
         {
             //TODO: Fix enum hashing
             return 187;
-            unchecked {
+            /*unchecked {
                 int h = 37;
                 h *= 392;
 
@@ -324,7 +397,7 @@ namespace frznUpload.Shared
                 h ^= Enum.GetValues(T).GetHashCode();
 
                 return h;
-            }
+            }*/
         }
 
         public void Dispose()

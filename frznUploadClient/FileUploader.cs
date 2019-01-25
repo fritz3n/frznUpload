@@ -61,7 +61,7 @@ namespace frznUpload.Client
 
                 TotalSize = size;
 
-                await mes.SendMessage(new Message(Message.MessageType.FileUploadRequest, false, filename, extension, size));
+                mes.SendMessage(new Message(Message.MessageType.FileUploadRequest, false, filename, extension, size));
 
                 var m = mes.WaitForMessage(true, Message.MessageType.FileUploadApproved);
 
@@ -73,13 +73,13 @@ namespace frznUpload.Client
 
                 while ((written = await file.ReadAsync(buffer, 0, ChunkSize)) > 0)
                 {
-                    await mes.SendMessage(new Message(Message.MessageType.FileUpload, false, written, buffer));
+                    mes.SendMessage(new Message(Message.MessageType.FileUpload, false, written, buffer));
                     WrittenSize += written;
 
                     //await Task.Delay(10);
                 }
 
-                await mes.SendMessage(new Message(Message.MessageType.FileUploadFinished, false));
+                mes.SendMessage(new Message(Message.MessageType.FileUploadFinished, false));
 
                 //mes.Start();
 
@@ -90,7 +90,7 @@ namespace frznUpload.Client
             catch (SequenceBreakException e)
             {
                 Close();
-                await mes.SendMessage(new Message(Message.MessageType.Sequence, true));
+                mes.SendMessage(new Message(Message.MessageType.Sequence, true));
                 Console.WriteLine(e);
                 throw new AggregateException(e);
             }
@@ -98,7 +98,7 @@ namespace frznUpload.Client
             {
 
                 Close();
-                await mes.SendMessage(new Message(Message.MessageType.None, true, e.ToString()));
+                mes.SendMessage(new Message(Message.MessageType.None, true, e.ToString()));
 
                 Exception = e;
                 Error = true;

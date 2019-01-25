@@ -20,6 +20,7 @@ namespace frznUpload.Client
         public MainForm()
         {
             Client = new ClientManager();
+            Task.Run(() => Client.Connect());
             InitializeComponent();
             Shown += MainForm_Shown;
             FormClosing += MainForm_FormClosing;

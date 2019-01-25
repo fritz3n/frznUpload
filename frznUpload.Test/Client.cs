@@ -80,11 +80,11 @@ namespace frznUpload.Test
                 
                 byte[][] pub = chal.GetPublicComponents();
 
-                await mes.SendMessage(new Message(Message.MessageType.ChallengeRequest, false, pub[0], pub[1]));
+                mes.SendMessage(new Message(Message.MessageType.ChallengeRequest, false, pub[0], pub[1]));
 
                 var m = mes.WaitForMessage(true, Message.MessageType.Challenge);
                 
-                await mes.SendMessage(new Message(Message.MessageType.ChallengeResponse, false, chal.SignChallenge(m[0])));
+                mes.SendMessage(new Message(Message.MessageType.ChallengeResponse, false, chal.SignChallenge(m[0])));
 
                 m = mes.WaitForMessage(true, Message.MessageType.ChallengeApproved);
                 
@@ -95,7 +95,7 @@ namespace frznUpload.Test
 
             }catch(SequenceBreakException e)
             {
-                await mes.SendMessage(new Message(Message.MessageType.Sequence, true));
+                mes.SendMessage(new Message(Message.MessageType.Sequence, true));
                 Console.WriteLine(e);
                 return false;
             }
@@ -126,7 +126,7 @@ namespace frznUpload.Test
 
                 byte[][] pub = chal.GetPublicComponents();
 
-                await mes.SendMessage(new Message(Message.MessageType.Auth, false, username, password, pub[0], pub[1]));
+                mes.SendMessage(new Message(Message.MessageType.Auth, false, username, password, pub[0], pub[1]));
 
                 mes.WaitForMessage(true, Message.MessageType.AuthSuccess);
 
@@ -134,7 +134,7 @@ namespace frznUpload.Test
             }
             catch (SequenceBreakException e)
             {
-                await mes.SendMessage(new Message(Message.MessageType.Sequence, true));
+                mes.SendMessage(new Message(Message.MessageType.Sequence, true));
                 Console.WriteLine(e);
                 return false;
             }
@@ -155,7 +155,7 @@ namespace frznUpload.Test
             }
             catch (SequenceBreakException e)
             {
-                await mes.SendMessage(new Message(Message.MessageType.Sequence, true));
+                mes.SendMessage(new Message(Message.MessageType.Sequence, true));
                 Console.WriteLine(e);
                 throw new AggregateException(e);
             }
@@ -170,16 +170,16 @@ namespace frznUpload.Test
         {
 
 
-            await mes.SendMessage(new Message(Message.MessageType.ShareRequest, false, fileIdentifier, firstView ? 1 : 0, isPublic ? 1 : 0, publicRegistered ? 1 : 0, whitelisted ? 1 : 0, whitelist));
+            mes.SendMessage(new Message(Message.MessageType.ShareRequest, false, fileIdentifier, firstView ? 1 : 0, isPublic ? 1 : 0, publicRegistered ? 1 : 0, whitelisted ? 1 : 0, whitelist));
 
             var m = mes.WaitForMessage(true, Message.MessageType.ShareResponse);
 
             return m[0];
         }
 
-        public async Task<List<Remote_File>> GetFiles()
+        public List<Remote_File> GetFiles()
         {
-            await mes.SendMessage(new Message(Message.MessageType.FileListRequest));
+            mes.SendMessage(new Message(Message.MessageType.FileListRequest));
             var m = mes.WaitForMessage(true, Message.MessageType.FileList);
 
             var list = new List<Remote_File>();

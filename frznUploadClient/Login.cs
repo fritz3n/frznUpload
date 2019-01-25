@@ -24,6 +24,7 @@ namespace frznUpload.Client
             FormClosing += MainForm_FormClosing;
 
             ShowInTaskbar = false;
+            SetEnables();
         }
 
         private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
@@ -60,11 +61,13 @@ namespace frznUpload.Client
         private async void LoginButton_Click(object sender, EventArgs e)
         {
             await Client.Login(userBox.Text, passBox.Text);
+            SetEnables();
         }
 
         private async void LogoutButton_Click(object sender, EventArgs e)
         {
             await Client.Logout();
+            SetEnables();
         }
     }
 }

@@ -93,7 +93,7 @@ namespace frznUpload.Server
                         log.WriteLine(e);
                         try
                         {
-                            await mes.SendMessage(new Message(Message.MessageType.None, true, e.ToString()));
+                            mes.SendMessage(new Message(Message.MessageType.None, true, e.ToString()));
                         }
                         catch { }
 
@@ -121,18 +121,18 @@ namespace frznUpload.Server
                                 chal.SetPublicComponents(message[0], message[1]);
                                 if (!db.CheckTokenExists(chal.GetThumbprint()))
                                 {
-                                    await mes.SendMessage(new Message(Message.MessageType.Challenge, true, "Token not registered"));
+                                    mes.SendMessage(new Message(Message.MessageType.Challenge, true, "Token not registered"));
                                     break;
                                 }
                                 
-                                await mes.SendMessage(new Message(Message.MessageType.Challenge, false, chal.GenerateChallenge(8)));
+                                mes.SendMessage(new Message(Message.MessageType.Challenge, false, chal.GenerateChallenge(8)));
                                 var m = mes.WaitForMessage(true, Message.MessageType.ChallengeResponse);
                                 
                                 bool auth = chal.ValidateChallenge(m[0]);
 
                                 if(auth == false)
                                 {
-                                    await mes.SendMessage(new Message(Message.MessageType.ChallengeApproved, true, "Challenge failed"));
+                                    mes.SendMessage(new Message(Message.MessageType.ChallengeApproved, true, "Challenge failed"));
                                     log.WriteLine("Failed to authenticate using Public Key");
                                     break;
                                 }
@@ -140,7 +140,7 @@ namespace frznUpload.Server
                                 db.SetUser(chal.GetThumbprint());
                                 IsAuthenticated = true;
 
-                                await mes.SendMessage(new Message(Message.MessageType.ChallengeApproved, false, db.Name));
+                                mes.SendMessage(new Message(Message.MessageType.ChallengeApproved, false, db.Name));
 
                                 log.WriteLine("Authenticated using Public Key");
                                 log.WriteLine("Username: ", db.Name);
@@ -155,19 +155,19 @@ namespace frznUpload.Server
 
                                 if(db.SetToken(message[0], message[1], chal.GetThumbprint()))
                                 {
-                                    await mes.SendMessage(new Message(Message.MessageType.AuthSuccess));
+                                    mes.SendMessage(new Message(Message.MessageType.AuthSuccess));
                                     log.WriteLine("Authenticated a Public Key");
                                 }
                                 else
                                 {
-                                    await mes.SendMessage(new Message(Message.MessageType.AuthSuccess, true, "Login data not correct"));
+                                    mes.SendMessage(new Message(Message.MessageType.AuthSuccess, true, "Login data not correct"));
                                     log.WriteLine("Failed to authenticate a Public Key");
                                 }
 
                                 break;
 
                             default:
-                                await mes.SendMessage(new Message(Message.MessageType.Sequence, true, "Not authenticated"));
+                                mes.SendMessage(new Message(Message.MessageType.Sequence, true, "Not authenticated"));
                                 break;
                         }
                     }
@@ -198,7 +198,7 @@ namespace frznUpload.Server
                                     Fields[i + 1] = new Message(Message.MessageType.FileInfo, false, fileList[i].Filename, fileList[i].File_extension, fileList[i].Identifier, fileList[i].Size, BitConverter.GetBytes(fileList[i].Tags));
                                 }
 
-                                await mes.SendMessage(new Message(Message.MessageType.FileList, false, Fields));
+                                mes.SendMessage(new Message(Message.MessageType.FileList, false, Fields));
 
                                 log.WriteLine("Listed files");
 
@@ -216,7 +216,7 @@ namespace frznUpload.Server
                                     Fields[i + 1] = new Message(Message.MessageType.FileInfo, false, shareList[i].Share_id, shareList[i].File_identifier, shareList[i].First_view, shareList[i].Public, shareList[i].Public_registered, shareList[i].Whitelisted, shareList[i].Whitelist);
                                 }
 
-                                await mes.SendMessage(new Message(Message.MessageType.FileList, false, Fields));
+                                mes.SendMessage(new Message(Message.MessageType.FileList, false, Fields));
 
                                 log.WriteLine("Listed shares for file: " + message[0]);
 
@@ -233,14 +233,14 @@ namespace frznUpload.Server
                                     message[5]
                                     );
 
-                                await mes.SendMessage(new Message(Message.MessageType.ShareResponse, false, id));
+                                mes.SendMessage(new Message(Message.MessageType.ShareResponse, false, id));
 
                                 log.WriteLine("Created a share: " + id);
 
                                 break;
 
                             default:
-                                await mes.SendMessage(new Message(Message.MessageType.Sequence, true, "Not expected"));
+                                mes.SendMessage(new Message(Message.MessageType.Sequence, true, "Not expected"));
                                 break;
                         }
                     }
@@ -250,7 +250,7 @@ namespace frznUpload.Server
                 log.WriteLine(e);
                 try
                 {
-                    await mes.SendMessage(new Message(Message.MessageType.Sequence, true, e.ToString()));
+                    mes.SendMessage(new Message(Message.MessageType.Sequence, true, e.ToString()));
                 }
                 catch { }
 
@@ -261,7 +261,7 @@ namespace frznUpload.Server
                 log.WriteLine(e);
                 try
                 {
-                    await mes.SendMessage(new Message(Message.MessageType.None, true, e.ToString()));
+                    mes.SendMessage(new Message(Message.MessageType.None, true, e.ToString()));
                 }
                 catch { }
 

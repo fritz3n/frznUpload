@@ -22,7 +22,7 @@ namespace frznUpload.Server
 
             string identifier = db.GetAvailableFileIdentifier();
 
-            await mes.SendMessage(new Message(Message.MessageType.FileUploadApproved, false, identifier));
+            mes.SendMessage(new Message(Message.MessageType.FileUploadApproved, false, identifier));
 
             if (!Directory.Exists(directory))
                 Directory.CreateDirectory(directory);
@@ -54,24 +54,24 @@ namespace frznUpload.Server
                 {
                     if (written != size)
                     {
-                        await mes.SendMessage(new Message(Message.MessageType.FileUpload, true, $"Expected {size} bytes, got {written}"));
+                        mes.SendMessage(new Message(Message.MessageType.FileUpload, true, $"Expected {size} bytes, got {written}"));
                         error = true;
                         break;
                     }
 
-                    await mes.SendMessage(new Message(Message.MessageType.FileUploadSuccess, false));
+                    mes.SendMessage(new Message(Message.MessageType.FileUploadSuccess, false));
                     break;
                 }
                 else if (m.Type != Message.MessageType.FileUpload)
                 {
-                    await mes.SendMessage(new Message(Message.MessageType.Sequence, true));
+                    mes.SendMessage(new Message(Message.MessageType.Sequence, true));
                     error = true;
                     break;
                 }
 
                 if (written >= size)
                 {
-                    await mes.SendMessage(new Message(Message.MessageType.FileUpload, true, $"Expected {size} bytes, got {written}"));
+                    mes.SendMessage(new Message(Message.MessageType.FileUpload, true, $"Expected {size} bytes, got {written}"));
                     error = true;
                     break;
                 }
@@ -83,7 +83,7 @@ namespace frznUpload.Server
                 }
                 catch (Exception e)
                 {
-                    await mes.SendMessage(new Message(Message.MessageType.FileUpload, true, e.ToString()));
+                    mes.SendMessage(new Message(Message.MessageType.FileUpload, true, e.ToString()));
                     error = true;
                     break;
                 }

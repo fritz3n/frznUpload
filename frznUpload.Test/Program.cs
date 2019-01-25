@@ -76,7 +76,7 @@ namespace frznUpload.Test
 
             string shareId = await cli.ShareFile(fileId);
 
-            var files = await cli.GetFiles();
+            var files = cli.GetFiles();
 
             Console.WriteLine(string.Join("\n", files));
 
