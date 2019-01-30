@@ -35,7 +35,7 @@ namespace frznUpload.Shared
 
             {Message.MessageType.FileUploadRequest, new List<int>{ Types.String, Types.String, Types.Int } },
             {Message.MessageType.FileUploadApproved, new List<int>{ Types.String } },
-            {Message.MessageType.FileUpload, new List<int>{ Types.Int, Types.Raw } },
+            {Message.MessageType.FileUpload, new List<int>{ Types.Int, Types.Int, Types.Raw } },
             {Message.MessageType.FileUploadFinished, new List<int>{} },
             {Message.MessageType.FileUploadSuccess, new List<int>{} },
             //                                              file_identifier, First_view,Public,Public_registered,Whitelisted,Whitelist

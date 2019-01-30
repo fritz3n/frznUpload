@@ -14,6 +14,7 @@ namespace frznUpload.Server
 
         static public (bool, string) ReceiveFile(Message message, MessageHandler mes, DataBase db, Logger log)
         {
+            int id = 0;
             int size = message[2];
             int written = 0;
 
@@ -69,6 +70,13 @@ namespace frznUpload.Server
                     break;
                 }
 
+                if (m[0] != id)
+                {
+                    Logger.WriteLineStatic($"Expected fragment {id}, got fragment {m[0]}");
+                }
+
+                id++;
+
                 if (written >= size)
                 {
                     mes.SendMessage(new Message(Message.MessageType.FileUpload, true, $"Expected {size} bytes, got {written}"));
@@ -78,7 +86,7 @@ namespace frznUpload.Server
 
                 try
                 {
-                    file.Write(m[1], 0, m[0]);
+                    file.Write(m[2], 0, m[1]);
                     written += m[0];
                 }
                 catch (Exception e)

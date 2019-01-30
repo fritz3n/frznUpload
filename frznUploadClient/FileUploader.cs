@@ -55,6 +55,7 @@ namespace frznUpload.Client
         {
             try
             {
+                int id = 0;
                 Open();
                 FileInfo info = new FileInfo(FilePath);
                 int size = (int)(info.Length > int.MaxValue ? throw new FileLoadException() : info.Length);
@@ -77,9 +78,9 @@ namespace frznUpload.Client
 
                 while ((written = await file.ReadAsync(buffer, 0, ChunkSize)) > 0)
                 {
-                    mes.SendMessage(new Message(Message.MessageType.FileUpload, false, written, buffer));
+                    mes.SendMessage(new Message(Message.MessageType.FileUpload, false, id, written, buffer));
                     WrittenSize += written;
-
+                    id++;
                     //await Task.Delay(10);
                 }
 
