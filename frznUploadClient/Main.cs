@@ -17,7 +17,7 @@ namespace frznUpload.Client
         private LoginForm loginForm;
         private ClientManager Client;
         bool Uploading = false;
-        private FileUploader fileUploader = null;
+        private UploadContract FileUpload;
         private System.Timers.Timer UploadTimer = new System.Timers.Timer(100);
 
         public MainForm(ClientManager client)
@@ -33,17 +33,32 @@ namespace frznUpload.Client
             UploadTimer.Elapsed += UploadTimer_Elapsed;
         }
 
-        private void UploadTimer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
+        private async void UploadTimer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
         {
-            if (fileUploader.Running)
+            if (FileUpload.Uploader.Running)
             {
-                ProgressBar.Value = (int)(fileUploader.Progress * 100);
+                ProgressBar.Invoke(new Action(() => ProgressBar.Value = (int)(FileUpload.Uploader.Progress * 100)));
             }
             else
             {
+                ProgressBar.Invoke(new Action(() => StatusLabel.Text = "Finished"));
                 Uploading = false;
-                ProgressBar.Value = 0;
+                ProgressBar.Invoke(new Action(() => ProgressBar.Value = 0));
                 UploadTimer.Stop();
+
+                if (FileUpload.Share && FileUpload.Uploader.Finished)
+                {
+                    var s = await Client.ShareFile(
+                        FileUpload.Uploader.Identifier,
+                        FileUpload.FirstView,
+                        FileUpload.Public,
+                        FileUpload.PublicRegistered,
+                        FileUpload.Whitelisted,
+                        FileUpload.Whitelist
+                        );
+
+                    LinkText.Invoke(new Action(() => LinkText.Text = "fritzen.tk/view.php?id=" + s));
+                }
             }
         }
 
@@ -111,10 +126,26 @@ namespace frznUpload.Client
         {
             if (File.Exists(PathText.Text) && !Uploading)
             {
+                StatusLabel.Text = "Uploading: " + Path.GetFileName(PathText.Text);
                 Uploading = true;
-                fileUploader = await Client.UploadFile(PathText.Text);
+                var u = await Client.UploadFile(PathText.Text);
+                FileUpload = new UploadContract
+                {
+                    Uploader = u,
+                    Share = ShareBox.Checked,
+                    FirstView = FirstViewBox.Checked,
+                    Public = PublicBox.Checked,
+                    PublicRegistered = PublicRegisteredBox.Checked,
+                    Whitelisted = WhitelistedBox.Checked,
+                    Whitelist = WhitelistText.Text
+                };
                 UploadTimer.Start();
             }
+        }
+
+        private void CopyButton_Click(object sender, EventArgs e)
+        {
+            Clipboard.SetText(LinkText.Text);
         }
     }
 }

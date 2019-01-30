@@ -144,4 +144,16 @@ namespace frznUpload.Client
             Dispose();
         }
     }
+
+    struct UploadContract
+    {
+        public FileUploader Uploader { get; set; }
+
+        public bool Share { get; set; }
+        public bool FirstView { get; set; }
+        public bool Public { get; set; }
+        public bool PublicRegistered { get; set; }
+        public bool Whitelisted { get; set; }
+        public string Whitelist { get; set; }
+    }
 }

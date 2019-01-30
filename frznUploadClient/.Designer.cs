@@ -33,30 +33,33 @@
             this.AccountButton = new System.Windows.Forms.Button();
             this.Tab = new System.Windows.Forms.TabControl();
             this.UploadTab = new System.Windows.Forms.TabPage();
-            this.label1 = new System.Windows.Forms.Label();
-            this.PathText = new System.Windows.Forms.TextBox();
-            this.tabPage2 = new System.Windows.Forms.TabPage();
-            this.BrowseButton = new System.Windows.Forms.Button();
-            this.label2 = new System.Windows.Forms.Label();
-            this.FilenameText = new System.Windows.Forms.TextBox();
-            this.openFileDialog = new System.Windows.Forms.OpenFileDialog();
-            this.ShareBox = new System.Windows.Forms.CheckBox();
+            this.tableLayoutPanel = new System.Windows.Forms.TableLayoutPanel();
             this.ShareGroupBox = new System.Windows.Forms.GroupBox();
-            this.FileGroupBox = new System.Windows.Forms.GroupBox();
-            this.UploadButton = new System.Windows.Forms.Button();
+            this.CopyButton = new System.Windows.Forms.Button();
+            this.label3 = new System.Windows.Forms.Label();
+            this.LinkText = new System.Windows.Forms.TextBox();
             this.SharePanel = new System.Windows.Forms.TableLayoutPanel();
             this.FirstViewBox = new System.Windows.Forms.CheckBox();
             this.PublicBox = new System.Windows.Forms.CheckBox();
+            this.WhitelistText = new System.Windows.Forms.TextBox();
             this.PublicRegisteredBox = new System.Windows.Forms.CheckBox();
             this.WhitelistedBox = new System.Windows.Forms.CheckBox();
-            this.WhitelistText = new System.Windows.Forms.TextBox();
-            this.tableLayoutPanel = new System.Windows.Forms.TableLayoutPanel();
+            this.ShareBox = new System.Windows.Forms.CheckBox();
+            this.FileGroupBox = new System.Windows.Forms.GroupBox();
+            this.UploadButton = new System.Windows.Forms.Button();
+            this.label1 = new System.Windows.Forms.Label();
+            this.PathText = new System.Windows.Forms.TextBox();
+            this.FilenameText = new System.Windows.Forms.TextBox();
+            this.BrowseButton = new System.Windows.Forms.Button();
+            this.label2 = new System.Windows.Forms.Label();
+            this.tabPage2 = new System.Windows.Forms.TabPage();
+            this.openFileDialog = new System.Windows.Forms.OpenFileDialog();
             this.Tab.SuspendLayout();
             this.UploadTab.SuspendLayout();
-            this.ShareGroupBox.SuspendLayout();
-            this.FileGroupBox.SuspendLayout();
-            this.SharePanel.SuspendLayout();
             this.tableLayoutPanel.SuspendLayout();
+            this.ShareGroupBox.SuspendLayout();
+            this.SharePanel.SuspendLayout();
+            this.FileGroupBox.SuspendLayout();
             this.SuspendLayout();
             // 
             // StatusLabel
@@ -65,7 +68,7 @@
             this.StatusLabel.Name = "StatusLabel";
             this.StatusLabel.Size = new System.Drawing.Size(132, 16);
             this.StatusLabel.TabIndex = 0;
-            this.StatusLabel.Text = "label1";
+            this.StatusLabel.Text = "Hello";
             // 
             // ProgressBar
             // 
@@ -110,85 +113,28 @@
             this.UploadTab.TabIndex = 0;
             this.UploadTab.Text = "Upload";
             // 
-            // label1
+            // tableLayoutPanel
             // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(6, 20);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(29, 13);
-            this.label1.TabIndex = 1;
-            this.label1.Text = "Path";
-            // 
-            // PathText
-            // 
-            this.PathText.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.PathText.Location = new System.Drawing.Point(9, 36);
-            this.PathText.Name = "PathText";
-            this.PathText.Size = new System.Drawing.Size(278, 20);
-            this.PathText.TabIndex = 0;
-            this.PathText.TextChanged += new System.EventHandler(this.PathText_TextChanged);
-            // 
-            // tabPage2
-            // 
-            this.tabPage2.BackColor = System.Drawing.SystemColors.Control;
-            this.tabPage2.Location = new System.Drawing.Point(4, 22);
-            this.tabPage2.Name = "tabPage2";
-            this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage2.Size = new System.Drawing.Size(767, 375);
-            this.tabPage2.TabIndex = 1;
-            this.tabPage2.Text = "tabPage2";
-            // 
-            // BrowseButton
-            // 
-            this.BrowseButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.BrowseButton.Location = new System.Drawing.Point(293, 36);
-            this.BrowseButton.Name = "BrowseButton";
-            this.BrowseButton.Size = new System.Drawing.Size(75, 20);
-            this.BrowseButton.TabIndex = 2;
-            this.BrowseButton.Text = "Browse...";
-            this.BrowseButton.UseVisualStyleBackColor = true;
-            this.BrowseButton.Click += new System.EventHandler(this.BrowseButton_Click);
-            // 
-            // label2
-            // 
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(6, 63);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(49, 13);
-            this.label2.TabIndex = 3;
-            this.label2.Text = "Filename";
-            // 
-            // FilenameText
-            // 
-            this.FilenameText.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.FilenameText.Location = new System.Drawing.Point(9, 79);
-            this.FilenameText.Name = "FilenameText";
-            this.FilenameText.Size = new System.Drawing.Size(217, 20);
-            this.FilenameText.TabIndex = 4;
-            // 
-            // openFileDialog
-            // 
-            this.openFileDialog.FileName = "openFileDialog";
-            // 
-            // ShareBox
-            // 
-            this.ShareBox.AutoSize = true;
-            this.ShareBox.Checked = true;
-            this.ShareBox.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.ShareBox.Location = new System.Drawing.Point(6, 19);
-            this.ShareBox.Name = "ShareBox";
-            this.ShareBox.Size = new System.Drawing.Size(54, 17);
-            this.ShareBox.TabIndex = 5;
-            this.ShareBox.Text = "Share";
-            this.ShareBox.UseVisualStyleBackColor = true;
-            this.ShareBox.CheckedChanged += new System.EventHandler(this.ShareBox_CheckedChanged);
+            this.tableLayoutPanel.ColumnCount = 2;
+            this.tableLayoutPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanel.Controls.Add(this.ShareGroupBox, 1, 0);
+            this.tableLayoutPanel.Controls.Add(this.FileGroupBox, 0, 0);
+            this.tableLayoutPanel.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutPanel.Location = new System.Drawing.Point(3, 3);
+            this.tableLayoutPanel.Name = "tableLayoutPanel";
+            this.tableLayoutPanel.RowCount = 1;
+            this.tableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanel.Size = new System.Drawing.Size(761, 369);
+            this.tableLayoutPanel.TabIndex = 8;
             // 
             // ShareGroupBox
             // 
             this.ShareGroupBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.ShareGroupBox.Controls.Add(this.CopyButton);
+            this.ShareGroupBox.Controls.Add(this.label3);
+            this.ShareGroupBox.Controls.Add(this.LinkText);
             this.ShareGroupBox.Controls.Add(this.SharePanel);
             this.ShareGroupBox.Controls.Add(this.ShareBox);
             this.ShareGroupBox.Location = new System.Drawing.Point(383, 3);
@@ -198,34 +144,32 @@
             this.ShareGroupBox.TabStop = false;
             this.ShareGroupBox.Text = "Sharing";
             // 
-            // FileGroupBox
+            // CopyButton
             // 
-            this.FileGroupBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.FileGroupBox.Controls.Add(this.UploadButton);
-            this.FileGroupBox.Controls.Add(this.label1);
-            this.FileGroupBox.Controls.Add(this.PathText);
-            this.FileGroupBox.Controls.Add(this.FilenameText);
-            this.FileGroupBox.Controls.Add(this.BrowseButton);
-            this.FileGroupBox.Controls.Add(this.label2);
-            this.FileGroupBox.Location = new System.Drawing.Point(3, 3);
-            this.FileGroupBox.Name = "FileGroupBox";
-            this.FileGroupBox.Size = new System.Drawing.Size(374, 176);
-            this.FileGroupBox.TabIndex = 7;
-            this.FileGroupBox.TabStop = false;
-            this.FileGroupBox.Text = "File";
+            this.CopyButton.Location = new System.Drawing.Point(294, 150);
+            this.CopyButton.Name = "CopyButton";
+            this.CopyButton.Size = new System.Drawing.Size(75, 23);
+            this.CopyButton.TabIndex = 9;
+            this.CopyButton.Text = "Copy";
+            this.CopyButton.UseVisualStyleBackColor = true;
+            this.CopyButton.Click += new System.EventHandler(this.CopyButton_Click);
             // 
-            // UploadButton
+            // label3
             // 
-            this.UploadButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.UploadButton.Enabled = false;
-            this.UploadButton.Location = new System.Drawing.Point(232, 77);
-            this.UploadButton.Name = "UploadButton";
-            this.UploadButton.Size = new System.Drawing.Size(130, 23);
-            this.UploadButton.TabIndex = 5;
-            this.UploadButton.Text = "Upload";
-            this.UploadButton.UseVisualStyleBackColor = true;
-            this.UploadButton.Click += new System.EventHandler(this.UploadButton_Click);
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(7, 136);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(27, 13);
+            this.label3.TabIndex = 8;
+            this.label3.Text = "Link";
+            // 
+            // LinkText
+            // 
+            this.LinkText.Location = new System.Drawing.Point(6, 152);
+            this.LinkText.Name = "LinkText";
+            this.LinkText.ReadOnly = true;
+            this.LinkText.Size = new System.Drawing.Size(282, 20);
+            this.LinkText.TabIndex = 7;
             // 
             // SharePanel
             // 
@@ -261,6 +205,8 @@
             // PublicBox
             // 
             this.PublicBox.AutoSize = true;
+            this.PublicBox.Checked = true;
+            this.PublicBox.CheckState = System.Windows.Forms.CheckState.Checked;
             this.PublicBox.Location = new System.Drawing.Point(3, 31);
             this.PublicBox.Name = "PublicBox";
             this.PublicBox.Size = new System.Drawing.Size(55, 17);
@@ -268,9 +214,21 @@
             this.PublicBox.Text = "Public";
             this.PublicBox.UseVisualStyleBackColor = true;
             // 
+            // WhitelistText
+            // 
+            this.WhitelistText.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.WhitelistText.Enabled = false;
+            this.WhitelistText.Location = new System.Drawing.Point(187, 31);
+            this.WhitelistText.Name = "WhitelistText";
+            this.WhitelistText.Size = new System.Drawing.Size(179, 20);
+            this.WhitelistText.TabIndex = 4;
+            // 
             // PublicRegisteredBox
             // 
             this.PublicRegisteredBox.AutoSize = true;
+            this.PublicRegisteredBox.Checked = true;
+            this.PublicRegisteredBox.CheckState = System.Windows.Forms.CheckState.Checked;
             this.PublicRegisteredBox.Location = new System.Drawing.Point(3, 59);
             this.PublicRegisteredBox.Name = "PublicRegisteredBox";
             this.PublicRegisteredBox.Size = new System.Drawing.Size(121, 17);
@@ -289,30 +247,109 @@
             this.WhitelistedBox.UseVisualStyleBackColor = true;
             this.WhitelistedBox.CheckedChanged += new System.EventHandler(this.WhitelistedBox_CheckedChanged);
             // 
-            // WhitelistText
+            // ShareBox
             // 
-            this.WhitelistText.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            this.ShareBox.AutoSize = true;
+            this.ShareBox.Checked = true;
+            this.ShareBox.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.ShareBox.Location = new System.Drawing.Point(6, 19);
+            this.ShareBox.Name = "ShareBox";
+            this.ShareBox.Size = new System.Drawing.Size(54, 17);
+            this.ShareBox.TabIndex = 5;
+            this.ShareBox.Text = "Share";
+            this.ShareBox.UseVisualStyleBackColor = true;
+            this.ShareBox.CheckedChanged += new System.EventHandler(this.ShareBox_CheckedChanged);
+            // 
+            // FileGroupBox
+            // 
+            this.FileGroupBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.WhitelistText.Enabled = false;
-            this.WhitelistText.Location = new System.Drawing.Point(187, 31);
-            this.WhitelistText.Name = "WhitelistText";
-            this.WhitelistText.Size = new System.Drawing.Size(179, 20);
-            this.WhitelistText.TabIndex = 4;
+            this.FileGroupBox.Controls.Add(this.UploadButton);
+            this.FileGroupBox.Controls.Add(this.label1);
+            this.FileGroupBox.Controls.Add(this.PathText);
+            this.FileGroupBox.Controls.Add(this.FilenameText);
+            this.FileGroupBox.Controls.Add(this.BrowseButton);
+            this.FileGroupBox.Controls.Add(this.label2);
+            this.FileGroupBox.Location = new System.Drawing.Point(3, 3);
+            this.FileGroupBox.Name = "FileGroupBox";
+            this.FileGroupBox.Size = new System.Drawing.Size(374, 176);
+            this.FileGroupBox.TabIndex = 7;
+            this.FileGroupBox.TabStop = false;
+            this.FileGroupBox.Text = "File";
             // 
-            // tableLayoutPanel
+            // UploadButton
             // 
-            this.tableLayoutPanel.ColumnCount = 2;
-            this.tableLayoutPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel.Controls.Add(this.ShareGroupBox, 1, 0);
-            this.tableLayoutPanel.Controls.Add(this.FileGroupBox, 0, 0);
-            this.tableLayoutPanel.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tableLayoutPanel.Location = new System.Drawing.Point(3, 3);
-            this.tableLayoutPanel.Name = "tableLayoutPanel";
-            this.tableLayoutPanel.RowCount = 1;
-            this.tableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel.Size = new System.Drawing.Size(761, 369);
-            this.tableLayoutPanel.TabIndex = 8;
+            this.UploadButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.UploadButton.Enabled = false;
+            this.UploadButton.Location = new System.Drawing.Point(232, 77);
+            this.UploadButton.Name = "UploadButton";
+            this.UploadButton.Size = new System.Drawing.Size(130, 23);
+            this.UploadButton.TabIndex = 5;
+            this.UploadButton.Text = "Upload";
+            this.UploadButton.UseVisualStyleBackColor = true;
+            this.UploadButton.Click += new System.EventHandler(this.UploadButton_Click);
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(6, 20);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(29, 13);
+            this.label1.TabIndex = 1;
+            this.label1.Text = "Path";
+            // 
+            // PathText
+            // 
+            this.PathText.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.PathText.Location = new System.Drawing.Point(9, 36);
+            this.PathText.Name = "PathText";
+            this.PathText.Size = new System.Drawing.Size(278, 20);
+            this.PathText.TabIndex = 0;
+            this.PathText.TextChanged += new System.EventHandler(this.PathText_TextChanged);
+            // 
+            // FilenameText
+            // 
+            this.FilenameText.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.FilenameText.Location = new System.Drawing.Point(9, 79);
+            this.FilenameText.Name = "FilenameText";
+            this.FilenameText.Size = new System.Drawing.Size(217, 20);
+            this.FilenameText.TabIndex = 4;
+            // 
+            // BrowseButton
+            // 
+            this.BrowseButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.BrowseButton.Location = new System.Drawing.Point(293, 36);
+            this.BrowseButton.Name = "BrowseButton";
+            this.BrowseButton.Size = new System.Drawing.Size(75, 20);
+            this.BrowseButton.TabIndex = 2;
+            this.BrowseButton.Text = "Browse...";
+            this.BrowseButton.UseVisualStyleBackColor = true;
+            this.BrowseButton.Click += new System.EventHandler(this.BrowseButton_Click);
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(6, 63);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(49, 13);
+            this.label2.TabIndex = 3;
+            this.label2.Text = "Filename";
+            // 
+            // tabPage2
+            // 
+            this.tabPage2.BackColor = System.Drawing.SystemColors.Control;
+            this.tabPage2.Location = new System.Drawing.Point(4, 22);
+            this.tabPage2.Name = "tabPage2";
+            this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage2.Size = new System.Drawing.Size(767, 375);
+            this.tabPage2.TabIndex = 1;
+            this.tabPage2.Text = "tabPage2";
+            // 
+            // openFileDialog
+            // 
+            this.openFileDialog.FileName = "openFileDialog";
             // 
             // MainForm
             // 
@@ -328,13 +365,13 @@
             this.Load += new System.EventHandler(this.MainForm_Load);
             this.Tab.ResumeLayout(false);
             this.UploadTab.ResumeLayout(false);
+            this.tableLayoutPanel.ResumeLayout(false);
             this.ShareGroupBox.ResumeLayout(false);
             this.ShareGroupBox.PerformLayout();
-            this.FileGroupBox.ResumeLayout(false);
-            this.FileGroupBox.PerformLayout();
             this.SharePanel.ResumeLayout(false);
             this.SharePanel.PerformLayout();
-            this.tableLayoutPanel.ResumeLayout(false);
+            this.FileGroupBox.ResumeLayout(false);
+            this.FileGroupBox.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -364,6 +401,9 @@
         private System.Windows.Forms.CheckBox ShareBox;
         private System.Windows.Forms.TextBox WhitelistText;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel;
+        private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.TextBox LinkText;
+        private System.Windows.Forms.Button CopyButton;
     }
 }
 

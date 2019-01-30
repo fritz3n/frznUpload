@@ -114,12 +114,12 @@ namespace frznUpload.Client
             {
                 try
                 {
-                    if (!EnsureActivated())
+                    if (EnsureActivated())
                         throw new UnauthorizedAccessException();
                     T returned = func();
                     return returned;
                 }
-                catch (UnauthorizedAccessException f)
+                catch (UnauthorizedAccessException)
                 {
                     throw;
                 }
@@ -141,12 +141,12 @@ namespace frznUpload.Client
             {
                 try
                 {
-                    if (!await EnsureActivatedAsync())
+                    if (await EnsureActivatedAsync())
                         throw new UnauthorizedAccessException();
                     Task<T> returned = func();
                     return await returned;
                 }
-                catch(UnauthorizedAccessException f)
+                catch(UnauthorizedAccessException)
                 {
                     throw;
                 }

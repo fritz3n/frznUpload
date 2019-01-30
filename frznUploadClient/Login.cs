@@ -37,6 +37,7 @@ namespace frznUpload.Client
         private void MainForm_Shown(object sender, EventArgs e)
         {
             showing = true;
+            SetEnables();
         }
 
         public new void Show()

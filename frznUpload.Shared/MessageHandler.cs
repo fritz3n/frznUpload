@@ -112,7 +112,8 @@ namespace frznUpload.Shared
                 {
                     token.ThrowIfCancellationRequested();
 
-                    writeEvent.WaitOne();
+                    WaitHandle.WaitAny(new WaitHandle[] { writeEvent, token.WaitHandle });
+                    token.ThrowIfCancellationRequested();
 
                     while (OutgoingQueue.Count > 0) {
                         token.ThrowIfCancellationRequested();
@@ -135,7 +136,7 @@ namespace frznUpload.Shared
                             graceful = !tcp.Connected;
                             ShutdownException = e;
                             Stop(graceful ? DisconnectReason.Graceful : DisconnectReason.Error);
-                            ErrorEvent.Set();
+                            ErrorEvent?.Set();
                             return;
                         }
                     }
@@ -151,7 +152,7 @@ namespace frznUpload.Shared
                 ShutdownException = e;
                 Stop(DisconnectReason.Error);
 
-                ErrorEvent.Set();
+                ErrorEvent?.Set();
 
 
                 Console.WriteLine(e);
@@ -207,7 +208,7 @@ namespace frznUpload.Shared
                     if (!PingPong.HandleMessage(m))
                     {
                         IncomingQueue.Enqueue(m);
-                        readEvent.Set();
+                        readEvent?.Set();
                     }
                     
 #if LOGMESSAGES
@@ -219,7 +220,7 @@ namespace frznUpload.Shared
                 ShutdownException = e;
                 Stop(DisconnectReason.Error);
 
-                ErrorEvent.Set();
+                ErrorEvent?.Set();
 
 
                 Console.WriteLine(e);
@@ -382,9 +383,13 @@ namespace frznUpload.Shared
                 return;
 
             Stop();
-            tokenSource.Dispose();
+            //tokenSource.Dispose();
+            flushEvent.Dispose();
+            flushEvent = null;
             readEvent.Dispose();
+            readEvent = null;
             ErrorEvent.Dispose();
+            ErrorEvent = null;
             IncomingQueue = null;
 
             disposed = true;
