@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace frznUpload.Client
 {
-    class Client : IDisposable
+    public class Client : IDisposable
     {
         private TcpClient Tcp;
         private SslStream stream;
@@ -25,7 +25,11 @@ namespace frznUpload.Client
         public Client(string url, int port)
         {
             Connect(url, port);
-            mes.OnDisconnect += OnDisconnect;
+        }
+
+        public Client()
+        {
+
         }
 
         private void OnDisconnect(object sender, MessageHandler.DisconnectReason disconnectReason)
@@ -52,12 +56,34 @@ namespace frznUpload.Client
 
             mes = new MessageHandler(Tcp, stream);
             mes.Start();
+            mes.OnDisconnect += OnDisconnect;
+        }
+
+        public async Task ConnectAsync(string url, int port)
+        {
+            Stopwatch stp = new Stopwatch();
+            stp.Start();
+            Tcp = new TcpClient();
+
+            await Tcp.ConnectAsync(url, port);
+
+            stream = new SslStream(Tcp.GetStream(), false, new RemoteCertificateValidationCallback(ValidateServerCertificate));
+
+            await stream.AuthenticateAsClientAsync("fritzen.tk");
+
+            stp.Stop();
+
+            Console.WriteLine("encryption established: " + stp.ElapsedMilliseconds);
+
+            mes = new MessageHandler(Tcp, stream);
+            mes.Start();
+            mes.OnDisconnect += OnDisconnect;
         }
 
         public void Disconnect()
         {
-            mes.Stop();
-            Tcp.Close();
+            mes?.Stop();
+            Tcp?.Close();
         }
 
         public async Task<bool> AuthWithKey(string file)
@@ -86,7 +112,7 @@ namespace frznUpload.Client
 
                 mes.SendMessage(new Message(Message.MessageType.ChallengeResponse, false, chal.SignChallenge(m[0])));
 
-                m = await mes.WaitForMessageAsync(true, Message.MessageType.ChallengeApproved);
+                m = mes.WaitForMessage(true, Message.MessageType.ChallengeApproved);
 
                 Name = m[0];
                 IsAuthenticated = true;
@@ -129,7 +155,7 @@ namespace frznUpload.Client
 
                 mes.SendMessage(new Message(Message.MessageType.Auth, false, username, password, pub[0], pub[1]));
 
-                await mes.WaitForMessageAsync(true, Message.MessageType.AuthSuccess);
+                mes.WaitForMessage(true, Message.MessageType.AuthSuccess);
 
                 return await AuthWithKey(file);
             }
@@ -146,16 +172,11 @@ namespace frznUpload.Client
             }
         }
 
-        /// <summary>
-        /// Starts the upload of a file
-        /// </summary>
-        /// <param name="path"></param>
-        /// <returns>The Fileuploader uploading the File</returns>
-        public FileUploader UploadFile(string path)
+        public FileUploader UploadFile(string path, bool singleUse = false)
         {
             try
             {
-                var up = new FileUploader(mes, path);
+                var up = new FileUploader(mes, this, path, singleUse);
                 up.Start();
                 return up;
             }

@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace frznUpload.Client
 {
-    class RemoteFile
+    public class RemoteFile
     {
         public string Identifier { get; set; }
         public string Filename { get; set; }

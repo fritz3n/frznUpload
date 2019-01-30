@@ -56,6 +56,16 @@ namespace frznUpload.Client
         {
             LoginButton.Enabled = !Client.LoggedIn;
             LogoutButton.Enabled = Client.LoggedIn;
+
+
+            if (Client.LoggedIn)
+            {
+                StatusText.Text = $"Logged in as:\n{Client.Username}";
+            }
+            else
+            {
+                StatusText.Text = "Not logged in.";
+            }
         }
 
         private async void LoginButton_Click(object sender, EventArgs e)

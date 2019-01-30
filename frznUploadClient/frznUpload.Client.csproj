@@ -63,6 +63,8 @@
     <Compile Include="Client.cs" />
     <Compile Include="ClientManager.cs" />
     <Compile Include="FileUploader.cs" />
+    <Compile Include="HotKey.cs" />
+    <Compile Include="HotkeyHandler.cs" />
     <Compile Include="Login.cs">
       <SubType>Form</SubType>
     </Compile>

@@ -82,11 +82,11 @@ namespace frznUpload.Test
 
                 mes.SendMessage(new Message(Message.MessageType.ChallengeRequest, false, pub[0], pub[1]));
 
-                var m = mes.WaitForMessage(true, Message.MessageType.Challenge);
+                var m = await mes.WaitForMessageAsync(true, Message.MessageType.Challenge);
                 
                 mes.SendMessage(new Message(Message.MessageType.ChallengeResponse, false, chal.SignChallenge(m[0])));
 
-                m = mes.WaitForMessage(true, Message.MessageType.ChallengeApproved);
+                m = await mes.WaitForMessageAsync(true, Message.MessageType.ChallengeApproved);
                 
                 Name = m[0];
                 IsAuthenticated = true;
@@ -145,7 +145,7 @@ namespace frznUpload.Test
             }
         }
 
-        public async Task<FileUploader> UploadFile(string path)
+        public FileUploader UploadFile(string path)
         {
             try
             {
@@ -172,7 +172,7 @@ namespace frznUpload.Test
 
             mes.SendMessage(new Message(Message.MessageType.ShareRequest, false, fileIdentifier, firstView ? 1 : 0, isPublic ? 1 : 0, publicRegistered ? 1 : 0, whitelisted ? 1 : 0, whitelist));
 
-            var m = mes.WaitForMessage(true, Message.MessageType.ShareResponse);
+            var m = await mes.WaitForMessageAsync(true, Message.MessageType.ShareResponse);
 
             return m[0];
         }

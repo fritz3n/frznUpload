@@ -13,6 +13,7 @@ namespace frznUpload.Client
     {
         NotifyIcon notifyIcon = new NotifyIcon();
         MainForm mainForm;
+        public static ClientManager Client { get; private set; }
 
         public IconHandler()
         {
@@ -27,8 +28,10 @@ namespace frznUpload.Client
             notifyIcon.MouseClick += new MouseEventHandler(LeftClick);
             notifyIcon.Visible = true;
 
-            
-            mainForm = new MainForm();
+            Client = new ClientManager();
+            Task.Run(() => Client.Connect());
+
+            mainForm = new MainForm(Client);
         }
 
         void ShowConfig(object sender, EventArgs e)

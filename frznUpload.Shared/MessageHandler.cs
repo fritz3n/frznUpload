@@ -24,9 +24,8 @@ namespace frznUpload.Shared
             Timeout,
             Error,
         }
-
-        public bool Synchronous { get; set; }
-        private bool Verbose = false;
+        
+        private readonly bool Verbose = false;
         IMessageLogger VerboseLogger;
         Queue<Message> IncomingQueue = new Queue<Message>();
         Queue<Message> OutgoingQueue = new Queue<Message>();
@@ -54,9 +53,8 @@ namespace frznUpload.Shared
         List<(bool, Message)> Log = new List<(bool, Message)>();
 #endif
 
-        public MessageHandler(TcpClient cli, SslStream stream, bool synchronous = false,  bool verbose = false, IMessageLogger verboseLogger = null)
+        public MessageHandler(TcpClient cli, SslStream stream, bool verbose = false, IMessageLogger verboseLogger = null)
         {
-            Synchronous = synchronous;
             this.stream = stream;
             tcp = cli;
             PingPong = new PingPongHandler(this);
@@ -128,17 +126,9 @@ namespace frznUpload.Shared
 
                         byte[] length = BitConverter.GetBytes(data.Length);
 
-                        try { 
-                            if (Synchronous)
-                            {
-                                stream.Write(length, 0, 4);
-                                stream.Write(data, 0, data.Length);
-                            }
-                            else
-                            {
-                                await stream.WriteAsync(length, 0, 4, token);
-                                await stream.WriteAsync(data, 0, data.Length, token);
-                            }
+                        try {
+                            await stream.WriteAsync(length, 0, 4, token);
+                            await stream.WriteAsync(data, 0, data.Length, token);
                         }
                         catch (Exception e)
                         {
@@ -184,14 +174,7 @@ namespace frznUpload.Shared
                     {
                         while (l < 4)
                         {
-                            if (Synchronous)
-                            {
-                                l += stream.Read(headerBuffer, l, 4 - l);
-                            }
-                            else
-                            {
-                                l += await stream.ReadAsync(headerBuffer, l, 4 - l, token);
-                            }
+                            l += await stream.ReadAsync(headerBuffer, l, 4 - l, token);
                         }
                     }
                     catch(Exception e)
@@ -213,14 +196,7 @@ namespace frznUpload.Shared
                     int read = 0;
                     while (read != length)
                     {
-                        if (Synchronous)
-                        {
-                            read += stream.Read(bytes, read, (int)length - read);
-                        }
-                        else
-                        {
-                            read += await stream.ReadAsync(bytes, read, (int)length - read);
-                        }
+                        read += await stream.ReadAsync(bytes, read, (int)length - read);
                     }
                     
                     var m = new Message(bytes);

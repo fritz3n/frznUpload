@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace frznUpload.Client
 {
-    class FileUploader : IDisposable
+    public class FileUploader : IDisposable
     {
         int ChunkSize = 16384;
 
@@ -29,11 +29,15 @@ namespace frznUpload.Client
         private FileStream file;
 
         MessageHandler mes;
+        Client client;
+        bool SingleUse;
 
-        public FileUploader(MessageHandler messageHandler, string path)
+        public FileUploader(MessageHandler messageHandler, Client client, string path, bool singleUse = false)
         {
             mes = messageHandler;
             FilePath = path;
+            this.client = client;
+            SingleUse = singleUse;
         }
 
         public void Start()
@@ -123,6 +127,8 @@ namespace frznUpload.Client
 
         private void Close()
         {
+            if (SingleUse)
+                client?.Dispose();
             file?.Close();
             file?.Dispose();
         }

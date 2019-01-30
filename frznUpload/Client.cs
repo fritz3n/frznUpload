@@ -14,7 +14,7 @@ namespace frznUpload.Server
 {
     class Client : IDisposable
     {
-        private TcpClient Tcp;
+        private readonly TcpClient Tcp;
         private SslStream stream;
         private MessageHandler mes;
         private CancellationTokenSource tokenSource;
@@ -40,7 +40,7 @@ namespace frznUpload.Server
 
             log.WriteLine("Encryption established");
 
-            mes = new MessageHandler(tcp, stream, false, verbose, log.VerboseMessageLogger);
+            mes = new MessageHandler(tcp, stream, verbose, log.VerboseMessageLogger);
             mes.OnDisconnect += OnDisconnect;
             mes.Start();
 
@@ -177,7 +177,7 @@ namespace frznUpload.Server
                         {
                             case Message.MessageType.FileUploadRequest:
 
-                                (bool, string) returned = await FileHandler.ReceiveFile(message, mes, db, log);
+                                (bool, string) returned = FileHandler.ReceiveFile(message, mes, db, log);
 
                                 if (returned.Item1)
                                     log.WriteLine("Uploaded a file: ", returned.Item2.Substring(0, 10));

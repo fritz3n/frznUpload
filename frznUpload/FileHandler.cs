@@ -12,7 +12,7 @@ namespace frznUpload.Server
         const string directory = "../files/";
         const int chunksSize = 16384;
 
-        static public async Task<(bool, string)> ReceiveFile(Message message, MessageHandler mes, DataBase db, Logger log)
+        static public (bool, string) ReceiveFile(Message message, MessageHandler mes, DataBase db, Logger log)
         {
             int size = message[2];
             int written = 0;

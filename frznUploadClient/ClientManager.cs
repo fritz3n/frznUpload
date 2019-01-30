@@ -8,13 +8,18 @@ using System.Timers;
 
 namespace frznUpload.Client
 {
-    class ClientManager
+    public class ClientManager
     {
         Client ActiveClient;
         DateTime ActiveTime;
         TimeSpan cachedTime = new TimeSpan(0, 10, 0);
         Timer cacheTimer;
         public bool LoggedIn { get; private set; } = false;
+        public string Username { get
+            {
+                EnsureActivated();
+                return ActiveClient.Name;
+            } }
         
         public ClientManager()
         {
@@ -51,9 +56,13 @@ namespace frznUpload.Client
         /// </summary>
         /// <param name="path"> The path of the file</param>
         /// <returns></returns>
-        public FileUploader UploadFile(string path)
+        public async Task<FileUploader> UploadFile(string path)
         {
-            return Retry(() => ActiveClient.UploadFile(path));
+            return await RetryAsync(async () => {
+                var c = await GetNewClient();
+                return c.UploadFile(path, true);
+                }
+            );
         }
 
         public async Task<string> ShareFile(string fileIdentifier, bool firstView = false, bool isPublic = true, bool publicRegistered = true, bool whitelisted = false, string whitelist = "")
@@ -72,12 +81,22 @@ namespace frznUpload.Client
             ActiveClient.Dispose();
         }
 
+        private async Task<Client> GetNewClient(bool Login = true)
+        {
+            var c = new Client();
+            await c.ConnectAsync(Properties.Settings.Default.Url, Properties.Settings.Default.Port);
+            if(Login)
+                await c.AuthWithKey(Properties.Settings.Default.KeyFile);
+            return c;
+        }
+
         private async Task ActivateClient()
         {
             ActiveClient?.Dispose();
             LoggedIn = false;
 
-            ActiveClient = new Client(Properties.Settings.Default.Url, Properties.Settings.Default.Port);
+            ActiveClient = new Client();
+            await ActiveClient.ConnectAsync(Properties.Settings.Default.Url, Properties.Settings.Default.Port);
             try
             {
                 await ActiveClient.AuthWithKey(Properties.Settings.Default.KeyFile);
@@ -95,9 +114,14 @@ namespace frznUpload.Client
             {
                 try
                 {
-                    EnsureActivated();
+                    if (!EnsureActivated())
+                        throw new UnauthorizedAccessException();
                     T returned = func();
                     return returned;
+                }
+                catch (UnauthorizedAccessException f)
+                {
+                    throw;
                 }
                 catch (Exception e)
                 {
@@ -117,9 +141,14 @@ namespace frznUpload.Client
             {
                 try
                 {
-                    await EnsureActivatedAsync();
+                    if (!await EnsureActivatedAsync())
+                        throw new UnauthorizedAccessException();
                     Task<T> returned = func();
                     return await returned;
+                }
+                catch(UnauthorizedAccessException f)
+                {
+                    throw;
                 }
                 catch (Exception e)
                 {
