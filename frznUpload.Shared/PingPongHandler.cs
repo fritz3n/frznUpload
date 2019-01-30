@@ -51,7 +51,7 @@ namespace frznUpload.Shared
                 LastActivity = DateTime.Now;
                 var p = new Ping();
                 WaitingPings.Add(p);
-                 mes.SendMessage(p.Send());
+                //mes.SendMessage(p.Send());
 #if DEBUG
                 //Console.WriteLine("<Ping");
 #endif

@@ -177,7 +177,7 @@ namespace frznUpload.Server
                         {
                             case Message.MessageType.FileUploadRequest:
 
-                                (bool, string) returned = FileHandler.ReceiveFile(message, mes, db, log);
+                                (bool, string) returned = await FileHandler.ReceiveFile(message, mes, db, log);
 
                                 if (returned.Item1)
                                     log.WriteLine("Uploaded a file: ", returned.Item2.Substring(0, 10));

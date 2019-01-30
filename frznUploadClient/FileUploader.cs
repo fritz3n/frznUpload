@@ -55,14 +55,13 @@ namespace frznUpload.Client
         {
             try
             {
-                int id = 0;
                 Open();
                 FileInfo info = new FileInfo(FilePath);
                 int size = (int)(info.Length > int.MaxValue ? throw new FileLoadException() : info.Length);
                 string filename = Path.GetFileNameWithoutExtension(info.FullName);
                 string extension = info.Extension.Replace(".", ""); ;
 
-                ChunkSize = size / 100;
+                ChunkSize = size / 10;
 
                 TotalSize = size;
 
@@ -78,10 +77,8 @@ namespace frznUpload.Client
 
                 while ((written = await file.ReadAsync(buffer, 0, ChunkSize)) > 0)
                 {
-                    mes.SendMessage(new Message(Message.MessageType.FileUpload, false, id, written, buffer));
+                    mes.SendMessage(new Message(Message.MessageType.FileUpload, false, written, buffer.Clone()));
                     WrittenSize += written;
-                    id++;
-                    //await Task.Delay(10);
                 }
 
                 mes.SendMessage(new Message(Message.MessageType.FileUploadFinished, false));
@@ -129,7 +126,10 @@ namespace frznUpload.Client
         private void Close()
         {
             if (SingleUse)
+            {
+                client?.Disconnect();
                 client?.Dispose();
+            }
             file?.Close();
             file?.Dispose();
         }

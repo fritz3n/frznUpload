@@ -12,9 +12,8 @@ namespace frznUpload.Server
         const string directory = "../files/";
         const int chunksSize = 16384;
 
-        static public (bool, string) ReceiveFile(Message message, MessageHandler mes, DataBase db, Logger log)
+        static public async Task<(bool, string)> ReceiveFile(Message message, MessageHandler mes, DataBase db, Logger log)
         {
-            int id = 0;
             int size = message[2];
             int written = 0;
 
@@ -70,12 +69,7 @@ namespace frznUpload.Server
                     break;
                 }
 
-                if (m[0] != id)
-                {
-                    Logger.WriteLineStatic($"Expected fragment {id}, got fragment {m[0]}");
-                }
-
-                id++;
+                
 
                 if (written >= size)
                 {
@@ -86,7 +80,7 @@ namespace frznUpload.Server
 
                 try
                 {
-                    file.Write(m[2], 0, m[1]);
+                    await file.WriteAsync(m[1], 0, m[0]);
                     written += m[0];
                 }
                 catch (Exception e)
