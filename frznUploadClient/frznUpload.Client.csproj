@@ -69,7 +69,7 @@
     <Compile Include="Files\TempFileHandler.cs" />
     <Compile Include="FileUploader.cs" />
     <Compile Include="HotkeyConfigControl.cs">
-      <SubType>Form</SubType>
+      <SubType>Component</SubType>
     </Compile>
     <Compile Include="Hotkeys\HotKey.cs" />
     <Compile Include="Hotkeys\HotkeyConfig.cs" />

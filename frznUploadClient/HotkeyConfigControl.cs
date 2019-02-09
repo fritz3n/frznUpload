@@ -7,228 +7,231 @@ using System.Windows.Forms;
 
 namespace frznUpload.Client
 {
-    partial class SettingsForm
+    class HotkeyConfigControl : GroupBox
     {
-        class HotkeyConfigControl : GroupBox
+        private SplitContainer SplitContainer;
+        private TextBox FormatBox;
+        private Button HotkeyButton;
+        private Label label3;
+        private Label label1;
+        private ComboBox FileProviderBox;
+        private Label label2;
+        private CheckBox ShareBox;
+        private Label label4;
+        private TextBox WhitelistText;
+        private CheckBox WhitelistedBox;
+        private CheckBox checkBox1;
+        private CheckBox FirstViewBox;
+        private CheckBox PublicBox;
+
+        public HotkeyConfigControl()
         {
-            private SplitContainer SplitContainer;
-            private TextBox FormatBox;
-            private Button HotkeyButton;
-            private Label label3;
-            private Label label1;
-            private ComboBox FileProviderBox;
-            private Label label2;
-            private CheckBox ShareBox;
-            private Label label4;
-            private TextBox WhitelistText;
-            private CheckBox WhitelistedBox;
-            private CheckBox checkBox1;
-            private CheckBox FirstViewBox;
-            private CheckBox PublicBox;
-            
-            public HotkeyConfigControl()
-            {
-                this.SplitContainer = new System.Windows.Forms.SplitContainer();
-                this.FormatBox = new System.Windows.Forms.TextBox();
-                this.HotkeyButton = new System.Windows.Forms.Button();
-                this.label3 = new System.Windows.Forms.Label();
-                this.label1 = new System.Windows.Forms.Label();
-                this.FileProviderBox = new System.Windows.Forms.ComboBox();
-                this.label2 = new System.Windows.Forms.Label();
-                this.ShareBox = new System.Windows.Forms.CheckBox();
-                this.label4 = new System.Windows.Forms.Label();
-                this.WhitelistText = new System.Windows.Forms.TextBox();
-                this.WhitelistedBox = new System.Windows.Forms.CheckBox();
-                this.checkBox1 = new System.Windows.Forms.CheckBox();
-                this.FirstViewBox = new System.Windows.Forms.CheckBox();
-                this.PublicBox = new System.Windows.Forms.CheckBox();
-                ((System.ComponentModel.ISupportInitialize)(this.SplitContainer)).BeginInit();
-                this.SplitContainer.Panel1.SuspendLayout();
-                this.SplitContainer.Panel2.SuspendLayout();
-                this.SplitContainer.SuspendLayout();
-                this.SuspendLayout();
-                // 
-                // SplitContainer
-                // 
-                this.SplitContainer.Dock = System.Windows.Forms.DockStyle.Fill;
-                this.SplitContainer.IsSplitterFixed = true;
-                this.SplitContainer.Location = new System.Drawing.Point(0, 0);
-                this.SplitContainer.Name = "SplitContainer";
-                // 
-                // SplitContainer.Panel1
-                // 
-                this.SplitContainer.Panel1.Controls.Add(this.FormatBox);
-                this.SplitContainer.Panel1.Controls.Add(this.HotkeyButton);
-                this.SplitContainer.Panel1.Controls.Add(this.label3);
-                this.SplitContainer.Panel1.Controls.Add(this.label1);
-                this.SplitContainer.Panel1.Controls.Add(this.FileProviderBox);
-                this.SplitContainer.Panel1.Controls.Add(this.label2);
-                this.SplitContainer.Panel1.Controls.Add(this.ShareBox);
-                // 
-                // SplitContainer.Panel2
-                // 
-                this.SplitContainer.Panel2.Controls.Add(this.label4);
-                this.SplitContainer.Panel2.Controls.Add(this.WhitelistText);
-                this.SplitContainer.Panel2.Controls.Add(this.WhitelistedBox);
-                this.SplitContainer.Panel2.Controls.Add(this.checkBox1);
-                this.SplitContainer.Panel2.Controls.Add(this.FirstViewBox);
-                this.SplitContainer.Panel2.Controls.Add(this.PublicBox);
-                this.SplitContainer.Size = new System.Drawing.Size(245, 167);
-                this.SplitContainer.SplitterDistance = 120;
-                this.SplitContainer.TabIndex = 8;
-                // 
-                // FormatBox
-                // 
-                this.FormatBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-                | System.Windows.Forms.AnchorStyles.Right)));
-                this.FormatBox.Location = new System.Drawing.Point(9, 114);
-                this.FormatBox.Name = "FormatBox";
-                this.FormatBox.Size = new System.Drawing.Size(108, 20);
-                this.FormatBox.TabIndex = 5;
-                // 
-                // HotkeyButton
-                // 
-                this.HotkeyButton.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-                | System.Windows.Forms.AnchorStyles.Right)));
-                this.HotkeyButton.Location = new System.Drawing.Point(9, 32);
-                this.HotkeyButton.Name = "HotkeyButton";
-                this.HotkeyButton.Size = new System.Drawing.Size(108, 23);
-                this.HotkeyButton.TabIndex = 0;
-                this.HotkeyButton.Text = "[none]";
-                this.HotkeyButton.UseVisualStyleBackColor = true;
-                // 
-                // label3
-                // 
-                this.label3.AutoSize = true;
-                this.label3.Location = new System.Drawing.Point(3, 98);
-                this.label3.Name = "label3";
-                this.label3.Size = new System.Drawing.Size(84, 13);
-                this.label3.TabIndex = 4;
-                this.label3.Text = "Filename Format";
-                // 
-                // label1
-                // 
-                this.label1.AutoSize = true;
-                this.label1.Location = new System.Drawing.Point(3, 16);
-                this.label1.Name = "label1";
-                this.label1.Size = new System.Drawing.Size(41, 13);
-                this.label1.TabIndex = 1;
-                this.label1.Text = "Hotkey";
-                // 
-                // FileProviderBox
-                // 
-                this.FileProviderBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-                | System.Windows.Forms.AnchorStyles.Right)));
-                this.FileProviderBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-                this.FileProviderBox.FormattingEnabled = true;
-                this.FileProviderBox.Items.AddRange(new object[] {
+            SplitContainer = new SplitContainer();
+            FormatBox = new TextBox();
+            HotkeyButton = new Button();
+            label3 = new Label();
+            label1 = new Label();
+            FileProviderBox = new ComboBox();
+            label2 = new Label();
+            ShareBox = new CheckBox();
+            label4 = new Label();
+            WhitelistText = new TextBox();
+            WhitelistedBox = new CheckBox();
+            checkBox1 = new CheckBox();
+            FirstViewBox = new CheckBox();
+            PublicBox = new CheckBox();
+            ((System.ComponentModel.ISupportInitialize)(SplitContainer)).BeginInit();
+            SplitContainer.Panel1.SuspendLayout();
+            SplitContainer.Panel2.SuspendLayout();
+            SplitContainer.SuspendLayout();
+            SuspendLayout();
+            // 
+            // SplitContainer
+            // 
+            SplitContainer.Dock = DockStyle.Fill;
+            SplitContainer.IsSplitterFixed = true;
+            SplitContainer.Location = new System.Drawing.Point(0, 0);
+            SplitContainer.Name = "SplitContainer";
+            // 
+            // SplitContainer.Panel1
+            // 
+            SplitContainer.Panel1.Controls.Add(FormatBox);
+            SplitContainer.Panel1.Controls.Add(HotkeyButton);
+            SplitContainer.Panel1.Controls.Add(label3);
+            SplitContainer.Panel1.Controls.Add(label1);
+            SplitContainer.Panel1.Controls.Add(FileProviderBox);
+            SplitContainer.Panel1.Controls.Add(label2);
+            SplitContainer.Panel1.Controls.Add(ShareBox);
+            // 
+            // SplitContainer.Panel2
+            // 
+            SplitContainer.Panel2.Controls.Add(label4);
+            SplitContainer.Panel2.Controls.Add(WhitelistText);
+            SplitContainer.Panel2.Controls.Add(WhitelistedBox);
+            SplitContainer.Panel2.Controls.Add(checkBox1);
+            SplitContainer.Panel2.Controls.Add(FirstViewBox);
+            SplitContainer.Panel2.Controls.Add(PublicBox);
+            SplitContainer.Size = new System.Drawing.Size(245, 167);
+            SplitContainer.SplitterDistance = 120;
+            SplitContainer.TabIndex = 8;
+            // 
+            // FormatBox
+            // 
+            FormatBox.Anchor = ((AnchorStyles)(((AnchorStyles.Top | AnchorStyles.Left)
+            | AnchorStyles.Right)));
+            FormatBox.Location = new System.Drawing.Point(9, 114);
+            FormatBox.Name = "FormatBox";
+            FormatBox.Size = new System.Drawing.Size(108, 20);
+            FormatBox.TabIndex = 5;
+            // 
+            // HotkeyButton
+            // 
+            HotkeyButton.Anchor = ((AnchorStyles)(((AnchorStyles.Top | AnchorStyles.Left)
+            | AnchorStyles.Right)));
+            HotkeyButton.Location = new System.Drawing.Point(9, 32);
+            HotkeyButton.Name = "HotkeyButton";
+            HotkeyButton.Size = new System.Drawing.Size(108, 23);
+            HotkeyButton.TabIndex = 0;
+            HotkeyButton.Text = "[none]";
+            HotkeyButton.UseVisualStyleBackColor = true;
+            // 
+            // label3
+            // 
+            label3.AutoSize = true;
+            label3.Location = new System.Drawing.Point(3, 98);
+            label3.Name = "label3";
+            label3.Size = new System.Drawing.Size(84, 13);
+            label3.TabIndex = 4;
+            label3.Text = "Filename Format";
+            // 
+            // label1
+            // 
+            label1.AutoSize = true;
+            label1.Location = new System.Drawing.Point(3, 16);
+            label1.Name = "label1";
+            label1.Size = new System.Drawing.Size(41, 13);
+            label1.TabIndex = 1;
+            label1.Text = "Hotkey";
+            // 
+            // FileProviderBox
+            // 
+            FileProviderBox.Anchor = ((AnchorStyles)(((AnchorStyles.Top | AnchorStyles.Left)
+            | AnchorStyles.Right)));
+            FileProviderBox.DropDownStyle = ComboBoxStyle.DropDownList;
+            FileProviderBox.FormattingEnabled = true;
+            FileProviderBox.Items.AddRange(new object[] {
             "Clipboard",
             "ScreenClip",
             "Screenshot"});
-                this.FileProviderBox.Location = new System.Drawing.Point(9, 74);
-                this.FileProviderBox.Name = "FileProviderBox";
-                this.FileProviderBox.Size = new System.Drawing.Size(108, 21);
-                this.FileProviderBox.TabIndex = 3;
-                // 
-                // label2
-                // 
-                this.label2.AutoSize = true;
-                this.label2.Location = new System.Drawing.Point(3, 58);
-                this.label2.Name = "label2";
-                this.label2.Size = new System.Drawing.Size(61, 13);
-                this.label2.TabIndex = 2;
-                this.label2.Text = "Fileprovider";
-                // 
-                // ShareBox
-                // 
-                this.ShareBox.AutoSize = true;
-                this.ShareBox.Checked = true;
-                this.ShareBox.CheckState = System.Windows.Forms.CheckState.Checked;
-                this.ShareBox.Location = new System.Drawing.Point(10, 140);
-                this.ShareBox.Name = "ShareBox";
-                this.ShareBox.Size = new System.Drawing.Size(54, 17);
-                this.ShareBox.TabIndex = 0;
-                this.ShareBox.Text = "Share";
-                this.ShareBox.UseVisualStyleBackColor = true;
-                // 
-                // label4
-                // 
-                this.label4.AutoSize = true;
-                this.label4.Location = new System.Drawing.Point(3, 96);
-                this.label4.Name = "label4";
-                this.label4.Size = new System.Drawing.Size(47, 13);
-                this.label4.TabIndex = 6;
-                this.label4.Text = "Whitelist";
-                // 
-                // WhitelistText
-                // 
-                this.WhitelistText.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-                | System.Windows.Forms.AnchorStyles.Right)));
-                this.WhitelistText.Location = new System.Drawing.Point(6, 114);
-                this.WhitelistText.Name = "WhitelistText";
-                this.WhitelistText.Size = new System.Drawing.Size(112, 20);
-                this.WhitelistText.TabIndex = 5;
-                // 
-                // WhitelistedBox
-                // 
-                this.WhitelistedBox.AutoSize = true;
-                this.WhitelistedBox.Location = new System.Drawing.Point(6, 76);
-                this.WhitelistedBox.Name = "WhitelistedBox";
-                this.WhitelistedBox.Size = new System.Drawing.Size(78, 17);
-                this.WhitelistedBox.TabIndex = 4;
-                this.WhitelistedBox.Text = "Whitelisted";
-                this.WhitelistedBox.UseVisualStyleBackColor = true;
-                // 
-                // checkBox1
-                // 
-                this.checkBox1.AutoSize = true;
-                this.checkBox1.Checked = true;
-                this.checkBox1.CheckState = System.Windows.Forms.CheckState.Checked;
-                this.checkBox1.Location = new System.Drawing.Point(6, 54);
-                this.checkBox1.Name = "checkBox1";
-                this.checkBox1.Size = new System.Drawing.Size(109, 17);
-                this.checkBox1.TabIndex = 3;
-                this.checkBox1.Text = "Public Registered";
-                this.checkBox1.UseVisualStyleBackColor = true;
-                // 
-                // FirstViewBox
-                // 
-                this.FirstViewBox.AutoSize = true;
-                this.FirstViewBox.Location = new System.Drawing.Point(6, 12);
-                this.FirstViewBox.Name = "FirstViewBox";
-                this.FirstViewBox.Size = new System.Drawing.Size(71, 17);
-                this.FirstViewBox.TabIndex = 2;
-                this.FirstViewBox.Text = "First View";
-                this.FirstViewBox.UseVisualStyleBackColor = true;
-                // 
-                // PublicBox
-                // 
-                this.PublicBox.AutoSize = true;
-                this.PublicBox.Checked = true;
-                this.PublicBox.CheckState = System.Windows.Forms.CheckState.Checked;
-                this.PublicBox.Location = new System.Drawing.Point(6, 32);
-                this.PublicBox.Name = "PublicBox";
-                this.PublicBox.Size = new System.Drawing.Size(55, 17);
-                this.PublicBox.TabIndex = 1;
-                this.PublicBox.Text = "Public";
-                this.PublicBox.UseVisualStyleBackColor = true;
-                // 
-                // SettingsForm
-                // 
-                this.ClientSize = new System.Drawing.Size(245, 167);
-                this.Controls.Add(this.SplitContainer);
-                this.Name = "SettingsForm";
-                this.SplitContainer.Panel1.ResumeLayout(false);
-                this.SplitContainer.Panel1.PerformLayout();
-                this.SplitContainer.Panel2.ResumeLayout(false);
-                this.SplitContainer.Panel2.PerformLayout();
-                ((System.ComponentModel.ISupportInitialize)(this.SplitContainer)).EndInit();
-                this.SplitContainer.ResumeLayout(false);
-                this.ResumeLayout(false);
+            FileProviderBox.Location = new System.Drawing.Point(9, 74);
+            FileProviderBox.Name = "FileProviderBox";
+            FileProviderBox.Size = new System.Drawing.Size(108, 21);
+            FileProviderBox.TabIndex = 3;
+            // 
+            // label2
+            // 
+            label2.AutoSize = true;
+            label2.Location = new System.Drawing.Point(3, 58);
+            label2.Name = "label2";
+            label2.Size = new System.Drawing.Size(61, 13);
+            label2.TabIndex = 2;
+            label2.Text = "Fileprovider";
+            // 
+            // ShareBox
+            // 
+            ShareBox.AutoSize = true;
+            ShareBox.Checked = true;
+            ShareBox.CheckState = CheckState.Checked;
+            ShareBox.Location = new System.Drawing.Point(10, 140);
+            ShareBox.Name = "ShareBox";
+            ShareBox.Size = new System.Drawing.Size(54, 17);
+            ShareBox.TabIndex = 0;
+            ShareBox.Text = "Share";
+            ShareBox.UseVisualStyleBackColor = true;
+            // 
+            // label4
+            // 
+            label4.AutoSize = true;
+            label4.Location = new System.Drawing.Point(3, 96);
+            label4.Name = "label4";
+            label4.Size = new System.Drawing.Size(47, 13);
+            label4.TabIndex = 6;
+            label4.Text = "Whitelist";
+            // 
+            // WhitelistText
+            // 
+            WhitelistText.Anchor = ((AnchorStyles)(((AnchorStyles.Top | AnchorStyles.Left)
+            | AnchorStyles.Right)));
+            WhitelistText.Location = new System.Drawing.Point(6, 114);
+            WhitelistText.Name = "WhitelistText";
+            WhitelistText.Size = new System.Drawing.Size(112, 20);
+            WhitelistText.TabIndex = 5;
+            // 
+            // WhitelistedBox
+            // 
+            WhitelistedBox.AutoSize = true;
+            WhitelistedBox.Location = new System.Drawing.Point(6, 76);
+            WhitelistedBox.Name = "WhitelistedBox";
+            WhitelistedBox.Size = new System.Drawing.Size(78, 17);
+            WhitelistedBox.TabIndex = 4;
+            WhitelistedBox.Text = "Whitelisted";
+            WhitelistedBox.UseVisualStyleBackColor = true;
+            // 
+            // checkBox1
+            // 
+            checkBox1.AutoSize = true;
+            checkBox1.Checked = true;
+            checkBox1.CheckState = CheckState.Checked;
+            checkBox1.Location = new System.Drawing.Point(6, 54);
+            checkBox1.Name = "checkBox1";
+            checkBox1.Size = new System.Drawing.Size(109, 17);
+            checkBox1.TabIndex = 3;
+            checkBox1.Text = "Public Registered";
+            checkBox1.UseVisualStyleBackColor = true;
+            // 
+            // FirstViewBox
+            // 
+            FirstViewBox.AutoSize = true;
+            FirstViewBox.Location = new System.Drawing.Point(6, 12);
+            FirstViewBox.Name = "FirstViewBox";
+            FirstViewBox.Size = new System.Drawing.Size(71, 17);
+            FirstViewBox.TabIndex = 2;
+            FirstViewBox.Text = "First View";
+            FirstViewBox.UseVisualStyleBackColor = true;
+            // 
+            // PublicBox
+            // 
+            PublicBox.AutoSize = true;
+            PublicBox.Checked = true;
+            PublicBox.CheckState = CheckState.Checked;
+            PublicBox.Location = new System.Drawing.Point(6, 32);
+            PublicBox.Name = "PublicBox";
+            PublicBox.Size = new System.Drawing.Size(55, 17);
+            PublicBox.TabIndex = 1;
+            PublicBox.Text = "Public";
+            PublicBox.UseVisualStyleBackColor = true;
+            // 
+            // SettingsForm
+            // 
+            ClientSize = new System.Drawing.Size(245, 167);
+            Controls.Add(SplitContainer);
+            Name = "SettingsForm";
+            SplitContainer.Panel1.ResumeLayout(false);
+            SplitContainer.Panel1.PerformLayout();
+            SplitContainer.Panel2.ResumeLayout(false);
+            SplitContainer.Panel2.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(SplitContainer)).EndInit();
+            SplitContainer.ResumeLayout(false);
+            ResumeLayout(false);
 
-            }
+        }
+
+        private void InitializeComponent()
+        {
+            SuspendLayout();
+            ResumeLayout(false);
+
         }
     }
-    
-    
+
 }
