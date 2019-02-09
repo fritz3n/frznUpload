@@ -80,5 +80,10 @@ namespace frznUpload.Client
             await Client.Logout();
             SetEnables();
         }
+
+        private void LoginForm_Load(object sender, EventArgs e)
+        {
+            this.AcceptButton = LoginButton;
+        }
     }
 }

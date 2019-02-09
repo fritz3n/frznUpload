@@ -66,7 +66,7 @@
             // 
             this.passBox.Location = new System.Drawing.Point(74, 42);
             this.passBox.Name = "passBox";
-            this.passBox.PasswordChar = '0';
+            this.passBox.PasswordChar = '•';
             this.passBox.Size = new System.Drawing.Size(142, 20);
             this.passBox.TabIndex = 3;
             // 
@@ -113,6 +113,7 @@
             this.Controls.Add(this.userBox);
             this.Name = "LoginForm";
             this.Text = "Login";
+            this.Load += new System.EventHandler(this.LoginForm_Load);
             this.ResumeLayout(false);
             this.PerformLayout();
 

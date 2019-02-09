@@ -35,6 +35,14 @@ namespace frznUpload.Client
             UploadTimer.AutoReset = true;
             UploadTimer.Enabled = false;
             UploadTimer.Elapsed += UploadTimer_Elapsed;
+
+            //Check if the client is logged in, if not -> Display the login form
+            if(client.LoggedIn == false)
+            {
+                loginForm.Owner = this;
+                loginForm.ControlBox = false;
+                loginForm.Show();
+            }
         }
 
         private async void UploadTimer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
