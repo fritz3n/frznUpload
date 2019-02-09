@@ -40,15 +40,16 @@ namespace frznUpload.Client
             await ActivateClient();
         }
 
-        public async Task Login(string username, string password)
+        public async Task<bool> Login(string username, string password)
         {
-            await RetryAsync(async () => await ActiveClient.AuthWithPass(username, password, Properties.Settings.Default.KeyFile));
+            LoggedIn = await RetryAsync(async () => await ActiveClient.AuthWithPass(username, password, Properties.Settings.Default.KeyFile), false);
+            return LoggedIn;
         }
 
         public async Task Logout()
         {
             File.Delete(Properties.Settings.Default.KeyFile);
-            await Retry(() => ActivateClient());
+            await RetryAsync(() => ActivateClient());
         }
 
         /// <summary>
@@ -99,13 +100,12 @@ namespace frznUpload.Client
             await ActiveClient.ConnectAsync(Properties.Settings.Default.Url, Properties.Settings.Default.Port);
             try
             {
-                await ActiveClient.AuthWithKey(Properties.Settings.Default.KeyFile);
-                LoggedIn = true;
+                LoggedIn = await ActiveClient.AuthWithKey(Properties.Settings.Default.KeyFile);
             }
             catch { }
         }
         
-        private T Retry<T>(Func<T> func, int maxRetry = 5)
+        private T Retry<T>(Func<T> func, bool ensureLogin = false, int maxRetry = 5)
         {
             ActiveTime = DateTime.Now;
             List<Exception> exceptions = new List<Exception>();
@@ -114,7 +114,7 @@ namespace frznUpload.Client
             {
                 try
                 {
-                    if (EnsureActivated())
+                    if (EnsureActivated(ensureLogin))
                         throw new UnauthorizedAccessException();
                     T returned = func();
                     return returned;
@@ -132,7 +132,7 @@ namespace frznUpload.Client
             throw new RetryException(exceptions, maxRetry);
         }
 
-        private async Task<T> RetryAsync<T>(Func<Task<T>> func, int maxRetry = 5)
+        private async Task<T> RetryAsync<T>(Func<Task<T>> func,bool ensureLogin = false ,int maxRetry = 5)
         {
             ActiveTime = DateTime.Now;
             List<Exception> exceptions = new List<Exception>();
@@ -141,12 +141,40 @@ namespace frznUpload.Client
             {
                 try
                 {
-                    if (await EnsureActivatedAsync())
+                    if (await EnsureActivatedAsync(ensureLogin))
                         throw new UnauthorizedAccessException();
                     Task<T> returned = func();
                     return await returned;
                 }
                 catch(UnauthorizedAccessException)
+                {
+                    throw;
+                }
+                catch (Exception e)
+                {
+                    exceptions.Add(e);
+                }
+            }
+
+            throw new RetryException(exceptions, maxRetry);
+        }
+
+        private async Task RetryAsync(Func<Task> func, bool ensureLogin = false, int maxRetry = 5)
+        {
+            ActiveTime = DateTime.Now;
+            List<Exception> exceptions = new List<Exception>();
+
+            for (int i = 0; i < maxRetry; i++)
+            {
+                try
+                {
+                    if (await EnsureActivatedAsync(ensureLogin))
+                        throw new UnauthorizedAccessException();
+                    Task returned = func();
+                    await returned;
+                    return;
+                }
+                catch (UnauthorizedAccessException)
                 {
                     throw;
                 }

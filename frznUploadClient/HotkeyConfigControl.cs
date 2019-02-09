@@ -7,7 +7,7 @@ using System.Windows.Forms;
 
 namespace frznUpload.Client
 {
-    class HotkeyConfigControl : GroupBox
+    partial class HotkeyConfigControl : GroupBox
     {
         private SplitContainer SplitContainer;
         private TextBox FormatBox;

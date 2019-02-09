@@ -22,6 +22,8 @@ namespace frznUpload.Client
         public bool IsAuthenticated { get; private set; }
         public bool Connected { get => Tcp.Connected; }
 
+        private bool disposed = false;
+
         public Client(string url, int port)
         {
             Connect(url, port);
@@ -40,6 +42,7 @@ namespace frznUpload.Client
 
         public void Connect(string url, int port)
         {
+            ThrowIfDisposed();
             Stopwatch stp = new Stopwatch();
             stp.Start();
             Tcp = new TcpClient();
@@ -61,6 +64,7 @@ namespace frznUpload.Client
 
         public async Task ConnectAsync(string url, int port)
         {
+            ThrowIfDisposed();
             Stopwatch stp = new Stopwatch();
             stp.Start();
             Tcp = new TcpClient();
@@ -82,12 +86,14 @@ namespace frznUpload.Client
 
         public void Disconnect()
         {
+            ThrowIfDisposed();
             mes?.Stop();
             Tcp?.Close();
         }
 
         public async Task<bool> AuthWithKey(string file)
         {
+            ThrowIfDisposed();
             try
             {
                 var chal = new Challenge();
@@ -135,6 +141,7 @@ namespace frznUpload.Client
 
         public async Task<bool> AuthWithPass(string username, string password, string file)
         {
+            ThrowIfDisposed();
             try
             {
                 var chal = new Challenge();
@@ -174,6 +181,7 @@ namespace frznUpload.Client
 
         public FileUploader UploadFile(string path, bool singleUse = false, string Filename = null)
         {
+            ThrowIfDisposed();
             try
             {
                 var up = new FileUploader(mes, this, path, singleUse, Filename);
@@ -195,6 +203,7 @@ namespace frznUpload.Client
 
         public async Task<string> ShareFile(string fileIdentifier, bool firstView = false, bool isPublic = true, bool publicRegistered = true, bool whitelisted = false, string whitelist = "")
         {
+            ThrowIfDisposed();
 
 
             mes.SendMessage(new Message(Message.MessageType.ShareRequest, false, fileIdentifier, firstView ? 1 : 0, isPublic ? 1 : 0, publicRegistered ? 1 : 0, whitelisted ? 1 : 0, whitelist));
@@ -206,6 +215,7 @@ namespace frznUpload.Client
 
         public async Task<List<RemoteFile>> GetFiles()
         {
+            ThrowIfDisposed();
             mes.SendMessage(new Message(Message.MessageType.FileListRequest));
             var m = await mes.WaitForMessageAsync(true, Message.MessageType.FileList);
 
@@ -232,6 +242,7 @@ namespace frznUpload.Client
 
         public async Task<List<RemoteFile>> GetShares(string fileIdentifier)
         {
+            ThrowIfDisposed();
             mes.SendMessage(new Message(Message.MessageType.FileListRequest));
             var m = await mes.WaitForMessageAsync(true, Message.MessageType.FileList);
 
@@ -272,9 +283,18 @@ namespace frznUpload.Client
             return false;
         }
 
+        private void ThrowIfDisposed()
+        {
+            if (disposed)
+                throw new ObjectDisposedException("Client");
+        }
+
         public void Dispose()
         {
+            if (disposed)
+                return;
             Disconnect();
+            disposed = true;
             Tcp?.Dispose();
             stream?.Dispose();
             mes?.Dispose();
