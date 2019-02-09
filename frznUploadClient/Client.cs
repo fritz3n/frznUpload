@@ -179,6 +179,26 @@ namespace frznUpload.Client
             }
         }
 
+        public async Task DeauthKey()
+        {
+            ThrowIfDisposed();
+            try
+            {
+                mes.SendMessage(new Message(Message.MessageType.DeauthRequest));
+                await mes.WaitForMessageAsync(true, Message.MessageType.DeauthSuccess);
+                IsAuthenticated = false;
+            }
+            catch (SequenceBreakException e)
+            {
+                mes.SendMessage(new Message(Message.MessageType.Sequence, true));
+                Console.WriteLine(e);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+            }
+        }
+
         public FileUploader UploadFile(string path, bool singleUse = false, string Filename = null)
         {
             ThrowIfDisposed();

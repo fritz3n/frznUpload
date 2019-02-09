@@ -19,6 +19,8 @@ namespace frznUpload.Shared
             AuthRequest, // server asks the client to authenticate a public key //NOT YET USED//
             Auth, // client authenticates a public key with a username and password
             AuthSuccess, // server approves of the authentication, the pub key is now authenticated but the client isnt yet
+            DeauthRequest,
+            DeauthSuccess,
             FileUploadRequest,
             FileUploadApproved,
             FileUpload,

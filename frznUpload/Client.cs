@@ -175,6 +175,11 @@ namespace frznUpload.Server
                     {
                         switch (message.Type)
                         {
+                            case Message.MessageType.DeauthRequest:
+                                db.Deauthenticate();
+                                IsAuthenticated = false;
+                                break;
+
                             case Message.MessageType.FileUploadRequest:
 
                                 (bool, string) returned = await FileHandler.ReceiveFile(message, mes, db, log);

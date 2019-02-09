@@ -26,6 +26,9 @@ namespace frznUpload.Shared
             {Message.MessageType.Ping, new List<int>{ Types.Int, Types.Int} },
             {Message.MessageType.Pong, new List<int>{ Types.Int, Types.Int} },
 
+            {Message.MessageType.DeauthRequest, new List<int>() },
+            {Message.MessageType.DeauthSuccess, new List<int>() },
+
             {Message.MessageType.Auth, new List<int>{Types.String, Types.String, Types.Raw, Types.Raw} },
             {Message.MessageType.AuthSuccess, new List<int>{ Types.String } },
             {Message.MessageType.Challenge, new List<int>{ Types.Raw } },

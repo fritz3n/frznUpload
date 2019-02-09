@@ -13,6 +13,7 @@ namespace frznUpload.Server
         MySqlConnection conn;
         int userId;
         public bool IsAuthenticated { get; private set; }
+        byte[] token = new byte[0];
 
         public DataBase()
         {
@@ -99,7 +100,22 @@ namespace frznUpload.Server
         {
             userId = conn.QuerySingle<int>("SELECT user_id FROM tokens WHERE signature = @tp", new { tp = token });
             conn.Execute("UPDATE tokens SET last_used = now() WHERE signature = @tp", new { tp = token });
+            this.token = token;
             IsAuthenticated = true;
+        }
+
+        public void Deauthenticate()
+        {
+            if (!IsAuthenticated)
+                return;
+
+            bool exists = conn.QuerySingle<int>("SELECT COUNT(*) FROM tokens WHERE signature = @sig", new { sig = token }) > 0;
+
+            if (exists)
+            {
+                conn.Execute("DELETE FROM tokens WHERE signature = @sig", new { sig = token });
+                IsAuthenticated = false;
+            }
         }
 
         public string HashPassword(string password, int id)

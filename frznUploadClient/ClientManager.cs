@@ -48,8 +48,7 @@ namespace frznUpload.Client
 
         public async Task Logout()
         {
-            File.Delete(Properties.Settings.Default.KeyFile);
-            await RetryAsync(() => ActivateClient());
+            await RetryAsync(() => ActiveClient.DeauthKey());
         }
 
         /// <summary>
