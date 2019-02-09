@@ -72,12 +72,25 @@ namespace frznUpload.Client
 
         private async void LoginButton_Click(object sender, EventArgs e)
         {
-            await Client.Login(userBox.Text, passBox.Text);
-            SetEnables();
-            if (!Client.LoggedIn)
+            if (userBox.Text == "" || passBox.Text == "")
             {
-                StatusText.Text = "Wrong Username/Password";
+                StatusText.Text = "Enter Username/Password";
                 SystemSounds.Hand.Play();
+            }
+            else
+            {
+                await Client.Login(userBox.Text, passBox.Text);
+                SetEnables();
+                if (!Client.LoggedIn)
+                {
+                    StatusText.Text = "Wrong Username/Password";
+                    SystemSounds.Hand.Play();
+                }
+                else
+                {
+                    SystemSounds.Question.Play();
+                    this.ControlBox = true;
+                }
             }
         }
 
