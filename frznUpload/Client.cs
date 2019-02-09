@@ -178,6 +178,7 @@ namespace frznUpload.Server
                             case Message.MessageType.DeauthRequest:
                                 db.Deauthenticate();
                                 IsAuthenticated = false;
+                                mes.SendMessage(new Message(Message.MessageType.DeauthSuccess));
                                 break;
 
                             case Message.MessageType.FileUploadRequest:
