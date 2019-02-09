@@ -48,7 +48,7 @@ namespace frznUpload.Client
 
         public async Task Logout()
         {
-            await RetryAsync(() => ActiveClient.DeauthKey());
+            await RetryAsync(async () => { await ActiveClient.DeauthKey(); await ActivateClient(); });
         }
 
         /// <summary>

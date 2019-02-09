@@ -38,7 +38,7 @@ namespace frznUpload.Shared
         {
             PingTimer.Interval = Math.Max(100, TurnaoroundTimes.Average() * 10);
 
-            if (WaitingPings.Count > 1000)
+            if (WaitingPings.Count > 10)
             {
                 mes.Stop(MessageHandler.DisconnectReason.Timeout);
                 Timeout?.Invoke(this, null);
@@ -51,7 +51,7 @@ namespace frznUpload.Shared
                 LastActivity = DateTime.Now;
                 var p = new Ping();
                 WaitingPings.Add(p);
-                //mes.SendMessage(p.Send());
+                mes.SendMessage(p.Send());
 #if DEBUG
                 //Console.WriteLine("<Ping");
 #endif
