@@ -32,7 +32,9 @@ namespace frznUpload.Client
         Client client;
         bool SingleUse;
 
-        public FileUploader(MessageHandler messageHandler, Client client, string path, bool singleUse = false)
+        public string Filename { get; private set; }
+
+        public FileUploader(MessageHandler messageHandler, Client client, string path, bool singleUse = false, string Filename = null)
         {
             mes = messageHandler;
             FilePath = path;
@@ -58,10 +60,14 @@ namespace frznUpload.Client
                 Open();
                 FileInfo info = new FileInfo(FilePath);
                 int size = (int)(info.Length > int.MaxValue ? throw new FileLoadException() : info.Length);
-                string filename = Path.GetFileNameWithoutExtension(info.FullName);
-                string extension = info.Extension.Replace(".", ""); ;
 
-                ChunkSize = size / 10;
+                if (Filename == null)
+                    Filename = info.Name;
+
+                string filename = Path.GetFileNameWithoutExtension(Filename);
+                string extension = Path.GetExtension(Filename).Replace(".", "");
+
+                ChunkSize = size / 100;
 
                 TotalSize = size;
 
@@ -78,6 +84,7 @@ namespace frznUpload.Client
                 while ((written = await file.ReadAsync(buffer, 0, ChunkSize)) > 0)
                 {
                     mes.SendMessage(new Message(Message.MessageType.FileUpload, false, written, buffer.Clone()));
+                    mes.Flush();
                     WrittenSize += written;
                 }
 
@@ -146,9 +153,11 @@ namespace frznUpload.Client
         }
     }
 
-    struct UploadContract
+    public struct UploadContract
     {
         public FileUploader Uploader { get; set; }
+        public string Path { get; set; }
+        public string Filename { get; set; }
 
         public bool Share { get; set; }
         public bool FirstView { get; set; }

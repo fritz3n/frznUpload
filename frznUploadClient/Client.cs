@@ -172,11 +172,11 @@ namespace frznUpload.Client
             }
         }
 
-        public FileUploader UploadFile(string path, bool singleUse = false)
+        public FileUploader UploadFile(string path, bool singleUse = false, string Filename = null)
         {
             try
             {
-                var up = new FileUploader(mes, this, path, singleUse);
+                var up = new FileUploader(mes, this, path, singleUse, Filename);
                 up.Start();
                 return up;
             }

@@ -145,7 +145,7 @@ namespace frznUpload.Shared
             {
                 short head = BitConverter.ToInt16(headBuffer, 0);
                 int length = 0b0011111111111111 & head;
-                FieldType type = (FieldType)((0b1100000000000000 & head) / 0b0100000000000000);
+                FieldType type = (FieldType)((0b1100000000000000 & head) >> 14);
 
                 byte[] data = new byte[length == 0b0011111111111111 ? mem.Length - mem.Position : length];
                 length = mem.Read(data, 0, data.Length);
@@ -226,7 +226,7 @@ namespace frznUpload.Shared
                     length = (ushort)data.Length;
                 }
                 
-                length = (ushort)(length | ((int)fieldType * 0b0100000000000000));
+                length = (ushort)(length | ((int)fieldType << 14));
                 var lengthArray = BitConverter.GetBytes(length);
                 
                 Array.Copy(lengthArray, 0, bytes, copied, 2);

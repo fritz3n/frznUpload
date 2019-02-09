@@ -13,6 +13,7 @@ namespace frznUpload.Client
         public string Filename { get; set; }
         public string File_extension { get; set; }
         public int Size { get; set; }
+        public string SizeString => BytesToString(Size);
         public long Tags { get; set; }
 
         public override string ToString()

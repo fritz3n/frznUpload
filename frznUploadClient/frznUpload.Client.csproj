@@ -62,9 +62,19 @@
   <ItemGroup>
     <Compile Include="Client.cs" />
     <Compile Include="ClientManager.cs" />
+    <Compile Include="Files\ClipboardProvider.cs" />
+    <Compile Include="Files\IFileProvider.cs" />
+    <Compile Include="Files\ScreenClip.cs" />
+    <Compile Include="Files\Screenshot.cs" />
+    <Compile Include="Files\TempFileHandler.cs" />
     <Compile Include="FileUploader.cs" />
-    <Compile Include="HotKey.cs" />
-    <Compile Include="HotkeyHandler.cs" />
+    <Compile Include="HotkeyConfigControl.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Hotkeys\HotKey.cs" />
+    <Compile Include="Hotkeys\HotkeyConfig.cs" />
+    <Compile Include="Hotkeys\HotkeyHandler.cs" />
+    <Compile Include="Hotkeys\HotkeyContainer.cs" />
     <Compile Include="Login.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -82,6 +92,15 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RemoteFile.cs" />
+    <Compile Include="Settings.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Settings.Designer.cs">
+      <DependentUpon>Settings.cs</DependentUpon>
+    </Compile>
+    <EmbeddedResource Include="HotkeyConfigControl.resx">
+      <DependentUpon>HotkeyConfigControl.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Login.resx">
       <DependentUpon>Login.cs</DependentUpon>
     </EmbeddedResource>
@@ -98,6 +117,9 @@
       <DependentUpon>Resources.resx</DependentUpon>
       <DesignTime>True</DesignTime>
     </Compile>
+    <EmbeddedResource Include="Settings.resx">
+      <DependentUpon>Settings.cs</DependentUpon>
+    </EmbeddedResource>
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>

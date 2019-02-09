@@ -17,7 +17,7 @@ namespace frznUpload.Client
 
         public IconHandler()
         {
-            MenuItem consoleMenuItem = new MenuItem("Console", new EventHandler(ShowConsole));
+            MenuItem consoleMenuItem = new MenuItem("Show", new EventHandler(Show));
             MenuItem configMenuItem = new MenuItem("Configuration", new EventHandler(ShowConfig));
             MenuItem exitMenuItem = new MenuItem("Exit", new EventHandler(Exit));
 
@@ -36,17 +36,18 @@ namespace frznUpload.Client
 
         void ShowConfig(object sender, EventArgs e)
         {
-            throw new NotImplementedException();
+            mainForm.ShowLogin();
         }
 
         void Exit(object sender, EventArgs e)
         {
-            throw new NotImplementedException();
+            Application.Exit();
+            Environment.Exit(0);
         }
 
-        void ShowConsole(object sender, EventArgs e)
+        void Show(object sender, EventArgs e)
         {
-            throw new NotImplementedException();
+            mainForm.Show();
         }
 
         void LeftClick(object sender, MouseEventArgs e)

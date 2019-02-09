@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace frznUpload.Client
+namespace frznUpload.Client.Hotkey
 {
     public sealed class KeyboardHook : IDisposable
     {
@@ -127,14 +127,14 @@ namespace frznUpload.Client
     {
         static KeyboardHook hook = new KeyboardHook();
 
-        object Tag { get; set; }
+        public object Tag { get; set; }
         public ModifierKeys Modifier { get; private set; }
         public Keys Key { get; private set; }
         public bool Registered { get; private set; } = false;
         
         int Id { get; set; } = -1;
 
-        event EventHandler<EventArgs> Pressed;
+        public event EventHandler<EventArgs> Pressed;
 
         public HotKey(ModifierKeys modifier, Keys key)
         {

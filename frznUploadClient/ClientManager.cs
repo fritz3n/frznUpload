@@ -56,15 +56,15 @@ namespace frznUpload.Client
         /// </summary>
         /// <param name="path"> The path of the file</param>
         /// <returns></returns>
-        public async Task<FileUploader> UploadFile(string path)
+        public async Task<FileUploader> UploadFile(string path, string Filename = null)
         {
             return await RetryAsync(async () => {
                 var c = await GetNewClient();
-                return c.UploadFile(path, true);
+                return c.UploadFile(path, true, Filename);
                 }
             );
         }
-
+        
         public async Task<string> ShareFile(string fileIdentifier, bool firstView = false, bool isPublic = true, bool publicRegistered = true, bool whitelisted = false, string whitelist = "")
         {
             return await RetryAsync(() => ActiveClient.ShareFile(fileIdentifier, firstView, isPublic, publicRegistered, whitelisted, whitelist));

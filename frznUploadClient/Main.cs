@@ -15,10 +15,13 @@ namespace frznUpload.Client
     {
         private bool showing;
         private LoginForm loginForm;
+        private SettingsForm settingsForm;
         private ClientManager Client;
-        bool Uploading = false;
+        public bool Uploading { get; private set; } = false;
+        public event EventHandler UploadFinished;
         private UploadContract FileUpload;
         private System.Timers.Timer UploadTimer = new System.Timers.Timer(100);
+        private RemoteFile RightClicked = null;
 
         public MainForm(ClientManager client)
         {
@@ -27,6 +30,7 @@ namespace frznUpload.Client
             Shown += MainForm_Shown;
             FormClosing += MainForm_FormClosing;
             loginForm = new LoginForm(Client);
+            settingsForm = new SettingsForm();
 
             UploadTimer.AutoReset = true;
             UploadTimer.Enabled = false;
@@ -59,6 +63,8 @@ namespace frznUpload.Client
 
                     LinkText.Invoke(new Action(() => LinkText.Text = "fritzen.tk/view.php?id=" + s));
                 }
+
+                UploadFinished?.Invoke(this, EventArgs.Empty);
             }
         }
 
@@ -98,6 +104,12 @@ namespace frznUpload.Client
             loginForm.Show();
         }
 
+        public void ShowLogin()
+        {
+            Show();
+            loginForm.Show();
+        }
+
         private void BrowseButton_Click(object sender, EventArgs e)
         {
             if (openFileDialog.ShowDialog() == DialogResult.OK)
@@ -126,12 +138,13 @@ namespace frznUpload.Client
         {
             if (File.Exists(PathText.Text) && !Uploading)
             {
-                StatusLabel.Text = "Uploading: " + Path.GetFileName(PathText.Text);
-                Uploading = true;
-                var u = await Client.UploadFile(PathText.Text);
-                FileUpload = new UploadContract
+                var u = await Client.UploadFile(PathText.Text, FilenameText.Text);
+                var c  = new UploadContract
                 {
                     Uploader = u,
+                    Path = PathText.Text,
+                    Filename = FilenameText.Text,
+
                     Share = ShareBox.Checked,
                     FirstView = FirstViewBox.Checked,
                     Public = PublicBox.Checked,
@@ -139,13 +152,65 @@ namespace frznUpload.Client
                     Whitelisted = WhitelistedBox.Checked,
                     Whitelist = WhitelistText.Text
                 };
-                UploadTimer.Start();
+
+                StartUpload(c);
             }
+        }
+
+        public void StartUpload(UploadContract contract)
+        {
+            StatusLabel.Text = "Uploading: " + contract.Filename;
+            Uploading = true;
+            FileUpload = contract;
+            UploadTimer.Start();
         }
 
         private void CopyButton_Click(object sender, EventArgs e)
         {
             Clipboard.SetText(LinkText.Text);
+        }
+
+        private void Tab_Selecting(object sender, TabControlCancelEventArgs e)
+        {
+            if(e.TabPage == FileTab)
+            {
+                var t = UpdateFileList();
+            }
+        }
+
+        private async Task UpdateFileList()
+        {
+            FileView.Items.Clear();
+            var l = await Client.GetFiles();
+
+            foreach(RemoteFile file in l)
+            {
+                var Item = new ListViewItem(new string[] { file.Filename + "." + file.File_extension, file.SizeString });
+                Item.Tag = file;
+                if (FileView.InvokeRequired)
+                    FileView.Invoke(new Action(() => FileView.Items.Add(Item)));
+                else
+                    FileView.Items.Add(Item);
+            }
+
+        }
+
+        private void FileView_MouseClick(object sender, MouseEventArgs e)
+        {
+            if(e.Button == MouseButtons.Right)
+            {
+                contextMenu.Show(FileView, e.Location);
+            }
+        }
+
+        private void deleteToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void SettingsButton_Click(object sender, EventArgs e)
+        {
+            settingsForm.Show();
         }
     }
 }

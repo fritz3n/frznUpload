@@ -11,5 +11,8 @@
     <Setting Name="Port" Type="System.Int16" Scope="User">
       <Value Profile="(Default)">22340</Value>
     </Setting>
+    <Setting Name="Hotkeys" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
   </Settings>
 </SettingsFile>

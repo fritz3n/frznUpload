@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             this.StatusLabel = new System.Windows.Forms.Label();
             this.ProgressBar = new System.Windows.Forms.ProgressBar();
             this.AccountButton = new System.Windows.Forms.Button();
@@ -52,14 +53,22 @@
             this.FilenameText = new System.Windows.Forms.TextBox();
             this.BrowseButton = new System.Windows.Forms.Button();
             this.label2 = new System.Windows.Forms.Label();
-            this.tabPage2 = new System.Windows.Forms.TabPage();
+            this.FileTab = new System.Windows.Forms.TabPage();
+            this.FileView = new System.Windows.Forms.ListView();
+            this.FilenameHeader = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.SizeHeader = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.openFileDialog = new System.Windows.Forms.OpenFileDialog();
+            this.contextMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.deleteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.SettingsButton = new System.Windows.Forms.Button();
             this.Tab.SuspendLayout();
             this.UploadTab.SuspendLayout();
             this.tableLayoutPanel.SuspendLayout();
             this.ShareGroupBox.SuspendLayout();
             this.SharePanel.SuspendLayout();
             this.FileGroupBox.SuspendLayout();
+            this.FileTab.SuspendLayout();
+            this.contextMenu.SuspendLayout();
             this.SuspendLayout();
             // 
             // StatusLabel
@@ -74,19 +83,19 @@
             // 
             this.ProgressBar.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.ProgressBar.Location = new System.Drawing.Point(152, 425);
+            this.ProgressBar.Location = new System.Drawing.Point(167, 420);
             this.ProgressBar.Name = "ProgressBar";
-            this.ProgressBar.Size = new System.Drawing.Size(498, 16);
+            this.ProgressBar.Size = new System.Drawing.Size(466, 23);
             this.ProgressBar.TabIndex = 1;
             // 
             // AccountButton
             // 
             this.AccountButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.AccountButton.Location = new System.Drawing.Point(679, 420);
+            this.AccountButton.Location = new System.Drawing.Point(639, 420);
             this.AccountButton.Name = "AccountButton";
-            this.AccountButton.Size = new System.Drawing.Size(33, 23);
+            this.AccountButton.Size = new System.Drawing.Size(68, 23);
             this.AccountButton.TabIndex = 2;
-            this.AccountButton.Text = "Ac";
+            this.AccountButton.Text = "Account";
             this.AccountButton.UseVisualStyleBackColor = true;
             this.AccountButton.Click += new System.EventHandler(this.AccountButton_Click);
             // 
@@ -95,12 +104,13 @@
             this.Tab.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.Tab.Controls.Add(this.UploadTab);
-            this.Tab.Controls.Add(this.tabPage2);
+            this.Tab.Controls.Add(this.FileTab);
             this.Tab.Location = new System.Drawing.Point(13, 13);
             this.Tab.Name = "Tab";
             this.Tab.SelectedIndex = 0;
             this.Tab.Size = new System.Drawing.Size(775, 401);
             this.Tab.TabIndex = 3;
+            this.Tab.Selecting += new System.Windows.Forms.TabControlCancelEventHandler(this.Tab_Selecting);
             // 
             // UploadTab
             // 
@@ -337,25 +347,77 @@
             this.label2.TabIndex = 3;
             this.label2.Text = "Filename";
             // 
-            // tabPage2
+            // FileTab
             // 
-            this.tabPage2.BackColor = System.Drawing.SystemColors.Control;
-            this.tabPage2.Location = new System.Drawing.Point(4, 22);
-            this.tabPage2.Name = "tabPage2";
-            this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage2.Size = new System.Drawing.Size(767, 375);
-            this.tabPage2.TabIndex = 1;
-            this.tabPage2.Text = "tabPage2";
+            this.FileTab.BackColor = System.Drawing.SystemColors.Control;
+            this.FileTab.Controls.Add(this.FileView);
+            this.FileTab.Location = new System.Drawing.Point(4, 22);
+            this.FileTab.Name = "FileTab";
+            this.FileTab.Padding = new System.Windows.Forms.Padding(3);
+            this.FileTab.Size = new System.Drawing.Size(767, 375);
+            this.FileTab.TabIndex = 1;
+            this.FileTab.Text = "Files";
+            // 
+            // FileView
+            // 
+            this.FileView.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.FilenameHeader,
+            this.SizeHeader});
+            this.FileView.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.FileView.FullRowSelect = true;
+            this.FileView.Location = new System.Drawing.Point(3, 3);
+            this.FileView.Name = "FileView";
+            this.FileView.Size = new System.Drawing.Size(761, 369);
+            this.FileView.Sorting = System.Windows.Forms.SortOrder.Descending;
+            this.FileView.TabIndex = 0;
+            this.FileView.UseCompatibleStateImageBehavior = false;
+            this.FileView.View = System.Windows.Forms.View.Details;
+            this.FileView.MouseClick += new System.Windows.Forms.MouseEventHandler(this.FileView_MouseClick);
+            // 
+            // FilenameHeader
+            // 
+            this.FilenameHeader.Text = "Filename";
+            this.FilenameHeader.Width = 465;
+            // 
+            // SizeHeader
+            // 
+            this.SizeHeader.Text = "Size";
+            this.SizeHeader.Width = 122;
             // 
             // openFileDialog
             // 
             this.openFileDialog.FileName = "openFileDialog";
+            // 
+            // contextMenu
+            // 
+            this.contextMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.deleteToolStripMenuItem});
+            this.contextMenu.Name = "contextMenu";
+            this.contextMenu.Size = new System.Drawing.Size(108, 26);
+            // 
+            // deleteToolStripMenuItem
+            // 
+            this.deleteToolStripMenuItem.Name = "deleteToolStripMenuItem";
+            this.deleteToolStripMenuItem.Size = new System.Drawing.Size(107, 22);
+            this.deleteToolStripMenuItem.Text = "Delete";
+            this.deleteToolStripMenuItem.Click += new System.EventHandler(this.deleteToolStripMenuItem_Click);
+            // 
+            // SettingsButton
+            // 
+            this.SettingsButton.Location = new System.Drawing.Point(713, 420);
+            this.SettingsButton.Name = "SettingsButton";
+            this.SettingsButton.Size = new System.Drawing.Size(75, 23);
+            this.SettingsButton.TabIndex = 4;
+            this.SettingsButton.Text = "Settings";
+            this.SettingsButton.UseVisualStyleBackColor = true;
+            this.SettingsButton.Click += new System.EventHandler(this.SettingsButton_Click);
             // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 450);
+            this.Controls.Add(this.SettingsButton);
             this.Controls.Add(this.Tab);
             this.Controls.Add(this.AccountButton);
             this.Controls.Add(this.ProgressBar);
@@ -372,6 +434,8 @@
             this.SharePanel.PerformLayout();
             this.FileGroupBox.ResumeLayout(false);
             this.FileGroupBox.PerformLayout();
+            this.FileTab.ResumeLayout(false);
+            this.contextMenu.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -385,7 +449,7 @@
         private System.Windows.Forms.TabPage UploadTab;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.TextBox PathText;
-        private System.Windows.Forms.TabPage tabPage2;
+        private System.Windows.Forms.TabPage FileTab;
         private System.Windows.Forms.TextBox FilenameText;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Button BrowseButton;
@@ -404,6 +468,12 @@
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.TextBox LinkText;
         private System.Windows.Forms.Button CopyButton;
+        private System.Windows.Forms.ListView FileView;
+        private System.Windows.Forms.ColumnHeader FilenameHeader;
+        private System.Windows.Forms.ColumnHeader SizeHeader;
+        private System.Windows.Forms.ContextMenuStrip contextMenu;
+        private System.Windows.Forms.ToolStripMenuItem deleteToolStripMenuItem;
+        private System.Windows.Forms.Button SettingsButton;
     }
 }
 
