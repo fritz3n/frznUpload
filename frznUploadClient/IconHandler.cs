@@ -29,7 +29,7 @@ namespace frznUpload.Client
             notifyIcon.Visible = true;
 
             Client = new ClientManager();
-            Task.Run(() => Client.Connect());
+            Client.Connect().Wait();
 
             mainForm = new MainForm(Client);
 

@@ -106,7 +106,7 @@ namespace frznUpload.Server
 
                     if (message.IsError)
                     {
-                        log.WriteLine(message);
+                        log.WriteLine("Encountered a remote error:\n" + message);
                         stream.Close();
                     }
 
@@ -179,6 +179,9 @@ namespace frznUpload.Server
                                 db.Deauthenticate();
                                 IsAuthenticated = false;
                                 mes.SendMessage(new Message(Message.MessageType.DeauthSuccess));
+
+                                log.WriteLine("Deautheticated");
+
                                 break;
 
                             case Message.MessageType.FileUploadRequest:

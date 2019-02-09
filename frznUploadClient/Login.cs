@@ -52,6 +52,7 @@ namespace frznUpload.Client
                 BringToFront();
                 Activate();
             }
+            SetEnables();
         }
 
         private void SetEnables()
