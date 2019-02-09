@@ -32,6 +32,12 @@ namespace frznUpload.Client
             Task.Run(() => Client.Connect());
 
             mainForm = new MainForm(Client);
+
+            //if client is not logged in -> show a login prompt
+            if(Client.LoggedIn == false)
+            {
+                mainForm.Show();
+            }
         }
 
         void ShowConfig(object sender, EventArgs e)
