@@ -71,6 +71,9 @@
     <Compile Include="HotkeyConfigControl.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="HotkeyConfigControlDesigner.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Hotkeys\HotKey.cs" />
     <Compile Include="Hotkeys\HotkeyConfig.cs" />
     <Compile Include="Hotkeys\HotkeyHandler.cs" />
