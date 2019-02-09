@@ -325,7 +325,7 @@ namespace frznUpload.Shared
             var m = WaitForMessage();
 
             if (m.Type != expected)
-                throw new SequenceBreakException(expected, m.Type);
+                throw new SequenceBreakException(expected, m.Type, m);
 
             return m;
         }
@@ -355,7 +355,7 @@ namespace frznUpload.Shared
             var m = await WaitForMessageAsync();
 
             if (m.Type != expected)
-                throw new SequenceBreakException(expected, m.Type);
+                throw new SequenceBreakException(expected, m.Type, m);
 
             return m;
         }
@@ -402,12 +402,14 @@ namespace frznUpload.Shared
     {
         public Message.MessageType ExpectedType {get; private set;}
         public Message.MessageType ReceivedType {get; private set;}
+        public Message ReceivedMessage { get; private set; }
         public override string Message => ToString();
 
-        public SequenceBreakException(Message.MessageType expectedType, Message.MessageType receivedType)
+        public SequenceBreakException(Message.MessageType expectedType, Message.MessageType receivedType, Message receivedMessage)
         {
             ExpectedType = expectedType;
             ReceivedType = receivedType;
+            ReceivedMessage = receivedMessage;
         }
 
         public override string ToString()
