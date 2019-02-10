@@ -229,7 +229,7 @@ namespace frznUpload.Server
         /// </summary>
         public string GetFileName(string file_identifier)
         {
-            return conn.QuerySingle<string>("SELECT filename FROM files WHERE files.filename=@file_identifier", new { file_identifier = file_identifier });
+            return conn.QuerySingle<string>("SELECT filename FROM files WHERE identifier=@file_identifier", new { file_identifier });
         }
 
         /// <summary>
@@ -248,7 +248,7 @@ namespace frznUpload.Server
         /// <param name="file_identifier">the file_identifier to be checked</param>
         public bool UserOwnsFile(string file_identifier)
         {
-            return GetOwnerOfFile("file_identifier") == userId; 
+            return GetOwnerOfFile(file_identifier) == userId; 
         }
 
         /// <summary>

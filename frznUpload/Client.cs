@@ -257,14 +257,14 @@ namespace frznUpload.Server
                                     //delete all database records of it
                                     db.DeleteFile(file_identifier);
                                     mes.SendMessage(new Message(Message.MessageType.DeleteFile, false, ""));
-                                    log.WriteLine("Deleted " + file_identifier);
+                                    log.WriteLine("Deleted file: " + file_identifier.Substring(0, 10));
                                 }
                                 catch(Exception e){
                                     if (e.GetType() != typeof(UnauthorizedAccessException) && e.GetType() != typeof(ArgumentException))
                                     {
                                         log.WriteLine(e);
                                     }
-                                    log.WriteLine("Tryed to delete " + file_identifier);
+                                    log.WriteLine("Failed to delete file: " + file_identifier.Substring(0, 10));
                                     mes.SendMessage(new Message(Message.MessageType.DeleteFile, true, "Error deleting"));
                                 }
                                 break;
