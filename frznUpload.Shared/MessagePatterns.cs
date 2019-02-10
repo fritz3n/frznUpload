@@ -52,6 +52,9 @@ namespace frznUpload.Shared
             {Message.MessageType.ShareListRequest, new List<int>( Types.String ) },
             {Message.MessageType.ShareList, new List<int>{ Types.String, Types.Int | Control.Indexer ,  Types.Message | (int)Message.MessageType.ShareInfo << 4} },
 
+            //Delete Share                                    file_identifier
+            {Message.MessageType.DeleteFile, new List<int> { Types.String } },
+
             //                                                        file_identifier, First_view,Public,Public_registered,Whitelisted,Whitelist
             {Message.MessageType.ShareInfo, new List<int>{Types.String, Types.String, Types.Int, Types.Int, Types.Int, Types.Int, Types.String} },
 

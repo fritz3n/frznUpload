@@ -220,6 +220,55 @@ namespace frznUpload.Server
             }
         }
 
+        /// <summary>
+        /// Gets a filename for a given identifier
+        /// </summary>
+        public string GetFileName(string file_identifier)
+        {
+            return conn.QuerySingle<string>("SELECT filename FROM files WHERE files.filename=@file_identifier", file_identifier);
+        }
+
+        /// <summary>
+        /// Gets the userId of a file
+        /// </summary>
+        /// <param name="file_identifier">The file_identifier to be used</param>
+        /// <returns>the userId</returns>
+        public int GetOwnerOfFile(string file_identifier)
+        {
+            return conn.QuerySingle<int>("SELECT user_id FROM files WHERE identifier=@file_identifier", file_identifier);
+        }
+
+        /// <summary>
+        /// Checks if the user owns this file
+        /// </summary>
+        /// <param name="file_identifier">the file_identifier to be checked</param>
+        public bool UserOwnsFile(string file_identifier)
+        {
+            return GetOwnerOfFile("file_identifier") == userId; 
+        }
+
+        /// <summary>
+        /// Deletes a file (Including from the fs) and all shares with it
+        /// and sends a Succsess message.
+        /// </summary>
+        /// <param name="share">The file_identifier to be delted</param>
+        /// <exception cref="UnauthorizedAccessException">Thrown when the user is not the owner of this file</exception>
+        public void DeleteFile(string file_identifier)
+        {
+            ThrowIfNotAuthenticated();
+            if (UserOwnsFile(file_identifier))
+            {
+                //deletes all the shares for that file
+                conn.Execute("DELETE FROM shares WHERE shares.file_identifier=@id", file_identifier);
+                //deletes the file
+                conn.Execute("DELETE FROM files WHERE identifier=@file_identifier", file_identifier);
+            }
+            else
+            {
+                throw new UnauthorizedAccessException("The user dose not own this share");
+            }
+        }
+
 
     }       
 }

@@ -12,7 +12,7 @@ namespace frznUpload.Server
         const string directory = "../files/";
         const int chunksSize = 16384;
 
-        static public async Task<(bool, string)> ReceiveFile(Message message, MessageHandler mes, DataBase db, Logger log)
+        public static async Task<(bool, string)> ReceiveFile(Message message, MessageHandler mes, DataBase db, Logger log)
         {
             int size = message[2];
             int written = 0;
@@ -104,6 +104,16 @@ namespace frznUpload.Server
             }
 
             return (!error, identifier);
+        }
+
+        /// <summary>
+        /// Deletes a File from the fs
+        /// </summary>
+        /// <param name="file_name">the file to be deleted</param>
+        public static void DeleteFile(string file_name)
+        {
+            string localFileName = directory + file_name + ".file";
+            File.Delete(localFileName);
         }
     }
 }

@@ -213,9 +213,21 @@ namespace frznUpload.Client
             }
         }
 
-        private void deleteToolStripMenuItem_Click(object sender, EventArgs e)
+        private async void deleteToolStripMenuItem_ClickAsync(object sender, EventArgs e)
         {
-
+            foreach(ListViewItem sel in FileView.SelectedItems)
+            {
+                try
+                {
+                    string id = ((RemoteFile)(sel.Tag)).Identifier;
+                    await Client.DeleteFile(id);
+                }
+                catch(Exception ex)
+                {
+                    MessageBox.Show("Error deleting file " + sel.SubItems[0]);
+                }
+            }
+            await UpdateFileList();
         }
 
         private void SettingsButton_Click(object sender, EventArgs e)

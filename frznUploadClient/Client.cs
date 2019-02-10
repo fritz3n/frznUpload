@@ -287,6 +287,15 @@ namespace frznUpload.Client
             return list;
         }
 
+        /// <summary>
+        /// Asks the server to delete a file
+        /// </summary>
+        public async Task DeleteFileAsync(string file_identifier)
+        {
+            mes.SendMessage(new Message(Message.MessageType.DeleteFile, false, file_identifier));
+            await mes.WaitForMessageAsync(true, Message.MessageType.DeleteFile);
+        }
+
 
         private static bool ValidateServerCertificate(
               object sender,

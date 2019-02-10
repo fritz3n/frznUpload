@@ -1,4 +1,5 @@
-﻿using System;
+﻿using frznUpload.Shared;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -74,6 +75,12 @@ namespace frznUpload.Client
         {
             return await RetryAsync(() => ActiveClient.GetFiles());
         }
+
+        public async Task DeleteFile(string fileIdentifier)
+        {
+            await RetryAsync(() => ActiveClient.DeleteFileAsync(fileIdentifier));
+        }
+
         
         public void Disconnect()
         {
