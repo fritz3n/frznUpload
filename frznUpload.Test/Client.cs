@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace frznUpload.Test
 {
-    class Client
+    class Client : IDisposable
     {
         private TcpClient Tcp;
         private SslStream stream;
@@ -217,6 +217,13 @@ namespace frznUpload.Test
 
             // Do not allow this client to communicate with unauthenticated servers.
             return false;
+        }
+
+        public void Dispose()
+        {
+            Tcp?.Dispose();
+            stream?.Dispose();
+            mes?.Dispose();
         }
     }
 }

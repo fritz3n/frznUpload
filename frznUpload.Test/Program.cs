@@ -58,7 +58,7 @@ namespace frznUpload.Test
             //{
             string fileId = null;
 
-            var up =  cli.UploadFile(path);
+            var up = cli.UploadFile(path);
 
             while (true)
             {

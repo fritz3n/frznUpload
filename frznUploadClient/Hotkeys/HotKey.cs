@@ -180,24 +180,15 @@ namespace frznUpload.Client.Hotkey
     /// </summary>
     public class KeyPressedEventArgs : EventArgs
     {
-        private ModifierKeys _modifier;
-        private Keys _key;
-
         internal KeyPressedEventArgs(ModifierKeys modifier, Keys key)
         {
-            _modifier = modifier;
-            _key = key;
+            Modifier = modifier;
+            Key = key;
         }
 
-        public ModifierKeys Modifier
-        {
-            get { return _modifier; }
-        }
+        public ModifierKeys Modifier { get; }
 
-        public Keys Key
-        {
-            get { return _key; }
-        }
+        public Keys Key { get; }
     }
 
     /// <summary>

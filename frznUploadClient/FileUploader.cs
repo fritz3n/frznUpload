@@ -145,6 +145,7 @@ namespace frznUpload.Client
         {
             Close();
             tokenSource.Dispose();
+            GC.SuppressFinalize(this);
         }
 
         ~FileUploader()

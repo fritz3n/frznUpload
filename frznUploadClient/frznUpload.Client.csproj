@@ -68,6 +68,7 @@
     <Compile Include="Files\Screenshot.cs" />
     <Compile Include="Files\TempFileHandler.cs" />
     <Compile Include="FileUploader.cs" />
+    <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="HotkeyConfigControl.cs">
       <SubType>Component</SubType>
     </Compile>
