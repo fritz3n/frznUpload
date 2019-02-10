@@ -367,7 +367,9 @@ namespace frznUpload.Shared
             using (MD5CryptoServiceProvider md5 = new MD5CryptoServiceProvider())
             {
                 string[] names = Enum.GetNames(T);
-                int[] values = Enum.GetValues(T).Cast<int>().ToArray();
+                int[] values = (from object obj in Enum.GetValues(T)
+                                select (int)(Message.MessageType)obj)
+                                .ToArray();
 
                 string hashString = string.Concat(names) + string.Concat(values);
 
