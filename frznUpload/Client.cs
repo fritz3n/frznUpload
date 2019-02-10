@@ -110,7 +110,7 @@ namespace frznUpload.Server
                         stream.Close();
                     }
 
-
+                    #region user is not authed
                     if (!IsAuthenticated)
                     {
                         switch (message.Type)
@@ -171,6 +171,7 @@ namespace frznUpload.Server
                                 break;
                         }
                     }
+                    #endregion
                     else
                     {
                         switch (message.Type)
@@ -246,6 +247,20 @@ namespace frznUpload.Server
 
                                 log.WriteLine("Created a share: " + id);
 
+                                break;
+                            case Message.MessageType.DeleteFile:
+                                try
+                                {
+                                    string file_identifier = message.Fields[0];
+                                    //delete the file from the fs
+                                    FileHandler.DeleteFile(db.GetFileName(file_identifier));
+                                    //delete all database records of it
+                                    db.DeleteFile(file_identifier);
+                                    mes.SendMessage(new Message(Message.MessageType.DeleteFile, false, ""));
+                                }
+                                catch{
+                                    mes.SendMessage(new Message(Message.MessageType.DeleteFile, true, "Error deleting"));
+                                }
                                 break;
 
                             default:
