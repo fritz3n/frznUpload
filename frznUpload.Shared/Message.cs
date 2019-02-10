@@ -10,6 +10,7 @@ namespace frznUpload.Shared
     {
         public enum MessageType : byte
         {
+            Version,
             Ping,
             Pong,
             ChallengeRequest, // client requests a challenge to prove ownership of an authenticated public key
@@ -35,7 +36,6 @@ namespace frznUpload.Shared
             ShareList, // A list of shareinfo messages
             ShareInfo,
             DeleteFile,
-            Version,
             Sequence, // Used for a sequence error message, when the wrong message type is received
             None // General Message type, Mainly used for Errors
         }

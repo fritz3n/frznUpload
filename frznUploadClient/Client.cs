@@ -60,6 +60,15 @@ namespace frznUpload.Client
             mes = new MessageHandler(Tcp, stream);
             mes.Start();
             mes.OnDisconnect += OnDisconnect;
+
+            mes.SendMessage(new Message(Message.MessageType.Version, false, MessageHandler.Version));
+            var m = mes.WaitForMessage(true, Message.MessageType.Version);
+
+            if (m[0] != MessageHandler.Version)
+            {
+                Dispose();
+                throw new InvalidOperationException("Server version does not match Client version");
+            }
         }
 
         public async Task ConnectAsync(string url, int port)
@@ -82,6 +91,15 @@ namespace frznUpload.Client
             mes = new MessageHandler(Tcp, stream);
             mes.Start();
             mes.OnDisconnect += OnDisconnect;
+
+            mes.SendMessage(new Message(Message.MessageType.Version, false, MessageHandler.Version));
+            var m = await mes.WaitForMessageAsync(true, Message.MessageType.Version);
+
+            if(m[0] != MessageHandler.Version)
+            {
+                Dispose();
+                throw new InvalidOperationException("Server version does not match Client version");
+            }
         }
 
         public void Disconnect()

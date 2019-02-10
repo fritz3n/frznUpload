@@ -29,7 +29,24 @@ namespace frznUpload.Client
             notifyIcon.Visible = true;
 
             Client = new ClientManager();
-            Client.Connect().Wait();
+
+            try
+            {
+                Client.Connect().Wait();
+            }catch(AggregateException ex)
+            {
+                MessageBox.Show("Couldn´t connect:\n" + ex.InnerException.Message);
+
+                Exit();
+                return;
+            }
+            catch(Exception e)
+            {
+                MessageBox.Show("Couldn´t connect:\n" + e.Message);
+
+                Exit();
+                return;
+            }
 
             mainForm = new MainForm(Client);
 
@@ -46,6 +63,11 @@ namespace frznUpload.Client
         }
 
         void Exit(object sender, EventArgs e)
+        {
+            Exit();
+        }
+
+        void Exit()
         {
             Application.Exit();
             Environment.Exit(0);

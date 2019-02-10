@@ -72,6 +72,17 @@ namespace frznUpload.Server
         {
             try
             {
+                mes.SendMessage(new Message(Message.MessageType.Version, false, MessageHandler.Version));
+                var m = mes.WaitForMessage(true, Message.MessageType.Version);
+
+                log.WriteLine("Client Version: " + m[0]);
+
+                if (m[0] != MessageHandler.Version)
+                {
+                    log.WriteLine("Client Version does not match Server version: " + m[0]);
+                    throw new InvalidOperationException("Server version does not match Client version");
+                }
+
                 while (true)
                 {
                     Message message;
@@ -126,7 +137,7 @@ namespace frznUpload.Server
                                 }
                                 
                                 mes.SendMessage(new Message(Message.MessageType.Challenge, false, chal.GenerateChallenge(8)));
-                                var m = mes.WaitForMessage(true, Message.MessageType.ChallengeResponse);
+                                m = mes.WaitForMessage(true, Message.MessageType.ChallengeResponse);
                                 
                                 bool auth = chal.ValidateChallenge(m[0]);
 
@@ -259,7 +270,8 @@ namespace frznUpload.Server
                                     mes.SendMessage(new Message(Message.MessageType.DeleteFile, false, ""));
                                     log.WriteLine("Deleted file: " + file_identifier.Substring(0, 10));
                                 }
-                                catch(Exception e){
+                                catch(Exception e)
+                                {
                                     if (e.GetType() != typeof(UnauthorizedAccessException) && e.GetType() != typeof(ArgumentException))
                                     {
                                         log.WriteLine(e);
