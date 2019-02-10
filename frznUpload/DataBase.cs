@@ -229,7 +229,7 @@ namespace frznUpload.Server
         /// </summary>
         public string GetFileName(string file_identifier)
         {
-            return conn.QuerySingle<string>("SELECT filename FROM files WHERE files.filename=@file_identifier", file_identifier);
+            return conn.QuerySingle<string>("SELECT filename FROM files WHERE files.filename=@file_identifier", new { file_identifier = file_identifier });
         }
 
         /// <summary>
@@ -239,7 +239,7 @@ namespace frznUpload.Server
         /// <returns>the userId</returns>
         public int GetOwnerOfFile(string file_identifier)
         {
-            return conn.QuerySingle<int>("SELECT user_id FROM files WHERE identifier=@file_identifier", file_identifier);
+            return conn.QuerySingle<int>("SELECT user_id FROM files WHERE identifier=@file_identifier", new { file_identifier = file_identifier });
         }
 
         /// <summary>
@@ -263,9 +263,9 @@ namespace frznUpload.Server
             if (UserOwnsFile(file_identifier))
             {
                 //deletes all the shares for that file
-                conn.Execute("DELETE FROM shares WHERE shares.file_identifier=@id", file_identifier);
+                conn.Execute("DELETE FROM shares WHERE shares.file_identifier=@id", new { id = file_identifier });
                 //deletes the file
-                conn.Execute("DELETE FROM files WHERE identifier=@file_identifier", file_identifier);
+                conn.Execute("DELETE FROM files WHERE identifier=@file_identifier", new { file_identifier = file_identifier });
             }
             else
             {

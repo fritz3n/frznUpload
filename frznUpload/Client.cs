@@ -264,7 +264,7 @@ namespace frznUpload.Server
                                     {
                                         log.WriteLine(e);
                                     }
-                                    log.WriteLine("Tryed to delete" + file_identifier);
+                                    log.WriteLine("Tryed to delete " + file_identifier);
                                     mes.SendMessage(new Message(Message.MessageType.DeleteFile, true, "Error deleting"));
                                 }
                                 break;
