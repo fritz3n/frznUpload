@@ -7,6 +7,8 @@ using System.Threading.Tasks;
 using System.Linq;
 using System.IO;
 using System.Diagnostics;
+using System.Security.Cryptography;
+using System.Text;
 
 namespace frznUpload.Shared
 {
@@ -362,19 +364,16 @@ namespace frznUpload.Shared
 
         static private int HashEnum(Type T)
         {
-            //TODO: Fix enum hashing
-            return 187;
-            /*unchecked {
-                int h = 37;
-                h *= 392;
+            using (MD5CryptoServiceProvider md5 = new MD5CryptoServiceProvider())
+            {
+                string[] names = Enum.GetNames(T);
+                int[] values = Enum.GetValues(T).Cast<int>().ToArray();
 
-                h ^= Enum.GetNames(T).GetHashCode();
-                h *= 392;
+                string hashString = string.Concat(names) + string.Concat(values);
 
-                h ^= Enum.GetValues(T).GetHashCode();
-
-                return h;
-            }*/
+                byte[] hash = md5.ComputeHash(Encoding.UTF8.GetBytes(hashString));
+                return BitConverter.ToInt32(hash, 0);
+            }
         }
 
         public void Dispose()

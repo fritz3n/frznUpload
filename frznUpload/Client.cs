@@ -258,7 +258,8 @@ namespace frznUpload.Server
                                     db.DeleteFile(file_identifier);
                                     mes.SendMessage(new Message(Message.MessageType.DeleteFile, false, ""));
                                 }
-                                catch{
+                                catch
+                                {
                                     mes.SendMessage(new Message(Message.MessageType.DeleteFile, true, "Error deleting"));
                                 }
                                 break;
