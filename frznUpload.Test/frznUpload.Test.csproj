@@ -55,6 +55,7 @@
   <ItemGroup>
     <Compile Include="Client.cs" />
     <Compile Include="FileUploader.cs" />
+    <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Remote_File.cs" />

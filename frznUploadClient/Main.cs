@@ -193,8 +193,10 @@ namespace frznUpload.Client
 
             foreach(RemoteFile file in l)
             {
-                var Item = new ListViewItem(new string[] { file.Filename + "." + file.File_extension, file.SizeString });
-                Item.Tag = file;
+                var Item = new ListViewItem(new string[] { file.Filename + "." + file.File_extension, file.SizeString })
+                {
+                    Tag = file
+                };
                 if (FileView.InvokeRequired)
                     FileView.Invoke(new Action(() => FileView.Items.Add(Item)));
                 else

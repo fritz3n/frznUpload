@@ -318,6 +318,7 @@ namespace frznUpload.Client
             Tcp?.Dispose();
             stream?.Dispose();
             mes?.Dispose();
+            GC.SuppressFinalize(this);
         }
 
         ~Client()

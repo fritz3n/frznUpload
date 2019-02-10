@@ -8,7 +8,7 @@ using System.Timers;
 
 namespace frznUpload.Client
 {
-    public class ClientManager
+    public class ClientManager : IDisposable
     {
         Client ActiveClient;
         DateTime ActiveTime;
@@ -208,8 +208,19 @@ namespace frznUpload.Client
             return false;
         }
 
-    }
+        public void Dispose()
+        {
+            ActiveClient?.Dispose();
+            cacheTimer?.Dispose();
+            GC.SuppressFinalize(this);
+        }
 
+        ~ClientManager()
+        {
+            Dispose();
+        }
+    }
+    
     public class RetryException : Exception
     {
         public List<Exception> Exceptions { get; private set; }
