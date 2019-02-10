@@ -249,17 +249,22 @@ namespace frznUpload.Server
 
                                 break;
                             case Message.MessageType.DeleteFile:
+                                string file_identifier = message.Fields[0];
                                 try
                                 {
-                                    string file_identifier = message.Fields[0];
                                     //delete the file from the fs
                                     FileHandler.DeleteFile(db.GetFileName(file_identifier));
                                     //delete all database records of it
                                     db.DeleteFile(file_identifier);
                                     mes.SendMessage(new Message(Message.MessageType.DeleteFile, false, ""));
+                                    log.WriteLine("Deleted " + file_identifier);
                                 }
-                                catch
-                                {
+                                catch(Exception e){
+                                    if (e.GetType() != typeof(UnauthorizedAccessException) && e.GetType() != typeof(ArgumentException))
+                                    {
+                                        log.WriteLine(e);
+                                    }
+                                    log.WriteLine("Tryed to delete " + file_identifier);
                                     mes.SendMessage(new Message(Message.MessageType.DeleteFile, true, "Error deleting"));
                                 }
                                 break;
