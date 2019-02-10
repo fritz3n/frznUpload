@@ -196,6 +196,10 @@ namespace frznUpload.Server
             return shareId;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <exception cref="ArgumentException"></exception>
         private void ThrowIfNotAuthenticated()
         {
             if (!IsAuthenticated)
