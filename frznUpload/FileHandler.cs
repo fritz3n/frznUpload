@@ -13,7 +13,7 @@ namespace frznUpload.Server
         const string backupDirectory = directory + "/delted/";
         const int chunksSize = 16384;
 
-        public static FileHandler()
+        static FileHandler()
         {
             //Check if dirs exsist, if not create them
             if (!Directory.Exists(directory))
