@@ -7,11 +7,20 @@ using System.Threading.Tasks;
 
 namespace frznUpload.Server
 {
-    class FileHandler
+    static class FileHandler
     {
         const string directory = "../files/";
         const string backupDirectory = directory + "/delted/";
         const int chunksSize = 16384;
+
+        public static FileHandler()
+        {
+            //Check if dirs exsist, if not create them
+            if (!Directory.Exists(directory))
+                Directory.CreateDirectory(directory);
+            if (!Directory.Exists(backupDirectory))
+                Directory.CreateDirectory(backupDirectory);
+        }
 
         public static async Task<(bool, string)> ReceiveFile(Message message, MessageHandler mes, DataBase db, Logger log)
         {
@@ -25,8 +34,7 @@ namespace frznUpload.Server
 
             mes.SendMessage(new Message(Message.MessageType.FileUploadApproved, false, identifier));
 
-            if (!Directory.Exists(directory))
-                Directory.CreateDirectory(directory);
+            
 
             string localFilename = directory + identifier + ".file";
 
