@@ -26,7 +26,8 @@ namespace frznUpload.Client
             notifyIcon.ContextMenu = new ContextMenu(new MenuItem[]
                 { consoleMenuItem, configMenuItem, exitMenuItem });
             notifyIcon.MouseClick += new MouseEventHandler(LeftClick);
-            notifyIcon.Visible = true;
+            //Dont show icon untill everything is set ups
+            notifyIcon.Visible = false;
 
             Client = new ClientManager();
 
@@ -55,6 +56,8 @@ namespace frznUpload.Client
             {
                 mainForm.Show();
             }
+            //Everything is ready -> show icon
+            notifyIcon.Visible = true;
         }
 
         void ShowConfig(object sender, EventArgs e)
