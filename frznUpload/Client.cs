@@ -264,7 +264,7 @@ namespace frznUpload.Server
                                 try
                                 {
                                     //delete the file from the fs
-                                    FileHandler.DeleteFile(db.GetFileName(file_identifier));
+                                    FileHandler.DeleteFile(file_identifier,db.GetFullFileName(file_identifier));
                                     //delete all database records of it
                                     db.DeleteFile(file_identifier);
                                     mes.SendMessage(new Message(Message.MessageType.DeleteFile, false, ""));

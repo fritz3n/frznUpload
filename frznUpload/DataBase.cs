@@ -231,6 +231,21 @@ namespace frznUpload.Server
         {
             return conn.QuerySingle<string>("SELECT filename FROM files WHERE identifier=@file_identifier", new { file_identifier });
         }
+        /// <summary>
+        /// Gets the extension for a given identifier
+        /// </summary>
+        public string GetFileExtension(string file_identifier)
+        {
+            return conn.QuerySingle<string>("SELECT file_extension FROM files WHERE identifier=@file_identifier", new { file_identifier });
+        }
+
+        /// <summary>
+        /// Get a full filename for a given file_identifier (e.g picrure.png)
+        /// </summary>
+        public string GetFullFileName(string file_identifier)
+        {
+            return GetFileName(file_identifier) + GetFileExtension(file_identifier);
+        }
 
         /// <summary>
         /// Gets the userId of a file

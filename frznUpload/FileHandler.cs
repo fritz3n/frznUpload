@@ -10,6 +10,7 @@ namespace frznUpload.Server
     class FileHandler
     {
         const string directory = "../files/";
+        const string backupDirectory = directory + "/delted/";
         const int chunksSize = 16384;
 
         public static async Task<(bool, string)> ReceiveFile(Message message, MessageHandler mes, DataBase db, Logger log)
@@ -110,9 +111,13 @@ namespace frznUpload.Server
         /// Deletes a File from the fs
         /// </summary>
         /// <param name="file_name">the file to be deleted</param>
-        public static void DeleteFile(string file_name)
+        /// <param name="fullname">The name of the file, as given on upload</param>
+        public static void DeleteFile(string file_name, string fullname)
         {
             string localFileName = directory + file_name + ".file";
+            //copy the file, so we have a backup
+            File.Copy(localFileName, backupDirectory + fullname + "==" + file_name);
+            //Delete the file from the fs
             File.Delete(localFileName);
         }
     }
