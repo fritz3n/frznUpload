@@ -7,11 +7,11 @@ using System.Windows.Forms;
 
 namespace frznUpload.Client
 {
-    partial class HotkeyConfigControl
+    partial class HotkeyConfigControl : GroupBox
     {
 
         private SplitContainer SplitContainer;
-        private TextBox FormatBox;
+        private TextBox FormatText;
         private Button HotkeyButton;
         private Label label3;
         private Label label1;
@@ -21,14 +21,14 @@ namespace frznUpload.Client
         private Label label4;
         private TextBox WhitelistText;
         private CheckBox WhitelistedBox;
-        private CheckBox checkBox1;
+        private CheckBox PublicRegisteredBox;
         private CheckBox FirstViewBox;
         private CheckBox PublicBox;
 
         private void Initialize()
         {
             SplitContainer = new SplitContainer();
-            FormatBox = new TextBox();
+            FormatText = new TextBox();
             HotkeyButton = new Button();
             label3 = new Label();
             label1 = new Label();
@@ -38,7 +38,7 @@ namespace frznUpload.Client
             label4 = new Label();
             WhitelistText = new TextBox();
             WhitelistedBox = new CheckBox();
-            checkBox1 = new CheckBox();
+            PublicRegisteredBox = new CheckBox();
             FirstViewBox = new CheckBox();
             PublicBox = new CheckBox();
             ((System.ComponentModel.ISupportInitialize)(SplitContainer)).BeginInit();
@@ -46,17 +46,25 @@ namespace frznUpload.Client
             SplitContainer.Panel2.SuspendLayout();
             SplitContainer.SuspendLayout();
             SuspendLayout();
+
+            this.Location = new System.Drawing.Point(83, 5);
+            this.Name = "Hotkey";
+            this.Size = new System.Drawing.Size(270, 190);
+            this.TabIndex = 1;
+            this.TabStop = false;
+            this.Text = "Hotkey";
+
             // 
             // SplitContainer
             // 
             SplitContainer.Dock = DockStyle.Fill;
             SplitContainer.IsSplitterFixed = true;
-            SplitContainer.Location = new System.Drawing.Point(0, 0);
+            SplitContainer.Location = new System.Drawing.Point(10, 15);
             SplitContainer.Name = "SplitContainer";
             // 
             // SplitContainer.Panel1
             // 
-            SplitContainer.Panel1.Controls.Add(FormatBox);
+            SplitContainer.Panel1.Controls.Add(FormatText);
             SplitContainer.Panel1.Controls.Add(HotkeyButton);
             SplitContainer.Panel1.Controls.Add(label3);
             SplitContainer.Panel1.Controls.Add(label1);
@@ -69,7 +77,7 @@ namespace frznUpload.Client
             SplitContainer.Panel2.Controls.Add(label4);
             SplitContainer.Panel2.Controls.Add(WhitelistText);
             SplitContainer.Panel2.Controls.Add(WhitelistedBox);
-            SplitContainer.Panel2.Controls.Add(checkBox1);
+            SplitContainer.Panel2.Controls.Add(PublicRegisteredBox);
             SplitContainer.Panel2.Controls.Add(FirstViewBox);
             SplitContainer.Panel2.Controls.Add(PublicBox);
             SplitContainer.Size = new System.Drawing.Size(245, 167);
@@ -78,12 +86,12 @@ namespace frznUpload.Client
             // 
             // FormatBox
             // 
-            FormatBox.Anchor = ((AnchorStyles)(((AnchorStyles.Top | AnchorStyles.Left)
+            FormatText.Anchor = ((AnchorStyles)(((AnchorStyles.Top | AnchorStyles.Left)
             | AnchorStyles.Right)));
-            FormatBox.Location = new System.Drawing.Point(9, 114);
-            FormatBox.Name = "FormatBox";
-            FormatBox.Size = new System.Drawing.Size(108, 20);
-            FormatBox.TabIndex = 5;
+            FormatText.Location = new System.Drawing.Point(9, 114);
+            FormatText.Name = "FormatBox";
+            FormatText.Size = new System.Drawing.Size(108, 20);
+            FormatText.TabIndex = 5;
             // 
             // HotkeyButton
             // 
@@ -95,6 +103,7 @@ namespace frznUpload.Client
             HotkeyButton.TabIndex = 0;
             HotkeyButton.Text = "[none]";
             HotkeyButton.UseVisualStyleBackColor = true;
+            HotkeyButton.Click += HotkeyButton_Click;
             // 
             // label3
             // 
@@ -180,15 +189,15 @@ namespace frznUpload.Client
             // 
             // checkBox1
             // 
-            checkBox1.AutoSize = true;
-            checkBox1.Checked = true;
-            checkBox1.CheckState = CheckState.Checked;
-            checkBox1.Location = new System.Drawing.Point(6, 54);
-            checkBox1.Name = "checkBox1";
-            checkBox1.Size = new System.Drawing.Size(109, 17);
-            checkBox1.TabIndex = 3;
-            checkBox1.Text = "Public Registered";
-            checkBox1.UseVisualStyleBackColor = true;
+            PublicRegisteredBox.AutoSize = true;
+            PublicRegisteredBox.Checked = true;
+            PublicRegisteredBox.CheckState = CheckState.Checked;
+            PublicRegisteredBox.Location = new System.Drawing.Point(6, 54);
+            PublicRegisteredBox.Name = "checkBox1";
+            PublicRegisteredBox.Size = new System.Drawing.Size(109, 17);
+            PublicRegisteredBox.TabIndex = 3;
+            PublicRegisteredBox.Text = "Public Registered";
+            PublicRegisteredBox.UseVisualStyleBackColor = true;
             // 
             // FirstViewBox
             // 
@@ -214,16 +223,15 @@ namespace frznUpload.Client
             // 
             // SettingsForm
             // 
-            ClientSize = new System.Drawing.Size(245, 167);
-            Controls.Add(SplitContainer);
-            Name = "SettingsForm";
+            //ClientSize = new System.Drawing.Size(245, 167);
+            this.Controls.Add(SplitContainer);
             SplitContainer.Panel1.ResumeLayout(false);
             SplitContainer.Panel1.PerformLayout();
             SplitContainer.Panel2.ResumeLayout(false);
             SplitContainer.Panel2.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(SplitContainer)).EndInit();
             SplitContainer.ResumeLayout(false);
-            ResumeLayout(false);
+            ResumeLayout(true);
 
         }
     }

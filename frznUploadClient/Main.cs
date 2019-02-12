@@ -22,6 +22,7 @@ namespace frznUpload.Client
         private UploadContract FileUpload;
         private System.Timers.Timer UploadTimer = new System.Timers.Timer(100);
         private RemoteFile RightClicked = null;
+        private HotkeyContainer hotkeyContainer;
 
         public MainForm(ClientManager client)
         {
@@ -30,7 +31,8 @@ namespace frznUpload.Client
             Shown += MainForm_Shown;
             FormClosing += MainForm_FormClosing;
             loginForm = new LoginForm(Client);
-            settingsForm = new SettingsForm();
+            hotkeyContainer = new HotkeyContainer(Client, this);
+            settingsForm = new SettingsForm(hotkeyContainer);
 
             UploadTimer.AutoReset = true;
             UploadTimer.Enabled = false;
@@ -81,6 +83,7 @@ namespace frznUpload.Client
             Hide();
             showing = false;
             loginForm.Hide();
+            settingsForm.Hide();
             e.Cancel = true;
         }
 

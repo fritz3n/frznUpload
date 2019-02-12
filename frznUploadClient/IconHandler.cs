@@ -82,7 +82,7 @@ namespace frznUpload.Client
         {
             if (e.Button == MouseButtons.Left)
             {
-                mainForm.Show();
+                mainForm?.Show();
             }
         }
     }

@@ -30,8 +30,11 @@ namespace frznUpload.Client
 
             foreach(string hotkey in hotkeys)
             {
-                var hc = HotkeyHandler.Unserialize(this, hotkey.Replace("%bar%", "|"));
-                HotKeys.Add((hc.Config.Modifier, hc.Config.Key), hc);
+                if (hotkey != "")
+                {
+                    var hc = HotkeyHandler.Unserialize(this, hotkey.Replace("%bar%", "|"));
+                    HotKeys.Add((hc.Config.Modifier, hc.Config.Key), hc);
+                }
             }
 
         }
@@ -58,6 +61,7 @@ namespace frznUpload.Client
             if (HotKeys.ContainsKey(Key))
             {
                 HotKeys[Key].Enabled = false;
+                HotKeys.Remove(Key);
             }
         }
 
