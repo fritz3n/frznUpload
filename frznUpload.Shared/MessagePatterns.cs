@@ -35,6 +35,10 @@ namespace frznUpload.Shared
             {Message.MessageType.ChallengeApproved, new List<int>{ Types.String } },
             {Message.MessageType.ChallengeRequest, new List<int>{ Types.Raw, Types.Raw } },
             {Message.MessageType.ChallengeResponse, new List<int>{ Types.Raw } },
+            {Message.MessageType.TowFactorNeeded, new List<int>{ Types.String} },
+            {Message.MessageType.TowFactorAdd, new List<int>{ Types.String} },
+            {Message.MessageType.TowFactorRemove, new List<int>{ } },
+            {Message.MessageType.TowFactorSuccess, new List<int>{ } },
 
             {Message.MessageType.FileUploadRequest, new List<int>{ Types.String, Types.String, Types.Int } },
             {Message.MessageType.FileUploadApproved, new List<int>{ Types.String } },

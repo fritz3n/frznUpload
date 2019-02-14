@@ -159,15 +159,16 @@ namespace frznUpload.Server
                                 break;
 
                             case Message.MessageType.Auth:
-
                                 chal = new Challenge();
 
                                 chal.SetPublicComponents(message[2], message[3]);
 
-                                if(db.SetToken(message[0], message[1], chal.GetThumbprint()))
+                                if (db.SetToken(message[0], message[1], chal.GetThumbprint()))
                                 {
+                                    DoTowFaCheck();
+
                                     mes.SendMessage(new Message(Message.MessageType.AuthSuccess));
-                                    log.WriteLine("Authenticated a Public Key");
+                                    log.WriteLine("Authenticated with a Public Key");
                                 }
                                 else
                                 {
@@ -281,7 +282,28 @@ namespace frznUpload.Server
                                     mes.SendMessage(new Message(Message.MessageType.DeleteFile, true, "Error deleting"));
                                 }
                                 break;
+                            #region towFa
+                            case Message.MessageType.TowFactorAdd:
+                                string secret = TowFactorHandler.CreateSecret();
+                                mes.SendMessage(new Message(Message.MessageType.TowFactorAdd, false, secret));
+                                db.SetTowFactorSecret(secret);
 
+                                break;
+                            case Message.MessageType.TowFactorRemove:
+                                try
+                                {
+                                    DoTowFaCheck();
+                                    db.RemoveTowFactorSecret();
+                                    mes.SendMessage(new Message(Message.MessageType.TowFactorRemove,false));
+                                }
+                                catch(UnauthorizedAccessException e)
+                                {
+                                    log.WriteLine(e.Message);
+                                    Dispose();
+                                }
+
+                                break;
+                            #endregion
                             default:
                                 mes.SendMessage(new Message(Message.MessageType.Sequence, true, "Not expected"));
                                 break;
@@ -312,7 +334,28 @@ namespace frznUpload.Server
                 Dispose();
             }
         }
-        
+
+
+        private void DoTowFaCheck()
+        {
+            //check if the user has towFa enabled, if yes -> send him that we need proof!
+            string secret = db.GetTowFactorSecret();
+            if (secret != "null")
+            {
+                mes.SendMessage(new Message(Message.MessageType.TowFactorNeeded, false, ""));
+                Message towFaMessage = mes.WaitForMessage(true, Message.MessageType.TowFactorNeeded);
+                //if he cant prove who he is -> throw him out
+                if (!TowFactorHandler.Verify(secret, towFaMessage.Fields[0]))
+                {
+                    throw new UnauthorizedAccessException("TowFa failed!");
+                }
+                else
+                {
+                    mes.SendMessage(new Message(Message.MessageType.TowFactorSuccess, false));
+                }
+            }
+        }
+
         public void Dispose()
         {
             Stop();

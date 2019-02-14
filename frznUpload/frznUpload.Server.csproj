@@ -13,6 +13,7 @@
   <ItemGroup>
     <PackageReference Include="Dapper" Version="1.50.5" />
     <PackageReference Include="MySql.Data" Version="8.0.13" />
+    <PackageReference Include="TwoFactorAuth.Net" Version="1.3.4" />
   </ItemGroup>
 
   <ItemGroup>

@@ -304,6 +304,15 @@ namespace frznUpload.Client
 
             return list;
         }
+        public void DoTowFaExchange()
+        {
+            mes.SendMessage(new Message(Message.MessageType.TowFactorNeeded, false, GetTowFaToken()));
+            mes.WaitForMessage(true, Message.MessageType.TowFactorSuccess);
+        }
+        public string GetTowFaToken()
+        {
+            return Prompt.ShowDialog("Pleas enter your tow factor authentication token", "Further authentication required");
+        }
 
         /// <summary>
         /// Asks the server to delete a file

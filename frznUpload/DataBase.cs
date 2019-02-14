@@ -118,6 +118,7 @@ namespace frznUpload.Server
             }
         }
 
+        //TODO: improve 
         public string HashPassword(string password, int id)
         {
             User User = conn.QueryFirst<User>("SELECT * FROM users WHERE id=@id", new { id });
@@ -286,6 +287,27 @@ namespace frznUpload.Server
             {
                 throw new UnauthorizedAccessException("The user dose not own this share");
             }
+        }
+
+        /// <summary>
+        /// Gets a Tow Fa Secret for a given userID
+        /// </summary>
+        public string GetTowFactorSecret()
+        {
+            return conn.QuerySingle<string>("SELECT tow_fa_secret FROM users WHERE id=@id", new { id=userId });
+        }
+
+        /// <summary>
+        /// Sets a towFa secret in the db
+        /// </summary>
+        public void SetTowFactorSecret(string val)
+        {
+            conn.Execute("UPDATE users SET tow_fa_secret=@val WHERE id=@id", new { val = val, id = userId });
+        }
+        
+        public void RemoveTowFactorSecret()
+        {
+            conn.Execute("UPDATE users SET tow_fa_secret=null WHERE id=@id", new { id = userId });
         }
 
 
