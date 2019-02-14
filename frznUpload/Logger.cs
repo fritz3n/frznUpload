@@ -46,10 +46,17 @@ namespace frznUpload.Server
         }
         static public bool Opened { get; set; }
 
+        /// <summary>
+        /// The Identifier used to identify the current Logger in the Logfile
+        /// </summary>
+        /// <value>The new identifier or null to generate a random one</value>
         public string  Id {
             get => id;
             set
             {
+                if (value == null)
+                    value = GetId();
+
                 WriteLineStatic("Changed Id", id + "->" + value);
                 id = value;
             }
@@ -63,12 +70,18 @@ namespace frznUpload.Server
 
             if (id == null)
             {
-                long ms = DateTime.Now.Minute;
-                long ms2 = DateTime.Now.Second;
-                id = string.Format("{0:X}-{1:X}", ms, ms2).ToLower();
+                id = GetId();
             }
 
             this.id = id;
+        }
+
+        private static string GetId()
+        {
+            long ms = DateTime.Now.Minute;
+            long ms2 = DateTime.Now.Hour;
+            byte random = (byte)new Random().Next(0, 255);
+            return string.Format("{0:X}-{1:X}-{2:X}", ms, ms2, random).ToLower();
         }
 
         public static void Open()

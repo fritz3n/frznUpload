@@ -192,8 +192,9 @@ namespace frznUpload.Server
                                 IsAuthenticated = false;
                                 mes.SendMessage(new Message(Message.MessageType.DeauthSuccess));
 
-                                log.WriteLine("Deautheticated");
+                                log.WriteLine("Deauthenticated");
 
+                                log.Id = null;
                                 break;
 
                             case Message.MessageType.FileUploadRequest:

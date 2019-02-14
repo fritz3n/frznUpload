@@ -10,7 +10,7 @@ namespace frznUpload.Server
     static class FileHandler
     {
         const string directory = "../files/";
-        const string backupDirectory = directory + "/delted/";
+        const string backupDirectory = directory + "/deleted/";
         const int chunksSize = 16384;
 
         static FileHandler()
@@ -124,7 +124,7 @@ namespace frznUpload.Server
         {
             string localFileName = directory + file_name + ".file";
             //copy the file, so we have a backup
-            File.Copy(localFileName, backupDirectory + fullname + "==" + file_name);
+            File.Copy(localFileName, backupDirectory + fullname + "==" + file_name + ".file");
             //Delete the file from the fs
             File.Delete(localFileName);
         }
