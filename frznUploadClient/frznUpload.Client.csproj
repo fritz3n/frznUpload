@@ -60,6 +60,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AutostartHandler.cs" />
     <Compile Include="Client.cs" />
     <Compile Include="ClientManager.cs" />
     <Compile Include="Files\ClipboardProvider.cs" />

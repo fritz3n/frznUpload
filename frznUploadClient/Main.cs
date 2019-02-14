@@ -240,5 +240,9 @@ namespace frznUpload.Client
             settingsForm.Show();
         }
 
+        private void tabPage1_Click(object sender, EventArgs e)
+        {
+
+        }
     }
 }

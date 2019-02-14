@@ -32,7 +32,7 @@
             this.StatusLabel = new System.Windows.Forms.Label();
             this.ProgressBar = new System.Windows.Forms.ProgressBar();
             this.AccountButton = new System.Windows.Forms.Button();
-            this.Tab = new System.Windows.Forms.TabControl();
+            this.TabController = new System.Windows.Forms.TabControl();
             this.UploadTab = new System.Windows.Forms.TabPage();
             this.tableLayoutPanel = new System.Windows.Forms.TableLayoutPanel();
             this.ShareGroupBox = new System.Windows.Forms.GroupBox();
@@ -61,7 +61,7 @@
             this.contextMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.deleteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.SettingsButton = new System.Windows.Forms.Button();
-            this.Tab.SuspendLayout();
+            this.TabController.SuspendLayout();
             this.UploadTab.SuspendLayout();
             this.tableLayoutPanel.SuspendLayout();
             this.ShareGroupBox.SuspendLayout();
@@ -99,18 +99,20 @@
             this.AccountButton.UseVisualStyleBackColor = true;
             this.AccountButton.Click += new System.EventHandler(this.AccountButton_Click);
             // 
-            // Tab
+            // TabController
             // 
-            this.Tab.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            this.TabController.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.Tab.Controls.Add(this.UploadTab);
-            this.Tab.Controls.Add(this.FileTab);
-            this.Tab.Location = new System.Drawing.Point(13, 13);
-            this.Tab.Name = "Tab";
-            this.Tab.SelectedIndex = 0;
-            this.Tab.Size = new System.Drawing.Size(775, 401);
-            this.Tab.TabIndex = 3;
-            this.Tab.Selecting += new System.Windows.Forms.TabControlCancelEventHandler(this.Tab_Selecting);
+            this.TabController.CausesValidation = false;
+            this.TabController.Controls.Add(this.UploadTab);
+            this.TabController.Controls.Add(this.FileTab);
+            this.TabController.HotTrack = true;
+            this.TabController.Location = new System.Drawing.Point(13, 13);
+            this.TabController.Name = "TabController";
+            this.TabController.SelectedIndex = 0;
+            this.TabController.Size = new System.Drawing.Size(775, 401);
+            this.TabController.TabIndex = 3;
+            this.TabController.Selecting += new System.Windows.Forms.TabControlCancelEventHandler(this.Tab_Selecting);
             // 
             // UploadTab
             // 
@@ -419,14 +421,14 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 450);
             this.Controls.Add(this.SettingsButton);
-            this.Controls.Add(this.Tab);
+            this.Controls.Add(this.TabController);
             this.Controls.Add(this.AccountButton);
             this.Controls.Add(this.ProgressBar);
             this.Controls.Add(this.StatusLabel);
             this.Name = "MainForm";
             this.Text = "frznUpload";
             this.Load += new System.EventHandler(this.MainForm_Load);
-            this.Tab.ResumeLayout(false);
+            this.TabController.ResumeLayout(false);
             this.UploadTab.ResumeLayout(false);
             this.tableLayoutPanel.ResumeLayout(false);
             this.ShareGroupBox.ResumeLayout(false);
@@ -446,7 +448,7 @@
         private System.Windows.Forms.Label StatusLabel;
         private System.Windows.Forms.ProgressBar ProgressBar;
         private System.Windows.Forms.Button AccountButton;
-        private System.Windows.Forms.TabControl Tab;
+        private System.Windows.Forms.TabControl TabController;
         private System.Windows.Forms.TabPage UploadTab;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.TextBox PathText;

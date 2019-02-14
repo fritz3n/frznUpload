@@ -43,5 +43,17 @@ namespace frznUpload.Client
                 Activate();
             }
         }
+
+        private void checkBox1_CheckedChanged(object sender, EventArgs e)
+        {
+            if (autostartCheckbox.Checked)
+            {
+                AutostartHandler.SetToCurrentPath();
+            }
+            else
+            {
+                AutostartHandler.DeleteKey();
+            }
+        }
     }
 }
