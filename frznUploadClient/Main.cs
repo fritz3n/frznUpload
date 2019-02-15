@@ -5,7 +5,9 @@ using System.Data;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Media;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -46,18 +48,21 @@ namespace frznUpload.Client
                 loginForm.Show();
             }
         }
-
+        
         private async void UploadTimer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
         {
             if (FileUpload.Uploader.Running)
             {
-                ProgressBar.Invoke(new Action(() => ProgressBar.Value = (int)(FileUpload.Uploader.Progress * 100)));
+                if(Created)
+                    ProgressBar.Invoke(new Action(() => ProgressBar.Value = (int)(FileUpload.Uploader.Progress * 100)));
             }
             else
             {
-                ProgressBar.Invoke(new Action(() => StatusLabel.Text = "Finished"));
+                if (Created)
+                    ProgressBar.Invoke(new Action(() => StatusLabel.Text = "Finished"));
                 Uploading = false;
-                ProgressBar.Invoke(new Action(() => ProgressBar.Value = 0));
+                if (Created)
+                    ProgressBar.Invoke(new Action(() => ProgressBar.Value = 0));
                 UploadTimer.Stop();
 
                 if (FileUpload.Share && FileUpload.Uploader.Finished)
@@ -71,11 +76,32 @@ namespace frznUpload.Client
                         FileUpload.Whitelist
                         );
 
-                    LinkText.Invoke(new Action(() => LinkText.Text = "fritzen.tk/view.php?id=" + s));
+                    if (Created)
+                        LinkText.Invoke(new Action(() => LinkText.Text = @"https://fritzen.tk/view.php?id=" + s));
+
+                    SetClipboardText(@"https://fritzen.tk/view.php?id=" + s);
+                    SystemSounds.Asterisk.Play();
                 }
 
                 UploadFinished?.Invoke(this, EventArgs.Empty);
             }
+        }
+
+        private void SetClipboardText(string text)
+        {
+            var state = Thread.CurrentThread.GetApartmentState();
+
+            if(state == ApartmentState.STA)
+            {
+                Clipboard.SetText(text);
+            }
+            else
+            {
+                var t = new Thread(() => SetClipboardText(text));
+                t.SetApartmentState(ApartmentState.STA);
+                t.Start();
+            }
+
         }
 
         private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
@@ -178,7 +204,7 @@ namespace frznUpload.Client
 
         private void CopyButton_Click(object sender, EventArgs e)
         {
-            Clipboard.SetText(LinkText.Text);
+            SetClipboardText(LinkText.Text);
         }
 
         private void Tab_Selecting(object sender, TabControlCancelEventArgs e)

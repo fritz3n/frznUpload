@@ -18,7 +18,7 @@ namespace frznUpload.Client
         private ComboBox FileProviderBox;
         private Label label2;
         private CheckBox ShareBox;
-        private Label label4;
+        private Label WhitelistLabel;
         private TextBox WhitelistText;
         private CheckBox WhitelistedBox;
         private CheckBox PublicRegisteredBox;
@@ -35,7 +35,7 @@ namespace frznUpload.Client
             FileProviderBox = new ComboBox();
             label2 = new Label();
             ShareBox = new CheckBox();
-            label4 = new Label();
+            WhitelistLabel = new Label();
             WhitelistText = new TextBox();
             WhitelistedBox = new CheckBox();
             PublicRegisteredBox = new CheckBox();
@@ -74,7 +74,7 @@ namespace frznUpload.Client
             // 
             // SplitContainer.Panel2
             // 
-            SplitContainer.Panel2.Controls.Add(label4);
+            SplitContainer.Panel2.Controls.Add(WhitelistLabel);
             SplitContainer.Panel2.Controls.Add(WhitelistText);
             SplitContainer.Panel2.Controls.Add(WhitelistedBox);
             SplitContainer.Panel2.Controls.Add(PublicRegisteredBox);
@@ -92,6 +92,8 @@ namespace frznUpload.Client
             FormatText.Name = "FormatBox";
             FormatText.Size = new System.Drawing.Size(108, 20);
             FormatText.TabIndex = 5;
+            FormatText.Text = "{1} - {0:h:mm dd.MM.yy}";
+            FormatText.TextChanged += FormatText_TextChanged;
             // 
             // HotkeyButton
             // 
@@ -137,6 +139,7 @@ namespace frznUpload.Client
             FileProviderBox.Name = "FileProviderBox";
             FileProviderBox.Size = new System.Drawing.Size(108, 21);
             FileProviderBox.TabIndex = 3;
+            FileProviderBox.SelectedIndexChanged += FileProviderBox_SelectedIndexChanged;
             // 
             // label2
             // 
@@ -158,15 +161,16 @@ namespace frznUpload.Client
             ShareBox.TabIndex = 0;
             ShareBox.Text = "Share";
             ShareBox.UseVisualStyleBackColor = true;
+            ShareBox.CheckedChanged += ShareBox_CheckedChanged;
             // 
             // label4
             // 
-            label4.AutoSize = true;
-            label4.Location = new System.Drawing.Point(3, 96);
-            label4.Name = "label4";
-            label4.Size = new System.Drawing.Size(47, 13);
-            label4.TabIndex = 6;
-            label4.Text = "Whitelist";
+            WhitelistLabel.AutoSize = true;
+            WhitelistLabel.Location = new System.Drawing.Point(3, 96);
+            WhitelistLabel.Name = "label4";
+            WhitelistLabel.Size = new System.Drawing.Size(47, 13);
+            WhitelistLabel.TabIndex = 6;
+            WhitelistLabel.Text = "Whitelist";
             // 
             // WhitelistText
             // 
@@ -176,6 +180,7 @@ namespace frznUpload.Client
             WhitelistText.Name = "WhitelistText";
             WhitelistText.Size = new System.Drawing.Size(112, 20);
             WhitelistText.TabIndex = 5;
+            WhitelistText.TextChanged += WhitelistText_TextChanged;
             // 
             // WhitelistedBox
             // 
@@ -186,6 +191,7 @@ namespace frznUpload.Client
             WhitelistedBox.TabIndex = 4;
             WhitelistedBox.Text = "Whitelisted";
             WhitelistedBox.UseVisualStyleBackColor = true;
+            WhitelistedBox.CheckedChanged += WhitelistedBox_CheckedChanged;
             // 
             // checkBox1
             // 
@@ -198,6 +204,7 @@ namespace frznUpload.Client
             PublicRegisteredBox.TabIndex = 3;
             PublicRegisteredBox.Text = "Public Registered";
             PublicRegisteredBox.UseVisualStyleBackColor = true;
+            PublicRegisteredBox.CheckedChanged += PublicRegisteredBox_CheckedChanged;
             // 
             // FirstViewBox
             // 
@@ -208,6 +215,7 @@ namespace frznUpload.Client
             FirstViewBox.TabIndex = 2;
             FirstViewBox.Text = "First View";
             FirstViewBox.UseVisualStyleBackColor = true;
+            FirstViewBox.CheckedChanged += FirstViewBox_CheckedChanged;
             // 
             // PublicBox
             // 
@@ -220,6 +228,7 @@ namespace frznUpload.Client
             PublicBox.TabIndex = 1;
             PublicBox.Text = "Public";
             PublicBox.UseVisualStyleBackColor = true;
+            PublicBox.CheckedChanged += PublicBox_CheckedChanged;
             // 
             // SettingsForm
             // 

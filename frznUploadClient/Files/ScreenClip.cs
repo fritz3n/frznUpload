@@ -20,7 +20,13 @@ namespace frznUpload.Client.Files
 
         public List<UploadFile> GetFile(string format)
         {
-            Process proc = Process.Start("snippingtool", "/clip");
+
+            Process proc;
+
+            if (!Environment.Is64BitProcess)
+                proc = Process.Start("C:\\Windows\\sysnative\\SnippingTool.exe", "/clip");
+            else
+                proc = Process.Start("C:\\Windows\\system32\\SnippingTool.exe", "/clip");
 
             proc.WaitForExit();
 
@@ -28,7 +34,7 @@ namespace frznUpload.Client.Files
                 throw new InvalidOperationException();
             
             Path = TempFileHandler.RegisterFile();
-            var filename = string.Format(format + ".Jpeg", DateTime.Now);
+            var filename = string.Format(format + ".Jpeg", DateTime.Now, "Screenclip");
 
             Clipboard.GetImage().Save(Path, ImageFormat.Jpeg);
 

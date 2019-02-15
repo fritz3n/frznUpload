@@ -42,10 +42,11 @@
             // 
             this.tabControl1.Controls.Add(this.HotkeyTab);
             this.tabControl1.Controls.Add(this.OtherTab);
-            this.tabControl1.Location = new System.Drawing.Point(12, 12);
+            this.tabControl1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tabControl1.Location = new System.Drawing.Point(0, 0);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(776, 426);
+            this.tabControl1.Size = new System.Drawing.Size(860, 450);
             this.tabControl1.TabIndex = 0;
             // 
             // HotkeyTab
@@ -55,17 +56,17 @@
             this.HotkeyTab.Location = new System.Drawing.Point(4, 22);
             this.HotkeyTab.Name = "HotkeyTab";
             this.HotkeyTab.Padding = new System.Windows.Forms.Padding(3);
-            this.HotkeyTab.Size = new System.Drawing.Size(768, 400);
+            this.HotkeyTab.Size = new System.Drawing.Size(852, 424);
             this.HotkeyTab.TabIndex = 0;
             this.HotkeyTab.Text = "Hotkeys";
             // 
             // HotkeyLayout
             // 
-            this.HotkeyLayout.Controls.Add(this.AddButton);
+            //this.HotkeyLayout.Controls.Add(this.AddButton);
             this.HotkeyLayout.Dock = System.Windows.Forms.DockStyle.Fill;
             this.HotkeyLayout.Location = new System.Drawing.Point(3, 3);
             this.HotkeyLayout.Name = "HotkeyLayout";
-            this.HotkeyLayout.Size = new System.Drawing.Size(762, 394);
+            this.HotkeyLayout.Size = new System.Drawing.Size(846, 418);
             this.HotkeyLayout.TabIndex = 0;
             // 
             // AddButton
@@ -95,7 +96,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(800, 450);
+            this.ClientSize = new System.Drawing.Size(860, 450);
             this.Controls.Add(this.tabControl1);
             this.KeyPreview = true;
             this.Name = "SettingsForm";

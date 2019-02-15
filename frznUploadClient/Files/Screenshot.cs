@@ -35,7 +35,7 @@ namespace frznUpload.Client.Files
             }
 
             Path = TempFileHandler.RegisterFile();
-            var filename = string.Format(format + ".Jpeg", DateTime.Now);
+            var filename = string.Format(format + ".Jpeg", DateTime.Now, "Screenshot");
 
             Screenshot.Save(Path, ImageFormat.Jpeg);
 

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using frznUpload.Client.Hotkey;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -23,6 +24,27 @@ namespace frznUpload.Client
             InitializeComponent();
             Hotkeys = hotkeys;
             
+            InitHotkeys();
+        }
+
+        private void InitHotkeys()
+        {
+            HotkeyLayout.SuspendLayout();
+            HotkeyLayout.Controls.Clear();
+            HotkeyControls.Clear();
+
+            foreach (HotkeyConfig Hotkey in Hotkeys)
+            {
+                var hk = new HotkeyConfigControl(this);
+                hk.Update(Hotkey);
+
+                HotkeyControls.Add(hk);
+                HotkeyLayout.Controls.Add(hk);
+            }
+
+            HotkeyLayout.Controls.Add(AddButton);
+
+            HotkeyLayout.ResumeLayout(true);
         }
 
         public bool StartCapturing(HotkeyConfigControl capturer)
@@ -46,8 +68,40 @@ namespace frznUpload.Client
 
         private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
         {
-            Hide();
-            showing = false;
+            bool discard = false;
+            string message = "";
+
+            int id = 0;
+
+            foreach(HotkeyConfigControl control in HotkeyControls)
+            {
+                id++;
+
+                (bool, string) valid = control.IsValid();
+
+                if (!valid.Item1)
+                {
+                    discard = true;
+                    message += $"Hotkey #{id}´s changes have not been saved and will be discarded:\n\t{valid.Item2}\n\n";
+                }
+            }
+
+            if (discard)
+            {
+                var result = MessageBox.Show(message, "Discard changes?", MessageBoxButtons.OKCancel);
+
+                if(result == DialogResult.OK)
+                {
+                    Hide();
+                    showing = false;
+                }
+            }
+            else
+            {
+                Hide();
+                showing = false;
+            }
+            
             e.Cancel = true;
         }
 
@@ -58,6 +112,8 @@ namespace frznUpload.Client
 
         public new void Show()
         {
+            InitHotkeys();
+
             if (!showing)
             {
                 base.Show();
@@ -73,9 +129,19 @@ namespace frznUpload.Client
         {
             HotkeyLayout.SuspendLayout();
             var hk = new HotkeyConfigControl(this);
+            
             HotkeyControls.Add(hk);
+
+            HotkeyLayout.Controls.Remove(AddButton); ;
             HotkeyLayout.Controls.Add(hk);
+            HotkeyLayout.Controls.Add(AddButton);
+
             HotkeyLayout.ResumeLayout(true);
+        }
+
+        public void SaveHotkey(HotkeyConfig config)
+        {
+            Hotkeys.Add(config);
         }
 
         private void SettingsForm_KeyDown(object sender, KeyEventArgs e)

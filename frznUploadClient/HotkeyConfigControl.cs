@@ -27,7 +27,6 @@ namespace frznUpload.Client
             InitializeComponent();
             UpdateShareEnables();
             UpdateButtonText();
-
         }
 
         public void Update(HotkeyConfig config)
@@ -35,18 +34,81 @@ namespace frznUpload.Client
             FormatText.Text = config.Format;
             WhitelistText.Text = config.Whitelist;
 
-            ShareBox.Checked = (config.Share) != 0;
+            ShareBox.Checked = (config.Share & ShareType.Share) != 0;
             PublicBox.Checked = (config.Share & ShareType.Public) != 0;
             PublicRegisteredBox.Checked = (config.Share & ShareType.PublicRegistered) != 0;
             FirstViewBox.Checked = (config.Share & ShareType.FirstView) != 0;
             WhitelistedBox.Checked = (config.Share & ShareType.Whitelisted) != 0;
             UpdateShareEnables();
 
+            FileProviderBox.SelectedIndex = (int)config.Provider - 1;
+
             Key = config.Key;
             Modifiers = config.Modifier;
             UpdateButtonText();
         }
 
+        private void Save()
+        {
+            if (!IsValid().Item1)
+                return;
+
+            ShareType share = ShareType.DontShare;
+
+            if (ShareBox.Checked)
+            {
+                share |= ShareType.Share;
+
+                if (FirstViewBox.Checked)
+                    share |= ShareType.FirstView;
+
+                if (PublicBox.Checked)
+                    share |= ShareType.Public;
+
+                if (PublicRegisteredBox.Checked)
+                    share |= ShareType.PublicRegistered;
+
+                if (WhitelistedBox.Checked)
+                    share |= ShareType.Whitelisted;
+            }
+
+            var config = new HotkeyConfig
+            {
+                Format = FormatText.Text,
+                Whitelist = WhitelistText.Text,
+                Share = share,
+                Key = Key,
+                Modifier = Modifiers,
+                Provider = GetSelectedFileProvider()
+            };
+
+            Form.SaveHotkey(config);
+        }
+
+        /// <summary>
+        /// Indicates whether the hotkey is valid and can be/was saved and if not, a message to display to the user
+        /// </summary>
+        /// <returns>A tuple of (is valid, optional error message)</returns>
+        public (bool, string) IsValid()
+        {
+            if (Key == 0 | Modifiers == 0)
+                return (false, "no Hotkey set!");
+
+            if (GetSelectedFileProvider() == FileProvider.None)
+                return (false, "no File Provider selected!");
+
+            if (WhitelistedBox.Checked & WhitelistText.Text == "")
+                return (false, "no valid Whitelist was provided!");
+
+            return (true, null);
+        }
+
+        private FileProvider GetSelectedFileProvider()
+        {
+            return (FileProvider)(FileProviderBox.SelectedIndex + 1);
+        }
+
+        #region Hotkey Capturing
         public void KeyUpEvent(KeyEventArgs e)
         {
             if (!Capturing)
@@ -79,7 +141,7 @@ namespace frznUpload.Client
             UpdateButtonText();
             e.Handled = true;
         }
-
+        
         public void KeyDownEvent(KeyEventArgs e)
         {
             if (!Capturing)
@@ -155,7 +217,7 @@ namespace frznUpload.Client
             }
             else
             {
-                
+                Save();
             }
 
             UpdateButtonText();
@@ -163,19 +225,12 @@ namespace frznUpload.Client
 
         private void UpdateButtonText()
         {
-            /*List<string> mods = new List<string>();
-
-            if ((Modifiers & Hotkey.ModifierKeys.Control) > 0)
-                mods.Add("Ctrl");
-
-            if ((Modifiers & Hotkey.ModifierKeys.Alt) > 0)
-                mods.Add("Alt");
-
-            if ((Modifiers & Hotkey.ModifierKeys.Control) > 0)
-                mods.Add("Ctrl");*/
+            
 
             HotkeyButton.Text = Modifiers.ToString("G").Replace(",", " +").Replace("Control", "Ctrl") + " + " + (Capturing ? "..." : Key.ToString("G"));
         }
+
+        #endregion
 
         private void UpdateShareEnables()
         {
@@ -184,6 +239,7 @@ namespace frznUpload.Client
             FirstViewBox.Enabled = ShareBox.Checked;
             WhitelistedBox.Enabled = ShareBox.Checked;
             WhitelistText.Enabled = ShareBox.Checked & WhitelistedBox.Checked;
+            WhitelistLabel.Enabled = ShareBox.Checked & WhitelistedBox.Checked;
         }
 
         private void HotkeyButton_Click(object sender, EventArgs e)
@@ -201,6 +257,47 @@ namespace frznUpload.Client
             ResumeLayout(false);
         }
 
+        private void PublicBox_CheckedChanged(object sender, EventArgs e)
+        {
+            Save();
+        }
 
+        private void FirstViewBox_CheckedChanged(object sender, EventArgs e)
+        {
+            Save();
+
+        }
+
+        private void PublicRegisteredBox_CheckedChanged(object sender, EventArgs e)
+        {
+            Save();
+        }
+
+        private void WhitelistedBox_CheckedChanged(object sender, EventArgs e)
+        {
+            UpdateShareEnables();
+        }
+
+        private void WhitelistText_TextChanged(object sender, EventArgs e)
+        {
+            Save();
+
+        }
+
+        private void ShareBox_CheckedChanged(object sender, EventArgs e)
+        {
+            UpdateShareEnables();
+        }
+
+        private void FileProviderBox_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            Save();
+
+        }
+
+        private void FormatText_TextChanged(object sender, EventArgs e)
+        {
+            Save();
+        }
     }
 }
