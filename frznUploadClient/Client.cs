@@ -353,11 +353,32 @@ namespace frznUpload.Client
                 throw new Exception("Error while deleting tow factor authentication", e);
             }
         }
+        
+        public async Task<bool> GetHasTowFaEnabled()
+        {
+            mes.SendMessage(new Message(Message.MessageType.HasTowFactor, false));
+            Message m = await mes.WaitForMessageAsync(Message.MessageType.HasTowFactor);
+            if (m.IsError)
+            {
+                throw new Exception("Error getting tow factor authentication status.");
+            }
+            else
+            {
+                return m.Fields[0];
+            }
+        }
+
+        public async Task<string> GetTowFaSecret()
+        {
+            mes.SendMessage(new Message(Message.MessageType.TowFactorAdd));
+            Message m = await mes.WaitForMessageAsync(true, Message.MessageType.TowFactorAdd);
+            return m.Fields[0];
+        }
 
     /// <summary>
     /// Asks the server to delete a file
     /// </summary>
-    public async Task DeleteFileAsync(string file_identifier)
+        public async Task DeleteFileAsync(string file_identifier)
         {
             mes.SendMessage(new Message(Message.MessageType.DeleteFile, false, file_identifier));
             await mes.WaitForMessageAsync(true, Message.MessageType.DeleteFile);

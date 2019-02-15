@@ -24,6 +24,7 @@ namespace frznUpload.Shared
             TowFactorAdd, //Send by client to tell server to generate and save a secret
             TowFactorRemove, //send by the client to tell server to delete secret
             TowFactorSuccess,
+            HasTowFactor,
             DeauthRequest,
             DeauthSuccess,
             FileUploadRequest,

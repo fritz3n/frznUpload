@@ -29,7 +29,7 @@ namespace frznUpload.Client
             Shown += MainForm_Shown;
             FormClosing += MainForm_FormClosing;
             loginForm = new LoginForm(Client);
-            settingsForm = new SettingsForm();
+            settingsForm = new SettingsForm(Client);
 
             UploadTimer.AutoReset = true;
             UploadTimer.Enabled = false;
