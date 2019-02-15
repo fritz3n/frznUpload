@@ -31,7 +31,7 @@ namespace frznUpload.Client.Files
                     var u = new UploadFile
                     {
                         Path = s,
-                        Filename = System.IO.Path.GetFileName(s),
+                        Filename = string.Format(format, DateTime.Now, System.IO.Path.GetFileName(s)),
                     };
                     UploadList.Add(u);
                 }
@@ -42,7 +42,7 @@ namespace frznUpload.Client.Files
             if (Clipboard.ContainsImage())
             {
                 Path = TempFileHandler.RegisterFile();
-                var filename = string.Format(format + ".Jpeg", DateTime.Now);
+                var filename = string.Format(format + ".Jpeg", DateTime.Now, "Clipboard Image");
 
                 Clipboard.GetImage().Save(Path, ImageFormat.Jpeg);
 
@@ -56,7 +56,7 @@ namespace frznUpload.Client.Files
             if (Clipboard.ContainsText())
             {
                 Path = TempFileHandler.RegisterFile();
-                var filename = string.Format(format + ".txt", DateTime.Now);
+                var filename = string.Format(format + ".txt", DateTime.Now, "Clipboard Text");
 
                 File.WriteAllText(Path, Clipboard.GetText());
 

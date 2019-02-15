@@ -7,56 +7,66 @@ using System.Windows.Forms;
 
 namespace frznUpload.Client
 {
-    partial class HotkeyConfigControl
+    partial class HotkeyConfigControl : GroupBox
     {
 
         private SplitContainer SplitContainer;
-        private TextBox FormatBox;
+        private TextBox FormatText;
         private Button HotkeyButton;
         private Label label3;
         private Label label1;
         private ComboBox FileProviderBox;
         private Label label2;
         private CheckBox ShareBox;
-        private Label label4;
+        private Label WhitelistLabel;
         private TextBox WhitelistText;
         private CheckBox WhitelistedBox;
-        private CheckBox checkBox1;
+        private CheckBox PublicRegisteredBox;
         private CheckBox FirstViewBox;
         private CheckBox PublicBox;
+        private Button RemoveButton;
 
         private void Initialize()
         {
             SplitContainer = new SplitContainer();
-            FormatBox = new TextBox();
+            FormatText = new TextBox();
             HotkeyButton = new Button();
             label3 = new Label();
             label1 = new Label();
             FileProviderBox = new ComboBox();
             label2 = new Label();
             ShareBox = new CheckBox();
-            label4 = new Label();
+            WhitelistLabel = new Label();
             WhitelistText = new TextBox();
             WhitelistedBox = new CheckBox();
-            checkBox1 = new CheckBox();
+            PublicRegisteredBox = new CheckBox();
             FirstViewBox = new CheckBox();
             PublicBox = new CheckBox();
+            RemoveButton = new Button();
             ((System.ComponentModel.ISupportInitialize)(SplitContainer)).BeginInit();
             SplitContainer.Panel1.SuspendLayout();
             SplitContainer.Panel2.SuspendLayout();
             SplitContainer.SuspendLayout();
             SuspendLayout();
+
+            this.Location = new System.Drawing.Point(83, 5);
+            this.Name = "Hotkey";
+            this.Size = new System.Drawing.Size(270, 190);
+            this.TabIndex = 1;
+            this.TabStop = false;
+            this.Text = "Hotkey";
+
             // 
             // SplitContainer
             // 
             SplitContainer.Dock = DockStyle.Fill;
             SplitContainer.IsSplitterFixed = true;
-            SplitContainer.Location = new System.Drawing.Point(0, 0);
+            SplitContainer.Location = new System.Drawing.Point(10, 15);
             SplitContainer.Name = "SplitContainer";
             // 
             // SplitContainer.Panel1
             // 
-            SplitContainer.Panel1.Controls.Add(FormatBox);
+            SplitContainer.Panel1.Controls.Add(FormatText);
             SplitContainer.Panel1.Controls.Add(HotkeyButton);
             SplitContainer.Panel1.Controls.Add(label3);
             SplitContainer.Panel1.Controls.Add(label1);
@@ -66,24 +76,27 @@ namespace frznUpload.Client
             // 
             // SplitContainer.Panel2
             // 
-            SplitContainer.Panel2.Controls.Add(label4);
+            SplitContainer.Panel2.Controls.Add(WhitelistLabel);
             SplitContainer.Panel2.Controls.Add(WhitelistText);
             SplitContainer.Panel2.Controls.Add(WhitelistedBox);
-            SplitContainer.Panel2.Controls.Add(checkBox1);
+            SplitContainer.Panel2.Controls.Add(PublicRegisteredBox);
             SplitContainer.Panel2.Controls.Add(FirstViewBox);
             SplitContainer.Panel2.Controls.Add(PublicBox);
+            SplitContainer.Panel2.Controls.Add(RemoveButton);
             SplitContainer.Size = new System.Drawing.Size(245, 167);
             SplitContainer.SplitterDistance = 120;
             SplitContainer.TabIndex = 8;
             // 
             // FormatBox
             // 
-            FormatBox.Anchor = ((AnchorStyles)(((AnchorStyles.Top | AnchorStyles.Left)
+            FormatText.Anchor = ((AnchorStyles)(((AnchorStyles.Top | AnchorStyles.Left)
             | AnchorStyles.Right)));
-            FormatBox.Location = new System.Drawing.Point(9, 114);
-            FormatBox.Name = "FormatBox";
-            FormatBox.Size = new System.Drawing.Size(108, 20);
-            FormatBox.TabIndex = 5;
+            FormatText.Location = new System.Drawing.Point(9, 114);
+            FormatText.Name = "FormatBox";
+            FormatText.Size = new System.Drawing.Size(108, 20);
+            FormatText.TabIndex = 5;
+            FormatText.Text = "{1} - {0:h:mm dd.MM.yy}";
+            FormatText.TextChanged += FormatText_TextChanged;
             // 
             // HotkeyButton
             // 
@@ -95,6 +108,7 @@ namespace frznUpload.Client
             HotkeyButton.TabIndex = 0;
             HotkeyButton.Text = "[none]";
             HotkeyButton.UseVisualStyleBackColor = true;
+            HotkeyButton.Click += HotkeyButton_Click;
             // 
             // label3
             // 
@@ -128,6 +142,7 @@ namespace frznUpload.Client
             FileProviderBox.Name = "FileProviderBox";
             FileProviderBox.Size = new System.Drawing.Size(108, 21);
             FileProviderBox.TabIndex = 3;
+            FileProviderBox.SelectedIndexChanged += FileProviderBox_SelectedIndexChanged;
             // 
             // label2
             // 
@@ -149,15 +164,16 @@ namespace frznUpload.Client
             ShareBox.TabIndex = 0;
             ShareBox.Text = "Share";
             ShareBox.UseVisualStyleBackColor = true;
+            ShareBox.CheckedChanged += ShareBox_CheckedChanged;
             // 
             // label4
             // 
-            label4.AutoSize = true;
-            label4.Location = new System.Drawing.Point(3, 96);
-            label4.Name = "label4";
-            label4.Size = new System.Drawing.Size(47, 13);
-            label4.TabIndex = 6;
-            label4.Text = "Whitelist";
+            WhitelistLabel.AutoSize = true;
+            WhitelistLabel.Location = new System.Drawing.Point(3, 96);
+            WhitelistLabel.Name = "label4";
+            WhitelistLabel.Size = new System.Drawing.Size(47, 13);
+            WhitelistLabel.TabIndex = 6;
+            WhitelistLabel.Text = "Whitelist";
             // 
             // WhitelistText
             // 
@@ -167,6 +183,7 @@ namespace frznUpload.Client
             WhitelistText.Name = "WhitelistText";
             WhitelistText.Size = new System.Drawing.Size(112, 20);
             WhitelistText.TabIndex = 5;
+            WhitelistText.TextChanged += WhitelistText_TextChanged;
             // 
             // WhitelistedBox
             // 
@@ -177,18 +194,20 @@ namespace frznUpload.Client
             WhitelistedBox.TabIndex = 4;
             WhitelistedBox.Text = "Whitelisted";
             WhitelistedBox.UseVisualStyleBackColor = true;
+            WhitelistedBox.CheckedChanged += WhitelistedBox_CheckedChanged;
             // 
-            // checkBox1
+            // PublicRegisteredBox
             // 
-            checkBox1.AutoSize = true;
-            checkBox1.Checked = true;
-            checkBox1.CheckState = CheckState.Checked;
-            checkBox1.Location = new System.Drawing.Point(6, 54);
-            checkBox1.Name = "checkBox1";
-            checkBox1.Size = new System.Drawing.Size(109, 17);
-            checkBox1.TabIndex = 3;
-            checkBox1.Text = "Public Registered";
-            checkBox1.UseVisualStyleBackColor = true;
+            PublicRegisteredBox.AutoSize = true;
+            PublicRegisteredBox.Checked = true;
+            PublicRegisteredBox.CheckState = CheckState.Checked;
+            PublicRegisteredBox.Location = new System.Drawing.Point(6, 54);
+            PublicRegisteredBox.Name = "PublicRegisteredBox";
+            PublicRegisteredBox.Size = new System.Drawing.Size(109, 17);
+            PublicRegisteredBox.TabIndex = 3;
+            PublicRegisteredBox.Text = "Public Registered";
+            PublicRegisteredBox.UseVisualStyleBackColor = true;
+            PublicRegisteredBox.CheckedChanged += PublicRegisteredBox_CheckedChanged;
             // 
             // FirstViewBox
             // 
@@ -199,6 +218,7 @@ namespace frznUpload.Client
             FirstViewBox.TabIndex = 2;
             FirstViewBox.Text = "First View";
             FirstViewBox.UseVisualStyleBackColor = true;
+            FirstViewBox.CheckedChanged += FirstViewBox_CheckedChanged;
             // 
             // PublicBox
             // 
@@ -211,19 +231,30 @@ namespace frznUpload.Client
             PublicBox.TabIndex = 1;
             PublicBox.Text = "Public";
             PublicBox.UseVisualStyleBackColor = true;
+            PublicBox.CheckedChanged += PublicBox_CheckedChanged;
+            //
+            // RemoveButton
+            //
+            RemoveButton.Anchor = ((AnchorStyles.Top | AnchorStyles.Left)
+            | AnchorStyles.Right);
+            RemoveButton.Location = new System.Drawing.Point(6, 134);
+            RemoveButton.Name = "RemoveButton";
+            RemoveButton.Size = new System.Drawing.Size(108, 23);
+            RemoveButton.TabIndex = 0;
+            RemoveButton.Text = "Remove";
+            RemoveButton.UseVisualStyleBackColor = true;
+            RemoveButton.Click += RemoveButton_Click;
             // 
             // SettingsForm
             // 
-            ClientSize = new System.Drawing.Size(245, 167);
-            Controls.Add(SplitContainer);
-            Name = "SettingsForm";
+            this.Controls.Add(SplitContainer);
             SplitContainer.Panel1.ResumeLayout(false);
             SplitContainer.Panel1.PerformLayout();
             SplitContainer.Panel2.ResumeLayout(false);
             SplitContainer.Panel2.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(SplitContainer)).EndInit();
             SplitContainer.ResumeLayout(false);
-            ResumeLayout(false);
+            ResumeLayout(true);
 
         }
     }
