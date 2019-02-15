@@ -26,7 +26,15 @@ namespace frznUpload.Client.Hotkey
 
             Hotkey = new HotKey(Config.Modifier, Config.Key);
             Hotkey.Tag = this;
-            Hotkey.Pressed += parent.Pressed;
+            Hotkey.Pressed += Hotkey_Pressed;
+        }
+
+        private void Hotkey_Pressed(object sender, EventArgs e)
+        {
+            if (!Enabled) // Ensure that the hotkey is not triggered if removed
+                return;
+
+            Parent.Enqueue(Execute());
         }
 
         public List<UploadContract> Execute()
@@ -77,12 +85,12 @@ namespace frznUpload.Client.Hotkey
 
         public string Serialize()
         {
-            string str = $"{(int)Config.Modifier},{(int)Config.Key},{(int)Config.Share},{(int)Config.Provider},'{Config.Whitelist.Replace("'", "\\'")}','{Config.Format.Replace("'", "\\'")}'";
+            string str = $"{(int)Config.Modifier},{(int)Config.Key},{(int)Config.Share},{(int)Config.Provider},'{Config.Format.Replace("'", "\\'")}','{Config.Whitelist.Replace("'", "\\'")}'";
 
             return str;
         }
 
-        public static HotkeyHandler Unserialize(HotkeyContainer parent, string str)
+        public static HotkeyHandler Deserialize(HotkeyContainer parent, string str)
         {
             Regex r = new Regex(@"^(\d+),(\d+),(\d+),(\d+),'((?:\\'|[^\\',])*)','((?:\\'|[^\\',])*)'$");
 

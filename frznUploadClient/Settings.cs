@@ -143,6 +143,7 @@ namespace frznUpload.Client
         {
             HotkeyLayout.Controls.Remove(control);
             Hotkeys.Remove(control.GetConfig());
+            HotkeyControls.Remove(control);
         }
 
         public void SaveHotkey(HotkeyConfig config)

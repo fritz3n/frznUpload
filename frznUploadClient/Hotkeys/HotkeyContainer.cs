@@ -32,7 +32,7 @@ namespace frznUpload.Client
             {
                 if (hotkey != "")
                 {
-                    var hc = HotkeyHandler.Unserialize(this, hotkey.Replace("%bar%", "|"));
+                    var hc = HotkeyHandler.Deserialize(this, hotkey.Replace("%bar%", "|"));
                     if (hc == null)
                         continue;
                     hc.Enabled = true;
@@ -93,10 +93,9 @@ namespace frznUpload.Client
             StartUpload();
         }
 
-        public void Pressed(object sender, EventArgs e)
+        public void Enqueue(List<UploadContract> contracts)
         {
-            var contracts = ((sender as HotKey).Tag as HotkeyHandler).Execute();
-            foreach(var c in contracts)
+            foreach (var c in contracts)
             {
                 UploadQueue.Enqueue(c);
             }
