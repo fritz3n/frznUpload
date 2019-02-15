@@ -287,7 +287,7 @@ namespace frznUpload.Server
                                 if (!db.HasTowFa())
                                 {
                                     string secret = TowFactorHandler.CreateSecret();
-                                    mes.SendMessage(new Message(Message.MessageType.TowFactorAdd, false, secret));
+                                    mes.SendMessage(new Message(Message.MessageType.TowFactorAdd, false, TowFactorHandler.GenerateQrCode(db.GetUsername(), secret)));
                                     db.SetTowFactorSecret(secret);
                                 }
                                 else
