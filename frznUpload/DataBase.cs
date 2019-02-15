@@ -317,7 +317,7 @@ namespace frznUpload.Server
 
         public string GetUsername()
         {
-            return conn.QuerySingle<string>("SELECT name FROM user WHERE id=@id",new { id = userId});
+            return conn.QuerySingle<string>("SELECT name FROM users WHERE id=@id",new { id = userId});
         }
     }       
 }
