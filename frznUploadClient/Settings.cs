@@ -139,6 +139,12 @@ namespace frznUpload.Client
             HotkeyLayout.ResumeLayout(true);
         }
 
+        public void RemoveHotkey(HotkeyConfigControl control)
+        {
+            HotkeyLayout.Controls.Remove(control);
+            Hotkeys.Remove(control.GetConfig());
+        }
+
         public void SaveHotkey(HotkeyConfig config)
         {
             Hotkeys.Add(config);

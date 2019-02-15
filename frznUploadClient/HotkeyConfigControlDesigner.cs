@@ -24,6 +24,7 @@ namespace frznUpload.Client
         private CheckBox PublicRegisteredBox;
         private CheckBox FirstViewBox;
         private CheckBox PublicBox;
+        private Button RemoveButton;
 
         private void Initialize()
         {
@@ -41,6 +42,7 @@ namespace frznUpload.Client
             PublicRegisteredBox = new CheckBox();
             FirstViewBox = new CheckBox();
             PublicBox = new CheckBox();
+            RemoveButton = new Button();
             ((System.ComponentModel.ISupportInitialize)(SplitContainer)).BeginInit();
             SplitContainer.Panel1.SuspendLayout();
             SplitContainer.Panel2.SuspendLayout();
@@ -80,6 +82,7 @@ namespace frznUpload.Client
             SplitContainer.Panel2.Controls.Add(PublicRegisteredBox);
             SplitContainer.Panel2.Controls.Add(FirstViewBox);
             SplitContainer.Panel2.Controls.Add(PublicBox);
+            SplitContainer.Panel2.Controls.Add(RemoveButton);
             SplitContainer.Size = new System.Drawing.Size(245, 167);
             SplitContainer.SplitterDistance = 120;
             SplitContainer.TabIndex = 8;
@@ -193,13 +196,13 @@ namespace frznUpload.Client
             WhitelistedBox.UseVisualStyleBackColor = true;
             WhitelistedBox.CheckedChanged += WhitelistedBox_CheckedChanged;
             // 
-            // checkBox1
+            // PublicRegisteredBox
             // 
             PublicRegisteredBox.AutoSize = true;
             PublicRegisteredBox.Checked = true;
             PublicRegisteredBox.CheckState = CheckState.Checked;
             PublicRegisteredBox.Location = new System.Drawing.Point(6, 54);
-            PublicRegisteredBox.Name = "checkBox1";
+            PublicRegisteredBox.Name = "PublicRegisteredBox";
             PublicRegisteredBox.Size = new System.Drawing.Size(109, 17);
             PublicRegisteredBox.TabIndex = 3;
             PublicRegisteredBox.Text = "Public Registered";
@@ -229,10 +232,21 @@ namespace frznUpload.Client
             PublicBox.Text = "Public";
             PublicBox.UseVisualStyleBackColor = true;
             PublicBox.CheckedChanged += PublicBox_CheckedChanged;
+            //
+            // RemoveButton
+            //
+            RemoveButton.Anchor = ((AnchorStyles.Top | AnchorStyles.Left)
+            | AnchorStyles.Right);
+            RemoveButton.Location = new System.Drawing.Point(6, 134);
+            RemoveButton.Name = "RemoveButton";
+            RemoveButton.Size = new System.Drawing.Size(108, 23);
+            RemoveButton.TabIndex = 0;
+            RemoveButton.Text = "Remove";
+            RemoveButton.UseVisualStyleBackColor = true;
+            RemoveButton.Click += RemoveButton_Click;
             // 
             // SettingsForm
             // 
-            //ClientSize = new System.Drawing.Size(245, 167);
             this.Controls.Add(SplitContainer);
             SplitContainer.Panel1.ResumeLayout(false);
             SplitContainer.Panel1.PerformLayout();

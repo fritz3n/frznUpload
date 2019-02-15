@@ -48,11 +48,8 @@ namespace frznUpload.Client
             UpdateButtonText();
         }
 
-        private void Save()
+        public HotkeyConfig GetConfig()
         {
-            if (!IsValid().Item1)
-                return;
-
             ShareType share = ShareType.DontShare;
 
             if (ShareBox.Checked)
@@ -81,6 +78,16 @@ namespace frznUpload.Client
                 Modifier = Modifiers,
                 Provider = GetSelectedFileProvider()
             };
+
+            return config;
+        }
+
+        private void Save()
+        {
+            if (!IsValid().Item1)
+                return;
+            
+            var config = GetConfig();
 
             Form.SaveHotkey(config);
         }
@@ -248,6 +255,11 @@ namespace frznUpload.Client
                 StopCapturing(true);
             else
                 StartCapturing();
+        }
+        
+        private void RemoveButton_Click(object sender, EventArgs e)
+        {
+            throw new NotImplementedException();
         }
 
         private void InitializeComponent()
