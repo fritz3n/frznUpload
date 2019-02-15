@@ -131,6 +131,7 @@
     <Compile Include="IconHandler.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Propmpt.cs" />
     <Compile Include="RemoteFile.cs" />
     <Compile Include="Settings.cs">
       <SubType>Form</SubType>

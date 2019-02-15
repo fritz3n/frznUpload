@@ -165,7 +165,7 @@ namespace frznUpload.Server
 
                                 if (db.SetToken(message[0], message[1], chal.GetThumbprint()))
                                 {
-                                    DoTowFaCheck();
+                                    DoTowFaCheckIfNeeded();
 
                                     mes.SendMessage(new Message(Message.MessageType.AuthSuccess));
                                     log.WriteLine("Authenticated with a Public Key");
@@ -292,7 +292,7 @@ namespace frznUpload.Server
                             case Message.MessageType.TowFactorRemove:
                                 try
                                 {
-                                    DoTowFaCheck();
+                                    DoTowFaCheckIfNeeded();
                                     db.RemoveTowFactorSecret();
                                     mes.SendMessage(new Message(Message.MessageType.TowFactorRemove,false));
                                 }
@@ -336,7 +336,7 @@ namespace frznUpload.Server
         }
 
 
-        private void DoTowFaCheck()
+        private void DoTowFaCheckIfNeeded()
         {
             //check if the user has towFa enabled, if yes -> send him that we need proof!
             string secret = db.GetTowFactorSecret();

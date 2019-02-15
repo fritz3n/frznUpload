@@ -21,7 +21,6 @@ namespace frznUpload.Client
         public event EventHandler UploadFinished;
         private UploadContract FileUpload;
         private System.Timers.Timer UploadTimer = new System.Timers.Timer(100);
-        private RemoteFile RightClicked = null;
 
         public MainForm(ClientManager client)
         {
@@ -214,7 +213,7 @@ namespace frznUpload.Client
                     string id = ((RemoteFile)(sel.Tag)).Identifier;
                     await Client.DeleteFile(id);
                 }
-                catch (Exception ex)
+                catch
                 {
                     MessageBox.Show("Error deleting file " + sel.SubItems[0]);
                 }
@@ -230,7 +229,7 @@ namespace frznUpload.Client
             }
         }
 
-        private async void deleteToolStripMenuItem_ClickAsync(object sender, EventArgs e)
+        private async void DeleteToolStripMenuItem_ClickAsync(object sender, EventArgs e)
         {
             await DeletSelectedItems();
         }
@@ -240,9 +239,5 @@ namespace frznUpload.Client
             settingsForm.Show();
         }
 
-        private void tabPage1_Click(object sender, EventArgs e)
-        {
-
-        }
     }
 }

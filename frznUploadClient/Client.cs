@@ -180,7 +180,24 @@ namespace frznUpload.Client
 
                 mes.SendMessage(new Message(Message.MessageType.Auth, false, username, password, pub[0], pub[1]));
 
-                mes.WaitForMessage(true, Message.MessageType.AuthSuccess);
+                Message rec = await mes.WaitForMessageAsync(false);
+                if(rec.IsError == true)
+                {
+                    throw new Exception("Recived an error: " + rec.ToString());
+                }
+                else if(rec.Type == Message.MessageType.AuthSuccess)
+                {
+                    //auth recived all good.
+                }else if (rec.Type == Message.MessageType.TowFactorNeeded)
+                {
+                    //tow fa needed
+                    await DoTowFaExchangeAsync();
+                }
+                else
+                {
+                    //unexpected message
+                    throw new Exception("Unexpected message: " + rec.ToString());
+                }
 
                 return await AuthWithKey(file);
             }
@@ -304,20 +321,43 @@ namespace frznUpload.Client
 
             return list;
         }
-        public void DoTowFaExchange()
+        public async Task DoTowFaExchangeAsync()
         {
             mes.SendMessage(new Message(Message.MessageType.TowFactorNeeded, false, GetTowFaToken()));
-            mes.WaitForMessage(true, Message.MessageType.TowFactorSuccess);
+            await mes.WaitForMessageAsync(true, Message.MessageType.TowFactorSuccess);
         }
+
         public string GetTowFaToken()
         {
             return Prompt.ShowDialog("Pleas enter your tow factor authentication token", "Further authentication required");
         }
 
-        /// <summary>
-        /// Asks the server to delete a file
-        /// </summary>
-        public async Task DeleteFileAsync(string file_identifier)
+        public async Task RemoveTowFaAsync()
+        {
+            try
+            {
+                mes.SendMessage(new Message(Message.MessageType.TowFactorRemove, false));
+                await mes.WaitForMessageAsync(true, Message.MessageType.TowFactorNeeded);
+            }
+            catch (Exception e)
+            {
+                throw new Exception("Error while requesting tow factor authentication removal", e);
+            }
+            try
+            {
+                await DoTowFaExchangeAsync();
+                await mes.WaitForMessageAsync(true, Message.MessageType.TowFactorRemove);
+            }
+            catch (Exception e)
+            {
+                throw new Exception("Error while deleting tow factor authentication", e);
+            }
+        }
+
+    /// <summary>
+    /// Asks the server to delete a file
+    /// </summary>
+    public async Task DeleteFileAsync(string file_identifier)
         {
             mes.SendMessage(new Message(Message.MessageType.DeleteFile, false, file_identifier));
             await mes.WaitForMessageAsync(true, Message.MessageType.DeleteFile);

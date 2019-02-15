@@ -30,7 +30,7 @@ namespace frznUpload.Client
         public static bool PathIsSame()
         {
 
-            if (rkApp.GetValue(AppName) == GetExecutingPath())
+            if ((string)rkApp.GetValue(AppName) == GetExecutingPath())
             {
                 return true;
             }

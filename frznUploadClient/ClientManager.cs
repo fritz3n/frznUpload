@@ -81,6 +81,11 @@ namespace frznUpload.Client
             await RetryAsync(() => ActiveClient.DeleteFileAsync(fileIdentifier));
         }
 
+        public async Task RemoveTowFa()
+        {
+            await RetryAsync(() => ActiveClient.RemoveTowFaAsync());
+        }
+
         
         public void Disconnect()
         {

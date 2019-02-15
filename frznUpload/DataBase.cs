@@ -302,7 +302,7 @@ namespace frznUpload.Server
         /// </summary>
         public void SetTowFactorSecret(string val)
         {
-            conn.Execute("UPDATE users SET tow_fa_secret=@val WHERE id=@id", new { val = val, id = userId });
+            conn.Execute("UPDATE users SET tow_fa_secret=@val WHERE id=@id", new { val, id = userId });
         }
         
         public void RemoveTowFactorSecret()
