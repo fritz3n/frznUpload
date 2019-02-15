@@ -30,10 +30,34 @@ namespace frznUpload.Client
 
             foreach(string hotkey in hotkeys)
             {
-                var hc = HotkeyHandler.Unserialize(this, hotkey.Replace("%bar%", "|"));
-                HotKeys.Add((hc.Config.Modifier, hc.Config.Key), hc);
+                if (hotkey != "")
+                {
+                    var hc = HotkeyHandler.Unserialize(this, hotkey.Replace("%bar%", "|"));
+                    if (hc == null)
+                        continue;
+                    hc.Enabled = true;
+                    HotKeys.Add((hc.Config.Modifier, hc.Config.Key), hc);
+                }
             }
 
+        }
+
+        private void Save()
+        {
+            string[] serializedStrings = new string[HotKeys.Count];
+
+            var list = HotKeys.Values.ToList();
+
+            for(int i = 0; i < HotKeys.Count; i++)
+            {
+                serializedStrings[i] = list[i].Serialize().Replace("|", "%bar%");
+            }
+
+            string serialized = string.Join("|", serializedStrings);
+
+            Properties.Settings.Default.Hotkeys = serialized;
+
+            Properties.Settings.Default.Save();
         }
 
         public IEnumerator<HotkeyConfig> GetEnumerator()
@@ -50,6 +74,7 @@ namespace frznUpload.Client
             var hotkeyHandler = new HotkeyHandler(this, hotkey);
             hotkeyHandler.Enabled = true;
             HotKeys.Add(Key, hotkeyHandler);
+            Save();
         }
 
         public void Remove(HotkeyConfig hotkey)
@@ -58,6 +83,8 @@ namespace frznUpload.Client
             if (HotKeys.ContainsKey(Key))
             {
                 HotKeys[Key].Enabled = false;
+                HotKeys.Remove(Key);
+                Save();
             }
         }
 
@@ -65,8 +92,8 @@ namespace frznUpload.Client
         {
             StartUpload();
         }
-        
-        private void Pressed(object sender, EventArgs e)
+
+        public void Pressed(object sender, EventArgs e)
         {
             var contracts = ((sender as HotKey).Tag as HotkeyHandler).Execute();
             foreach(var c in contracts)

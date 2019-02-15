@@ -20,18 +20,13 @@ namespace frznUpload.Client.Hotkey
 
         public HotkeyHandler(HotkeyContainer parent, HotkeyConfig config)
         {
-            config = Config;
+            Config = config;
 
             Parent = parent;
 
             Hotkey = new HotKey(Config.Modifier, Config.Key);
-            Hotkey.Pressed += Hotkey_Pressed;
-        }
-
-        private void Hotkey_Pressed(object sender, EventArgs e)
-        {
-            if (Enabled)
-                Execute();
+            Hotkey.Tag = this;
+            Hotkey.Pressed += parent.Pressed;
         }
 
         public List<UploadContract> Execute()
@@ -51,7 +46,7 @@ namespace frznUpload.Client.Hotkey
                 default:
                     throw new InvalidOperationException();
             }
-            
+
             List<UploadFile> uploads = provider.GetFile(Config.Format);
 
             var list = new List<UploadContract>();
@@ -82,7 +77,9 @@ namespace frznUpload.Client.Hotkey
 
         public string Serialize()
         {
-            return $"{(int)Config.Modifier},{(int)Config.Key},{(int)Config.Share}, {(int)Config.Provider},'{Config.Whitelist.Replace("'", "\\'")}','{Config.Format.Replace("'", "\\'")}'";
+            string str = $"{(int)Config.Modifier},{(int)Config.Key},{(int)Config.Share},{(int)Config.Provider},'{Config.Whitelist.Replace("'", "\\'")}','{Config.Format.Replace("'", "\\'")}'";
+
+            return str;
         }
 
         public static HotkeyHandler Unserialize(HotkeyContainer parent, string str)
@@ -92,24 +89,24 @@ namespace frznUpload.Client.Hotkey
             Match m = r.Match(str);
 
             if (!m.Success)
-                throw new InvalidOperationException();
+                return null;
 
-            int ModifierInt = int.Parse(m.Groups[0].Value);
+            int ModifierInt = int.Parse(m.Groups[1].Value);
             var ModifierKeys = (ModifierKeys)ModifierInt;
 
-            int KeyInt = int.Parse(m.Groups[1].Value);
+            int KeyInt = int.Parse(m.Groups[2].Value);
             var Keys = (Keys)KeyInt;
 
-            int ShareInt = int.Parse(m.Groups[2].Value);
+            int ShareInt = int.Parse(m.Groups[3].Value);
             var Share = (ShareType)ShareInt;
 
-            int ProviderInt = int.Parse(m.Groups[3].Value);
+            int ProviderInt = int.Parse(m.Groups[4].Value);
             var Provider = (FileProvider)ProviderInt;
 
-            string Format = m.Groups[4].Value;
+            string Format = m.Groups[5].Value;
             Format = Format.Replace("\\'", "'");
 
-            string Whitelist = m.Groups[4].Value;
+            string Whitelist = m.Groups[6].Value;
             Whitelist = Format.Replace("\\'", "'");
 
             HotkeyConfig config = new HotkeyConfig
@@ -130,15 +127,17 @@ namespace frznUpload.Client.Hotkey
     public enum ShareType
     {
         DontShare = 0,
-        FirstView = 1,
-        Public = 2,
-        PublicRegistered = 4,
-        Whitelisted = 8,
+        Share = 1,
+        FirstView = 2,
+        Public = 4,
+        PublicRegistered = 8,
+        Whitelisted = 16,
     }
 
     [Flags]
     public enum FileProvider
     {
+        None = 0, // Not a valid Value
         Clipboard = 1,
         ScreenClip = 2,
         Screenshot = 3,
