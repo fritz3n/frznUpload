@@ -296,6 +296,11 @@ namespace frznUpload.Server
         {
             return conn.QuerySingle<string>("SELECT tow_fa_secret FROM users WHERE id=@id", new { id=userId });
         }
+        
+        public bool HasTowFa()
+        {
+            return GetTowFactorSecret() != "null";
+        }
 
         /// <summary>
         /// Sets a towFa secret in the db

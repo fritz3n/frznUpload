@@ -35,10 +35,13 @@
             this.AutostartTab = new System.Windows.Forms.TabPage();
             this.autostartCheckbox = new System.Windows.Forms.CheckBox();
             this.AddButton = new System.Windows.Forms.Button();
+            this.accountTab = new System.Windows.Forms.TabPage();
+            this.towFaCheckbox = new System.Windows.Forms.CheckBox();
             this.SettingsTabCtrl.SuspendLayout();
             this.HotkeyTab.SuspendLayout();
             this.HotkeyLayout.SuspendLayout();
             this.AutostartTab.SuspendLayout();
+            this.accountTab.SuspendLayout();
             this.SuspendLayout();
             // 
             // SettingsTabCtrl
@@ -46,11 +49,13 @@
             this.SettingsTabCtrl.Controls.Add(this.HotkeyTab);
             this.SettingsTabCtrl.Controls.Add(this.OtherTab);
             this.SettingsTabCtrl.Controls.Add(this.AutostartTab);
+            this.SettingsTabCtrl.Controls.Add(this.accountTab);
             this.SettingsTabCtrl.Location = new System.Drawing.Point(12, 12);
             this.SettingsTabCtrl.Name = "SettingsTabCtrl";
             this.SettingsTabCtrl.SelectedIndex = 0;
             this.SettingsTabCtrl.Size = new System.Drawing.Size(776, 426);
             this.SettingsTabCtrl.TabIndex = 0;
+            this.SettingsTabCtrl.TabIndexChanged += new System.EventHandler(this.SettingsTabCtrl_TabIndexChangedAsync);
             // 
             // HotkeyTab
             // 
@@ -115,7 +120,30 @@
             this.autostartCheckbox.TabIndex = 0;
             this.autostartCheckbox.Text = "Autostart";
             this.autostartCheckbox.UseVisualStyleBackColor = true;
-            this.autostartCheckbox.CheckedChanged += new System.EventHandler(this.checkBox1_CheckedChanged);
+            this.autostartCheckbox.CheckedChanged += new System.EventHandler(this.CheckBox1_CheckedChanged);
+            // 
+            // accountTab
+            // 
+            this.accountTab.Controls.Add(this.towFaCheckbox);
+            this.accountTab.Location = new System.Drawing.Point(4, 22);
+            this.accountTab.Name = "accountTab";
+            this.accountTab.Padding = new System.Windows.Forms.Padding(3);
+            this.accountTab.Size = new System.Drawing.Size(768, 400);
+            this.accountTab.TabIndex = 3;
+            this.accountTab.Text = "Account";
+            this.accountTab.UseVisualStyleBackColor = true;
+            // 
+            // towFaCheckbox
+            // 
+            this.towFaCheckbox.AutoSize = true;
+            this.towFaCheckbox.Enabled = false;
+            this.towFaCheckbox.Location = new System.Drawing.Point(21, 27);
+            this.towFaCheckbox.Name = "towFaCheckbox";
+            this.towFaCheckbox.Size = new System.Drawing.Size(151, 17);
+            this.towFaCheckbox.TabIndex = 0;
+            this.towFaCheckbox.Text = "Tow Factor Authentication";
+            this.towFaCheckbox.UseVisualStyleBackColor = true;
+            this.towFaCheckbox.CheckedChanged += new System.EventHandler(this.TowFaCheckbox_CheckedChangedAsync);
             // 
             // SettingsForm
             // 
@@ -135,6 +163,8 @@
             this.HotkeyTab.ResumeLayout(false);
             this.AutostartTab.ResumeLayout(false);
             this.AutostartTab.PerformLayout();
+            this.accountTab.ResumeLayout(false);
+            this.accountTab.PerformLayout();
             this.HotkeyLayout.ResumeLayout(false);
             this.ResumeLayout(false);
 
@@ -149,5 +179,7 @@
         private System.Windows.Forms.Button AddButton;
         private System.Windows.Forms.TabPage AutostartTab;
         private System.Windows.Forms.CheckBox autostartCheckbox;
+        private System.Windows.Forms.TabPage accountTab;
+        private System.Windows.Forms.CheckBox towFaCheckbox;
     }
 }

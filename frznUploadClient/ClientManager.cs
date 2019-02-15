@@ -86,7 +86,18 @@ namespace frznUpload.Client
             await RetryAsync(() => ActiveClient.RemoveTowFaAsync());
         }
 
-        
+        public async Task<bool> GetHasTowFaEnabled()
+        {
+            return await RetryAsync(() => ActiveClient.GetHasTowFaEnabled());
+        }
+
+        public async Task<string> GetTowFaSecret()
+        {
+            return await RetryAsync(() => ActiveClient.GetTowFaSecret());
+        }
+
+
+
         public void Disconnect()
         {
             ActiveClient.Disconnect();

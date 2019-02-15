@@ -284,9 +284,16 @@ namespace frznUpload.Server
                                 break;
                             #region towFa
                             case Message.MessageType.TowFactorAdd:
-                                string secret = TowFactorHandler.CreateSecret();
-                                mes.SendMessage(new Message(Message.MessageType.TowFactorAdd, false, secret));
-                                db.SetTowFactorSecret(secret);
+                                if (!db.HasTowFa())
+                                {
+                                    string secret = TowFactorHandler.CreateSecret();
+                                    mes.SendMessage(new Message(Message.MessageType.TowFactorAdd, false, secret));
+                                    db.SetTowFactorSecret(secret);
+                                }
+                                else
+                                {
+                                    mes.SendMessage(new Message(Message.MessageType.TowFactorAdd, true));
+                                }
 
                                 break;
                             case Message.MessageType.TowFactorRemove:
@@ -302,6 +309,25 @@ namespace frznUpload.Server
                                     Dispose();
                                 }
 
+                                break;
+                            case Message.MessageType.HasTowFactor:
+                                try
+                                {
+                                    if (db.HasTowFa())
+                                    {
+                                        //no secret
+                                        mes.SendMessage(new Message(Message.MessageType.HasTowFactor, false, 0));
+                                    }
+                                    else
+                                    {
+                                        //has secret
+                                        mes.SendMessage(new Message(Message.MessageType.HasTowFactor, false, 0));
+                                    }
+                                }catch(Exception e)
+                                {
+                                    log.WriteLine("Error while testitng if user has towFa: " + e.Message);
+                                    mes.SendMessage(new Message(Message.MessageType.HasTowFactor, true));
+                                }
                                 break;
                             #endregion
                             default:
