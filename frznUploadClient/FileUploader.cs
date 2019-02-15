@@ -15,7 +15,13 @@ namespace frznUpload.Client
 
         public int TotalSize { get; private set; }
         public int WrittenSize { get; private set; }
-        public double Progress { get => (double)WrittenSize / TotalSize; }
+        public double Progress { get
+            {
+                var v = (double)WrittenSize / TotalSize;
+                if (v == double.NaN)
+                    return 0;
+                return v;
+            } }
         public bool Finished { get; private set; }
         public bool Running { get; private set; }
         public string Identifier { get; private set; }
@@ -134,7 +140,6 @@ namespace frznUpload.Client
         {
             if (SingleUse)
             {
-                client?.Disconnect();
                 client?.Dispose();
             }
             file?.Close();
