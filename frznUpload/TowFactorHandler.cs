@@ -19,6 +19,11 @@ namespace frznUpload.Server
         {
             return tfa.VerifyCode(secret, code);
         }
+
+        public static string GenerateQrCode(string username, string secret)
+        {
+            return tfa.GetQrCodeImageAsDataUri(username, secret, 512);
+        }
         
     }
 }

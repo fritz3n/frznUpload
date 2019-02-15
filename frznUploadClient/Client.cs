@@ -364,7 +364,7 @@ namespace frznUpload.Client
             }
             else
             {
-                return m.Fields[0];
+                return m.Fields[0] == 1;
             }
         }
 

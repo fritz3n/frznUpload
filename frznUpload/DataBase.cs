@@ -315,6 +315,9 @@ namespace frznUpload.Server
             conn.Execute("UPDATE users SET tow_fa_secret=null WHERE id=@id", new { id = userId });
         }
 
-
+        public string GetUsername()
+        {
+            return conn.QuerySingle<string>("SELECT name FROM users WHERE id=@id",new { id = userId});
+        }
     }       
 }
