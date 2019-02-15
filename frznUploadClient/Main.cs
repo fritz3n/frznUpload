@@ -52,8 +52,12 @@ namespace frznUpload.Client
         {
             if (FileUpload.Uploader.Running)
             {
-                if(Created)
-                    ProgressBar.Invoke(new Action(() => ProgressBar.Value = (int)(FileUpload.Uploader.Progress * 100)));
+                try
+                {
+                    if (Created)
+                        ProgressBar.Invoke(new Action(() => ProgressBar.Value = (int)(FileUpload.Uploader.Progress * 100)));
+                }
+                catch { }
             }
             else
             {

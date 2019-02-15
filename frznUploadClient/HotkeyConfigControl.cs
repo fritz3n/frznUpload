@@ -259,7 +259,7 @@ namespace frznUpload.Client
         
         private void RemoveButton_Click(object sender, EventArgs e)
         {
-            throw new NotImplementedException();
+            Form.RemoveHotkey(this);
         }
 
         private void InitializeComponent()
