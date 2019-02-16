@@ -83,7 +83,7 @@ namespace frznUpload.Client
                         LinkText.Invoke(new Action(() => LinkText.Text = @"https://fritzen.tk/view.php?id=" + s));
 
                     SetClipboardText(@"https://fritzen.tk/view.php?id=" + s);
-                    SystemSounds.Asterisk.Play();
+                    SystemSounds.Beep.Play();
                 }
 
                 UploadFinished?.Invoke(this, EventArgs.Empty);

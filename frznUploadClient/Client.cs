@@ -40,7 +40,7 @@ namespace frznUpload.Client
             Disconnect();
         }
 
-        public void Connect(string url, int port)
+        public void Connect(string url, int port, bool verbose = false)
         {
             ThrowIfDisposed();
             Stopwatch stp = new Stopwatch();
@@ -57,7 +57,7 @@ namespace frznUpload.Client
 
             Console.WriteLine("encryption established: " + stp.ElapsedMilliseconds);
 
-            mes = new MessageHandler(Tcp, stream);
+            mes = new MessageHandler(Tcp, stream, verbose);
             mes.Start();
             mes.OnDisconnect += OnDisconnect;
 
@@ -71,7 +71,7 @@ namespace frznUpload.Client
             }
         }
 
-        public async Task ConnectAsync(string url, int port)
+        public async Task ConnectAsync(string url, int port, bool verbose = false)
         {
             ThrowIfDisposed();
             Stopwatch stp = new Stopwatch();
@@ -87,8 +87,8 @@ namespace frznUpload.Client
             stp.Stop();
 
             Console.WriteLine("encryption established: " + stp.ElapsedMilliseconds);
-
-            mes = new MessageHandler(Tcp, stream);
+            
+            mes = new MessageHandler(Tcp, stream, verbose);
             mes.Start();
             mes.OnDisconnect += OnDisconnect;
 

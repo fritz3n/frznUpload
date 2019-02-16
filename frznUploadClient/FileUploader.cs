@@ -40,12 +40,13 @@ namespace frznUpload.Client
 
         public string Filename { get; private set; }
 
-        public FileUploader(MessageHandler messageHandler, Client client, string path, bool singleUse = false, string Filename = null)
+        public FileUploader(MessageHandler messageHandler, Client client, string path, bool singleUse = false, string filename = null)
         {
             mes = messageHandler;
             FilePath = path;
             this.client = client;
             SingleUse = singleUse;
+            Filename = filename;
         }
 
         public void Start()
@@ -73,7 +74,7 @@ namespace frznUpload.Client
                 string filename = Path.GetFileNameWithoutExtension(Filename);
                 string extension = Path.GetExtension(Filename).Replace(".", "");
 
-                ChunkSize = size / 100;
+                ChunkSize = (int)Math.Ceiling((double)size / 100);
 
                 TotalSize = size;
 

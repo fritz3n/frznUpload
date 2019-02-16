@@ -122,7 +122,7 @@ namespace frznUpload.Shared
 
                         Message m = OutgoingQueue.Dequeue();
 
-                        if (Verbose)
+                        if (Verbose & m.Type != Message.MessageType.Ping & m.Type != Message.MessageType.Pong)
                             VerboseLogger.LogMessage(true, m);
 
                         byte[] data = m.ToByte();
@@ -204,7 +204,7 @@ namespace frznUpload.Shared
                     
                     var m = new Message(bytes);
 
-                    if (Verbose)
+                    if (Verbose & m.Type != Message.MessageType.Ping & m.Type != Message.MessageType.Pong)
                         VerboseLogger.LogMessage(false, m);
 
                     if (!PingPong.HandleMessage(m))
