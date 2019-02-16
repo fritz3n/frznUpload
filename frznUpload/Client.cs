@@ -289,10 +289,12 @@ namespace frznUpload.Server
                                     string secret = TowFactorHandler.CreateSecret();
                                     mes.SendMessage(new Message(Message.MessageType.TowFactorAdd, false, TowFactorHandler.GenerateQrCode(db.GetUsername(), secret)));
                                     db.SetTowFactorSecret(secret);
+                                    log.WriteLine("Added tow fa");
                                 }
                                 else
                                 {
                                     mes.SendMessage(new Message(Message.MessageType.TowFactorAdd, true));
+                                    log.WriteLine("Tryed to add tow fa while having some");
                                 }
 
                                 break;

@@ -4,8 +4,10 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -194,8 +196,16 @@ namespace frznUpload.Client
             if (towFaCheckbox.Checked)
             {
                 //enable tow fa
-                string secret = await clientManager.GetTowFaSecret();
-                MessageBox.Show("Enter this secret into your app: " + secret);
+                string qr = await clientManager.GetTowFaSecret();
+                // Display the qrcode
+                var base64Data = Regex.Match(qr, @"data:image/(?<type>.+?),(?<data>.+)").Groups["data"].Value;
+                var binData = Convert.FromBase64String(base64Data);
+
+                using (var stream = new MemoryStream(binData))
+                {
+                    picture_qr.Image = new Bitmap(stream);
+                }
+                scanLable.Visible = true;
             }
             else
             {
@@ -211,9 +221,15 @@ namespace frznUpload.Client
             {
                 //account tab -> load settings
                 towFaCheckbox.Checked = await clientManager.GetHasTowFaEnabled();
-
+                picture_qr.Visible = true;
                 //settings loaded enable buttons
                 towFaCheckbox.Enabled = true;
+            }
+            else
+            {
+                //hide the qrcode and lable
+                picture_qr.Visible = false;
+                scanLable.Visible = false;
             }
         }
     }

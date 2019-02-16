@@ -28,7 +28,7 @@ namespace frznUpload.Client
             prompt.Controls.Add(textLabel);
             prompt.AcceptButton = confirmation;
             prompt.ControlBox = false;
-
+            
             return prompt.ShowDialog() == DialogResult.OK ? textBox.Text : "error";
         }
     }

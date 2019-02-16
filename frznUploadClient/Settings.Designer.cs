@@ -37,10 +37,13 @@
             this.accountTab = new System.Windows.Forms.TabPage();
             this.towFaCheckbox = new System.Windows.Forms.CheckBox();
             this.AddButton = new System.Windows.Forms.Button();
+            this.picture_qr = new System.Windows.Forms.PictureBox();
+            this.scanLable = new System.Windows.Forms.Label();
             this.SettingsTabCtrl.SuspendLayout();
             this.HotkeyTab.SuspendLayout();
             this.AutostartTab.SuspendLayout();
             this.accountTab.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.picture_qr)).BeginInit();
             this.SuspendLayout();
             // 
             // SettingsTabCtrl
@@ -110,6 +113,8 @@
             // 
             // accountTab
             // 
+            this.accountTab.Controls.Add(this.scanLable);
+            this.accountTab.Controls.Add(this.picture_qr);
             this.accountTab.Controls.Add(this.towFaCheckbox);
             this.accountTab.Location = new System.Drawing.Point(4, 22);
             this.accountTab.Name = "accountTab";
@@ -144,6 +149,24 @@
             this.AddButton.UseVisualStyleBackColor = false;
             this.AddButton.Click += new System.EventHandler(this.AddButton_Click);
             // 
+            // picture_qr
+            // 
+            this.picture_qr.Location = new System.Drawing.Point(506, 27);
+            this.picture_qr.Name = "picture_qr";
+            this.picture_qr.Size = new System.Drawing.Size(256, 256);
+            this.picture_qr.TabIndex = 1;
+            this.picture_qr.TabStop = false;
+            // 
+            // scanLable
+            // 
+            this.scanLable.AutoSize = true;
+            this.scanLable.Location = new System.Drawing.Point(367, 31);
+            this.scanLable.Name = "scanLable";
+            this.scanLable.Size = new System.Drawing.Size(136, 13);
+            this.scanLable.TabIndex = 2;
+            this.scanLable.Text = "Scan this code in your app:";
+            this.scanLable.Visible = false;
+            // 
             // SettingsForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -164,6 +187,7 @@
             this.AutostartTab.PerformLayout();
             this.accountTab.ResumeLayout(false);
             this.accountTab.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.picture_qr)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -179,5 +203,7 @@
         private System.Windows.Forms.CheckBox autostartCheckbox;
         private System.Windows.Forms.TabPage accountTab;
         private System.Windows.Forms.CheckBox towFaCheckbox;
+        private System.Windows.Forms.PictureBox picture_qr;
+        private System.Windows.Forms.Label scanLable;
     }
 }

@@ -22,7 +22,7 @@ namespace frznUpload.Server
 
         public static string GenerateQrCode(string username, string secret)
         {
-            return tfa.GetQrCodeImageAsDataUri(username, secret, 512);
+            return tfa.GetQrCodeImageAsDataUri(username, secret, 256);
         }
         
     }
