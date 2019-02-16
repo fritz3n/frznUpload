@@ -207,6 +207,7 @@ namespace frznUpload.Client
                     picture_qr.Image = new Bitmap(stream);
                 }
                 scanLable.Visible = true;
+                picture_qr.Visible = true;
             }
             else
             {
@@ -222,7 +223,6 @@ namespace frznUpload.Client
             {
                 //account tab -> load settings
                 towFaCheckbox.Checked = await clientManager.GetHasTowFaEnabled();
-                picture_qr.Visible = true;
                 //settings loaded enable buttons
                 towFaCheckbox.Enabled = true;
             }

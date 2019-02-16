@@ -323,7 +323,7 @@ namespace frznUpload.Server
                                     else
                                     {
                                         //has secret
-                                        mes.SendMessage(new Message(Message.MessageType.HasTowFactor, false, 0));
+                                        mes.SendMessage(new Message(Message.MessageType.HasTowFactor, false, 1));
                                     }
                                 }catch(Exception e)
                                 {
@@ -368,7 +368,7 @@ namespace frznUpload.Server
         {
             //check if the user has towFa enabled, if yes -> send him that we need proof!
             string secret = db.GetTowFactorSecret();
-            if (secret != "null")
+            if (db.HasTowFa())
             {
                 mes.SendMessage(new Message(Message.MessageType.TowFactorNeeded, false, ""));
                 Message towFaMessage = mes.WaitForMessage(true, Message.MessageType.TowFactorNeeded);
