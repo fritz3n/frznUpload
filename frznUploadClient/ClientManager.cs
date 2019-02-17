@@ -81,19 +81,19 @@ namespace frznUpload.Client
             await RetryAsync(() => ActiveClient.DeleteFileAsync(fileIdentifier));
         }
 
-        public async Task RemoveTowFa()
+        public async Task RemoveTwoFa()
         {
-            await RetryAsync(() => ActiveClient.RemoveTowFaAsync());
+            await RetryAsync(() => ActiveClient.RemoveTwoFaAsync());
         }
 
-        public async Task<bool> GetHasTowFaEnabled()
+        public async Task<bool> GetHasTwoFaEnabled()
         {
-            return await RetryAsync(() => ActiveClient.GetHasTowFaEnabled());
+            return await RetryAsync(() => ActiveClient.GetHasTwoFaEnabled());
         }
 
-        public async Task<string> GetTowFaSecret()
+        public async Task<string> GetTwoFaSecret()
         {
-            return await RetryAsync(() => ActiveClient.GetTowFaSecret());
+            return await RetryAsync(() => ActiveClient.GetTwoFaSecret());
         }
 
 

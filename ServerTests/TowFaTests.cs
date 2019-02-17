@@ -4,12 +4,12 @@ using Xunit;
 
 namespace ServerTests
 {
-    public class TowFaTests
+    public class TwoFaTests
     {
         [Fact]
         public void CanGenertaeScret()
         {
-            TowFactorHandler.CreateSecret();
+            TwoFactorHandler.CreateSecret();
         }
     }
 }

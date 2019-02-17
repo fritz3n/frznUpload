@@ -253,7 +253,7 @@ namespace frznUpload.Server
         /// </summary>
         /// <param name="file_identifier">The file_identifier to be used</param>
         /// <returns>the userId</returns>
-        public int GetOwnerOfFile(string file_identifier)
+        public int GeTwonerOfFile(string file_identifier)
         {
             return conn.QuerySingle<int>("SELECT user_id FROM files WHERE identifier=@file_identifier", new { file_identifier });
         }
@@ -264,7 +264,7 @@ namespace frznUpload.Server
         /// <param name="file_identifier">the file_identifier to be checked</param>
         public bool UserOwnsFile(string file_identifier)
         {
-            return GetOwnerOfFile(file_identifier) == userId; 
+            return GeTwonerOfFile(file_identifier) == userId; 
         }
 
         /// <summary>
@@ -290,29 +290,29 @@ namespace frznUpload.Server
         }
 
         /// <summary>
-        /// Gets a Tow Fa Secret for a given userID
+        /// Gets a Two Fa Secret for a given userID
         /// </summary>
-        public string GetTowFactorSecret()
+        public string GetTwoFactorSecret()
         {
-            return conn.QuerySingle<string>("SELECT tow_fa_secret FROM users WHERE id=@id", new { id=userId });
+            return conn.QuerySingle<string>("SELECT Two_fa_secret FROM users WHERE id=@id", new { id=userId });
         }
         
-        public bool HasTowFa()
+        public bool HasTwoFa()
         {
-            return GetTowFactorSecret() != "null";
+            return GetTwoFactorSecret() != "null";
         }
 
         /// <summary>
-        /// Sets a towFa secret in the db
+        /// Sets a TwoFa secret in the db
         /// </summary>
-        public void SetTowFactorSecret(string val)
+        public void SetTwoFactorSecret(string val)
         {
-            conn.Execute("UPDATE users SET tow_fa_secret=@val WHERE id=@id", new { val, id = userId });
+            conn.Execute("UPDATE users SET Two_fa_secret=@val WHERE id=@id", new { val, id = userId });
         }
         
-        public void RemoveTowFactorSecret()
+        public void RemoveTwoFactorSecret()
         {
-            conn.Execute("UPDATE users SET tow_fa_secret=null WHERE id=@id", new { id = userId });
+            conn.Execute("UPDATE users SET Two_fa_secret=null WHERE id=@id", new { id = userId });
         }
 
         public string GetUsername()

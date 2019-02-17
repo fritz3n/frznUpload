@@ -6,7 +6,7 @@ using TwoFactorAuthNet;
 namespace frznUpload.Server
 {
 
-    public static class TowFactorHandler
+    public static class TwoFactorHandler
     {
         private static TwoFactorAuth tfa = new TwoFactorAuth("Fitzen.tk");
 

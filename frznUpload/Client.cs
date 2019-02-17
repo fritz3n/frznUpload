@@ -165,7 +165,7 @@ namespace frznUpload.Server
 
                                 if (db.SetToken(message[0], message[1], chal.GetThumbprint()))
                                 {
-                                    DoTowFaCheckIfNeeded();
+                                    DoTwoFaCheckIfNeeded();
 
                                     mes.SendMessage(new Message(Message.MessageType.AuthSuccess));
                                     log.WriteLine("Authenticated with a Public Key");
@@ -282,28 +282,28 @@ namespace frznUpload.Server
                                     mes.SendMessage(new Message(Message.MessageType.DeleteFile, true, "Error deleting"));
                                 }
                                 break;
-                            #region towFa
-                            case Message.MessageType.TowFactorAdd:
-                                if (!db.HasTowFa())
+                            #region TwoFa
+                            case Message.MessageType.TwoFactorAdd:
+                                if (!db.HasTwoFa())
                                 {
-                                    string secret = TowFactorHandler.CreateSecret();
-                                    mes.SendMessage(new Message(Message.MessageType.TowFactorAdd, false, TowFactorHandler.GenerateQrCode(db.GetUsername(), secret)));
-                                    db.SetTowFactorSecret(secret);
-                                    log.WriteLine("Added tow fa");
+                                    string secret = TwoFactorHandler.CreateSecret();
+                                    mes.SendMessage(new Message(Message.MessageType.TwoFactorAdd, false, TwoFactorHandler.GenerateQrCode(db.GetUsername(), secret)));
+                                    db.SetTwoFactorSecret(secret);
+                                    log.WriteLine("Added Two fa");
                                 }
                                 else
                                 {
-                                    mes.SendMessage(new Message(Message.MessageType.TowFactorAdd, true));
-                                    log.WriteLine("Tryed to add tow fa while having some");
+                                    mes.SendMessage(new Message(Message.MessageType.TwoFactorAdd, true));
+                                    log.WriteLine("Tryed to add Two fa while having some");
                                 }
 
                                 break;
-                            case Message.MessageType.TowFactorRemove:
+                            case Message.MessageType.TwoFactorRemove:
                                 try
                                 {
-                                    DoTowFaCheckIfNeeded();
-                                    db.RemoveTowFactorSecret();
-                                    mes.SendMessage(new Message(Message.MessageType.TowFactorRemove,false));
+                                    DoTwoFaCheckIfNeeded();
+                                    db.RemoveTwoFactorSecret();
+                                    mes.SendMessage(new Message(Message.MessageType.TwoFactorRemove,false));
                                 }
                                 catch(UnauthorizedAccessException e)
                                 {
@@ -312,23 +312,23 @@ namespace frznUpload.Server
                                 }
 
                                 break;
-                            case Message.MessageType.HasTowFactor:
+                            case Message.MessageType.HasTwoFactor:
                                 try
                                 {
-                                    if (db.HasTowFa())
+                                    if (db.HasTwoFa())
                                     {
                                         //no secret
-                                        mes.SendMessage(new Message(Message.MessageType.HasTowFactor, false, 0));
+                                        mes.SendMessage(new Message(Message.MessageType.HasTwoFactor, false, 0));
                                     }
                                     else
                                     {
                                         //has secret
-                                        mes.SendMessage(new Message(Message.MessageType.HasTowFactor, false, 1));
+                                        mes.SendMessage(new Message(Message.MessageType.HasTwoFactor, false, 1));
                                     }
                                 }catch(Exception e)
                                 {
-                                    log.WriteLine("Error while testitng if user has towFa: " + e.Message);
-                                    mes.SendMessage(new Message(Message.MessageType.HasTowFactor, true));
+                                    log.WriteLine("Error while testitng if user has TwoFa: " + e.Message);
+                                    mes.SendMessage(new Message(Message.MessageType.HasTwoFactor, true));
                                 }
                                 break;
                             #endregion
@@ -364,22 +364,22 @@ namespace frznUpload.Server
         }
 
 
-        private void DoTowFaCheckIfNeeded()
+        private void DoTwoFaCheckIfNeeded()
         {
-            //check if the user has towFa enabled, if yes -> send him that we need proof!
-            string secret = db.GetTowFactorSecret();
-            if (db.HasTowFa())
+            //check if the user has TwoFa enabled, if yes -> send him that we need proof!
+            string secret = db.GetTwoFactorSecret();
+            if (db.HasTwoFa())
             {
-                mes.SendMessage(new Message(Message.MessageType.TowFactorNeeded, false, ""));
-                Message towFaMessage = mes.WaitForMessage(true, Message.MessageType.TowFactorNeeded);
+                mes.SendMessage(new Message(Message.MessageType.TwoFactorNeeded, false, ""));
+                Message TwoFaMessage = mes.WaitForMessage(true, Message.MessageType.TwoFactorNeeded);
                 //if he cant prove who he is -> throw him out
-                if (!TowFactorHandler.Verify(secret, towFaMessage.Fields[0]))
+                if (!TwoFactorHandler.Verify(secret, TwoFaMessage.Fields[0]))
                 {
-                    throw new UnauthorizedAccessException("TowFa failed!");
+                    throw new UnauthorizedAccessException("TwoFa failed!");
                 }
                 else
                 {
-                    mes.SendMessage(new Message(Message.MessageType.TowFactorSuccess, false));
+                    mes.SendMessage(new Message(Message.MessageType.TwoFactorSuccess, false));
                 }
             }
         }

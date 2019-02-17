@@ -35,7 +35,7 @@
             this.AutostartTab = new System.Windows.Forms.TabPage();
             this.autostartCheckbox = new System.Windows.Forms.CheckBox();
             this.accountTab = new System.Windows.Forms.TabPage();
-            this.towFaCheckbox = new System.Windows.Forms.CheckBox();
+            this.TwoFaCheckbox = new System.Windows.Forms.CheckBox();
             this.AddButton = new System.Windows.Forms.Button();
             this.picture_qr = new System.Windows.Forms.PictureBox();
             this.scanLable = new System.Windows.Forms.Label();
@@ -115,7 +115,7 @@
             // 
             this.accountTab.Controls.Add(this.scanLable);
             this.accountTab.Controls.Add(this.picture_qr);
-            this.accountTab.Controls.Add(this.towFaCheckbox);
+            this.accountTab.Controls.Add(this.TwoFaCheckbox);
             this.accountTab.Location = new System.Drawing.Point(4, 22);
             this.accountTab.Name = "accountTab";
             this.accountTab.Padding = new System.Windows.Forms.Padding(3);
@@ -124,17 +124,17 @@
             this.accountTab.Text = "Account";
             this.accountTab.UseVisualStyleBackColor = true;
             // 
-            // towFaCheckbox
+            // TwoFaCheckbox
             // 
-            this.towFaCheckbox.AutoSize = true;
-            this.towFaCheckbox.Enabled = false;
-            this.towFaCheckbox.Location = new System.Drawing.Point(21, 27);
-            this.towFaCheckbox.Name = "towFaCheckbox";
-            this.towFaCheckbox.Size = new System.Drawing.Size(151, 17);
-            this.towFaCheckbox.TabIndex = 0;
-            this.towFaCheckbox.Text = "Tow Factor Authentication";
-            this.towFaCheckbox.UseVisualStyleBackColor = true;
-            this.towFaCheckbox.CheckedChanged += new System.EventHandler(this.TowFaCheckbox_CheckedChangedAsync);
+            this.TwoFaCheckbox.AutoSize = true;
+            this.TwoFaCheckbox.Enabled = false;
+            this.TwoFaCheckbox.Location = new System.Drawing.Point(21, 27);
+            this.TwoFaCheckbox.Name = "TwoFaCheckbox";
+            this.TwoFaCheckbox.Size = new System.Drawing.Size(151, 17);
+            this.TwoFaCheckbox.TabIndex = 0;
+            this.TwoFaCheckbox.Text = "Two Factor Authentication";
+            this.TwoFaCheckbox.UseVisualStyleBackColor = true;
+            this.TwoFaCheckbox.CheckedChanged += new System.EventHandler(this.TwoFaCheckbox_CheckedChangedAsync);
             // 
             // AddButton
             // 
@@ -202,7 +202,7 @@
         private System.Windows.Forms.TabPage AutostartTab;
         private System.Windows.Forms.CheckBox autostartCheckbox;
         private System.Windows.Forms.TabPage accountTab;
-        private System.Windows.Forms.CheckBox towFaCheckbox;
+        private System.Windows.Forms.CheckBox TwoFaCheckbox;
         private System.Windows.Forms.PictureBox picture_qr;
         private System.Windows.Forms.Label scanLable;
     }

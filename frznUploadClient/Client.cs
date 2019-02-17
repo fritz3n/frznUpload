@@ -188,10 +188,10 @@ namespace frznUpload.Client
                 else if(rec.Type == Message.MessageType.AuthSuccess)
                 {
                     //auth recived all good.
-                }else if (rec.Type == Message.MessageType.TowFactorNeeded)
+                }else if (rec.Type == Message.MessageType.TwoFactorNeeded)
                 {
-                    //tow fa needed
-                    await DoTowFaExchangeAsync();
+                    //Two fa needed
+                    await DoTwoFaExchangeAsync();
                 }
                 else
                 {
@@ -321,46 +321,46 @@ namespace frznUpload.Client
 
             return list;
         }
-        public async Task DoTowFaExchangeAsync()
+        public async Task DoTwoFaExchangeAsync()
         {
-            mes.SendMessage(new Message(Message.MessageType.TowFactorNeeded, false, GetTowFaToken()));
-            await mes.WaitForMessageAsync(true, Message.MessageType.TowFactorSuccess);
+            mes.SendMessage(new Message(Message.MessageType.TwoFactorNeeded, false, GetTwoFaToken()));
+            await mes.WaitForMessageAsync(true, Message.MessageType.TwoFactorSuccess);
         }
 
-        public string GetTowFaToken()
+        public string GetTwoFaToken()
         {
-            return Prompt.ShowDialog("Pleas enter your tow factor authentication token", "Further authentication required");
+            return Prompt.ShowDialog("Pleas enter your Two factor authentication token", "Further authentication required");
         }
 
-        public async Task RemoveTowFaAsync()
+        public async Task RemoveTwoFaAsync()
         {
             try
             {
-                mes.SendMessage(new Message(Message.MessageType.TowFactorRemove, false));
-                await mes.WaitForMessageAsync(true, Message.MessageType.TowFactorNeeded);
+                mes.SendMessage(new Message(Message.MessageType.TwoFactorRemove, false));
+                await mes.WaitForMessageAsync(true, Message.MessageType.TwoFactorNeeded);
             }
             catch (Exception e)
             {
-                throw new Exception("Error while requesting tow factor authentication removal", e);
+                throw new Exception("Error while requesting Two factor authentication removal", e);
             }
             try
             {
-                await DoTowFaExchangeAsync();
-                await mes.WaitForMessageAsync(true, Message.MessageType.TowFactorRemove);
+                await DoTwoFaExchangeAsync();
+                await mes.WaitForMessageAsync(true, Message.MessageType.TwoFactorRemove);
             }
             catch (Exception e)
             {
-                throw new Exception("Error while deleting tow factor authentication", e);
+                throw new Exception("Error while deleting Two factor authentication", e);
             }
         }
         
-        public async Task<bool> GetHasTowFaEnabled()
+        public async Task<bool> GetHasTwoFaEnabled()
         {
-            mes.SendMessage(new Message(Message.MessageType.HasTowFactor, false));
-            Message m = await mes.WaitForMessageAsync(Message.MessageType.HasTowFactor);
+            mes.SendMessage(new Message(Message.MessageType.HasTwoFactor, false));
+            Message m = await mes.WaitForMessageAsync(Message.MessageType.HasTwoFactor);
             if (m.IsError)
             {
-                throw new Exception("Error getting tow factor authentication status.");
+                throw new Exception("Error getting Two factor authentication status.");
             }
             else
             {
@@ -368,10 +368,10 @@ namespace frznUpload.Client
             }
         }
 
-        public async Task<string> GetTowFaSecret()
+        public async Task<string> GetTwoFaSecret()
         {
-            mes.SendMessage(new Message(Message.MessageType.TowFactorAdd));
-            Message m = await mes.WaitForMessageAsync(true, Message.MessageType.TowFactorAdd);
+            mes.SendMessage(new Message(Message.MessageType.TwoFactorAdd));
+            Message m = await mes.WaitForMessageAsync(true, Message.MessageType.TwoFactorAdd);
             return m.Fields[0];
         }
 

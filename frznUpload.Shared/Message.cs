@@ -20,11 +20,11 @@ namespace frznUpload.Shared
             AuthRequest, // server asks the client to authenticate a public key //NOT YET USED//
             Auth, // client authenticates a public key with a username and password
             AuthSuccess, // server approves of the authentication, the pub key is now authenticated but the client isnt yet
-            TowFactorNeeded, // Send by the server if he requires further authentikation
-            TowFactorAdd, //Send by client to tell server to generate and save a secret
-            TowFactorRemove, //send by the client to tell server to delete secret
-            TowFactorSuccess,
-            HasTowFactor,
+            TwoFactorNeeded, // Send by the server if he requires further authentikation
+            TwoFactorAdd, //Send by client to tell server to generate and save a secret
+            TwoFactorRemove, //send by the client to tell server to delete secret
+            TwoFactorSuccess,
+            HasTwoFactor,
             DeauthRequest,
             DeauthSuccess,
             FileUploadRequest,

@@ -11,7 +11,7 @@ namespace frznUpload.Server
         public string Name { get; set; }
         public string Hash { get; set; }
         public string Salt { get; set; }
-        public string Tow_fa_secret { get; set; }
+        public string Two_fa_secret { get; set; }
     }
 
     class Token

@@ -189,15 +189,15 @@ namespace frznUpload.Client
 
 
         /*
-        * Tow factor 
+        * Two factor 
         *    
         */
-        private async void TowFaCheckbox_CheckedChangedAsync(object sender, EventArgs e)
+        private async void TwoFaCheckbox_CheckedChangedAsync(object sender, EventArgs e)
         {
-            if (towFaCheckbox.Checked)
+            if (TwoFaCheckbox.Checked)
             {
-                //enable tow fa
-                string qr = await clientManager.GetTowFaSecret();
+                //enable Two fa
+                string qr = await clientManager.GetTwoFaSecret();
                 // Display the qrcode
                 var base64Data = Regex.Match(qr, @"data:image/(?<type>.+?),(?<data>.+)").Groups["data"].Value;
                 var binData = Convert.FromBase64String(base64Data);
@@ -211,8 +211,8 @@ namespace frznUpload.Client
             }
             else
             {
-                //remove tow fa
-                await clientManager.RemoveTowFa();
+                //remove Two fa
+                await clientManager.RemoveTwoFa();
             }
         }
 
@@ -222,9 +222,9 @@ namespace frznUpload.Client
             if(SettingsTabCtrl.SelectedIndex == 3)
             {
                 //account tab -> load settings
-                towFaCheckbox.Checked = await clientManager.GetHasTowFaEnabled();
+                TwoFaCheckbox.Checked = await clientManager.GetHasTwoFaEnabled();
                 //settings loaded enable buttons
-                towFaCheckbox.Enabled = true;
+                TwoFaCheckbox.Enabled = true;
             }
             else
             {
