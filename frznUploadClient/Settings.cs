@@ -22,6 +22,8 @@ namespace frznUpload.Client
         private HotkeyConfigControl Capturer;
         private bool Capturing = false;
 
+        private bool hasLoadedAccountData = false;
+
         public SettingsForm(ClientManager manager,HotkeyContainer hotkeys)
         {
             InitializeComponent();
@@ -221,10 +223,14 @@ namespace frznUpload.Client
         {
             if(SettingsTabCtrl.SelectedIndex == 3)
             {
+                TwoFaCheckbox.CheckedChanged -= TwoFaCheckbox_CheckedChangedAsync;
+
                 //account tab -> load settings
                 TwoFaCheckbox.Checked = await clientManager.GetHasTwoFaEnabled();
                 //settings loaded enable buttons
                 TwoFaCheckbox.Enabled = true;
+
+                TwoFaCheckbox.CheckedChanged += TwoFaCheckbox_CheckedChangedAsync;
             }
             else
             {
