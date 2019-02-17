@@ -35,10 +35,11 @@
             this.AutostartTab = new System.Windows.Forms.TabPage();
             this.autostartCheckbox = new System.Windows.Forms.CheckBox();
             this.accountTab = new System.Windows.Forms.TabPage();
+            this.scanLable = new System.Windows.Forms.Label();
+            this.picture_qr = new System.Windows.Forms.PictureBox();
             this.TwoFaCheckbox = new System.Windows.Forms.CheckBox();
             this.AddButton = new System.Windows.Forms.Button();
-            this.picture_qr = new System.Windows.Forms.PictureBox();
-            this.scanLable = new System.Windows.Forms.Label();
+            this.ExplorerIntegrationBox = new System.Windows.Forms.CheckBox();
             this.SettingsTabCtrl.SuspendLayout();
             this.HotkeyTab.SuspendLayout();
             this.AutostartTab.SuspendLayout();
@@ -52,10 +53,11 @@
             this.SettingsTabCtrl.Controls.Add(this.OtherTab);
             this.SettingsTabCtrl.Controls.Add(this.AutostartTab);
             this.SettingsTabCtrl.Controls.Add(this.accountTab);
-            this.SettingsTabCtrl.Location = new System.Drawing.Point(12, 12);
+            this.SettingsTabCtrl.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.SettingsTabCtrl.Location = new System.Drawing.Point(0, 0);
             this.SettingsTabCtrl.Name = "SettingsTabCtrl";
             this.SettingsTabCtrl.SelectedIndex = 0;
-            this.SettingsTabCtrl.Size = new System.Drawing.Size(776, 426);
+            this.SettingsTabCtrl.Size = new System.Drawing.Size(860, 450);
             this.SettingsTabCtrl.TabIndex = 0;
             this.SettingsTabCtrl.SelectedIndexChanged += new System.EventHandler(this.SettingsTabCtrl_TabIndexChangedAsync);
             this.SettingsTabCtrl.TabIndexChanged += new System.EventHandler(this.SettingsTabCtrl_TabIndexChangedAsync);
@@ -67,7 +69,7 @@
             this.HotkeyTab.Location = new System.Drawing.Point(4, 22);
             this.HotkeyTab.Name = "HotkeyTab";
             this.HotkeyTab.Padding = new System.Windows.Forms.Padding(3);
-            this.HotkeyTab.Size = new System.Drawing.Size(768, 400);
+            this.HotkeyTab.Size = new System.Drawing.Size(852, 424);
             this.HotkeyTab.TabIndex = 0;
             this.HotkeyTab.Text = "Hotkeys";
             // 
@@ -76,7 +78,7 @@
             this.HotkeyLayout.Dock = System.Windows.Forms.DockStyle.Fill;
             this.HotkeyLayout.Location = new System.Drawing.Point(3, 3);
             this.HotkeyLayout.Name = "HotkeyLayout";
-            this.HotkeyLayout.Size = new System.Drawing.Size(762, 394);
+            this.HotkeyLayout.Size = new System.Drawing.Size(846, 418);
             this.HotkeyLayout.TabIndex = 0;
             // 
             // OtherTab
@@ -85,19 +87,20 @@
             this.OtherTab.Location = new System.Drawing.Point(4, 22);
             this.OtherTab.Name = "OtherTab";
             this.OtherTab.Padding = new System.Windows.Forms.Padding(3);
-            this.OtherTab.Size = new System.Drawing.Size(768, 400);
+            this.OtherTab.Size = new System.Drawing.Size(852, 424);
             this.OtherTab.TabIndex = 1;
             this.OtherTab.Text = "Other";
             // 
             // AutostartTab
             // 
+            this.AutostartTab.Controls.Add(this.ExplorerIntegrationBox);
             this.AutostartTab.Controls.Add(this.autostartCheckbox);
             this.AutostartTab.Location = new System.Drawing.Point(4, 22);
             this.AutostartTab.Name = "AutostartTab";
             this.AutostartTab.Padding = new System.Windows.Forms.Padding(3);
-            this.AutostartTab.Size = new System.Drawing.Size(768, 400);
+            this.AutostartTab.Size = new System.Drawing.Size(852, 424);
             this.AutostartTab.TabIndex = 2;
-            this.AutostartTab.Text = "Autostart";
+            this.AutostartTab.Text = "Config";
             this.AutostartTab.UseVisualStyleBackColor = true;
             // 
             // autostartCheckbox
@@ -119,10 +122,28 @@
             this.accountTab.Location = new System.Drawing.Point(4, 22);
             this.accountTab.Name = "accountTab";
             this.accountTab.Padding = new System.Windows.Forms.Padding(3);
-            this.accountTab.Size = new System.Drawing.Size(768, 400);
+            this.accountTab.Size = new System.Drawing.Size(852, 424);
             this.accountTab.TabIndex = 3;
             this.accountTab.Text = "Account";
             this.accountTab.UseVisualStyleBackColor = true;
+            // 
+            // scanLable
+            // 
+            this.scanLable.AutoSize = true;
+            this.scanLable.Location = new System.Drawing.Point(367, 31);
+            this.scanLable.Name = "scanLable";
+            this.scanLable.Size = new System.Drawing.Size(136, 13);
+            this.scanLable.TabIndex = 2;
+            this.scanLable.Text = "Scan this code in your app:";
+            this.scanLable.Visible = false;
+            // 
+            // picture_qr
+            // 
+            this.picture_qr.Location = new System.Drawing.Point(506, 27);
+            this.picture_qr.Name = "picture_qr";
+            this.picture_qr.Size = new System.Drawing.Size(256, 256);
+            this.picture_qr.TabIndex = 1;
+            this.picture_qr.TabStop = false;
             // 
             // TwoFaCheckbox
             // 
@@ -149,23 +170,16 @@
             this.AddButton.UseVisualStyleBackColor = false;
             this.AddButton.Click += new System.EventHandler(this.AddButton_Click);
             // 
-            // picture_qr
+            // ExplorerIntegrationBox
             // 
-            this.picture_qr.Location = new System.Drawing.Point(506, 27);
-            this.picture_qr.Name = "picture_qr";
-            this.picture_qr.Size = new System.Drawing.Size(256, 256);
-            this.picture_qr.TabIndex = 1;
-            this.picture_qr.TabStop = false;
-            // 
-            // scanLable
-            // 
-            this.scanLable.AutoSize = true;
-            this.scanLable.Location = new System.Drawing.Point(367, 31);
-            this.scanLable.Name = "scanLable";
-            this.scanLable.Size = new System.Drawing.Size(136, 13);
-            this.scanLable.TabIndex = 2;
-            this.scanLable.Text = "Scan this code in your app:";
-            this.scanLable.Visible = false;
+            this.ExplorerIntegrationBox.AutoSize = true;
+            this.ExplorerIntegrationBox.Location = new System.Drawing.Point(24, 55);
+            this.ExplorerIntegrationBox.Name = "ExplorerIntegrationBox";
+            this.ExplorerIntegrationBox.Size = new System.Drawing.Size(117, 17);
+            this.ExplorerIntegrationBox.TabIndex = 1;
+            this.ExplorerIntegrationBox.Text = "Explorer Integration";
+            this.ExplorerIntegrationBox.UseVisualStyleBackColor = true;
+            this.ExplorerIntegrationBox.CheckedChanged += new System.EventHandler(this.ExplorerIntegrationBox_CheckedChanged);
             // 
             // SettingsForm
             // 
@@ -205,5 +219,6 @@
         private System.Windows.Forms.CheckBox TwoFaCheckbox;
         private System.Windows.Forms.PictureBox picture_qr;
         private System.Windows.Forms.Label scanLable;
+        private System.Windows.Forms.CheckBox ExplorerIntegrationBox;
     }
 }

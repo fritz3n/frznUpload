@@ -231,6 +231,7 @@ namespace frznUpload.Client
                 TwoFaCheckbox.Enabled = true;
 
                 TwoFaCheckbox.CheckedChanged += TwoFaCheckbox_CheckedChangedAsync;
+                
             }
             else
             {
@@ -238,6 +239,19 @@ namespace frznUpload.Client
                 picture_qr.Visible = false;
                 scanLable.Visible = false;
             }
+
+            if(SettingsTabCtrl.SelectedIndex == 2)
+            {
+                ExplorerIntegrationBox.Checked = ExplorerIntegrationHandler.IsEnabled();
+            }
+        }
+
+        private void ExplorerIntegrationBox_CheckedChanged(object sender, EventArgs e)
+        {
+            if (ExplorerIntegrationBox.Checked)
+                ExplorerIntegrationBox.Checked = ExplorerIntegrationHandler.Enable();
+            else
+                ExplorerIntegrationHandler.Disable();
         }
     }
 }
