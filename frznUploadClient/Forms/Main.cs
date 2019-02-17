@@ -46,6 +46,8 @@ namespace frznUpload.Client
                 loginForm.ControlBox = false;
                 loginForm.Show();
             }
+
+            CreateHandle();
         }
         
         private async void UploadTimer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
@@ -68,8 +70,9 @@ namespace frznUpload.Client
                     ProgressBar.Invoke(new Action(() => ProgressBar.Value = 0));
                 UploadTimer.Stop();
 
-                if (FileUpload.Share && FileUpload.Uploader.Finished)
+                if (FileUpload.Share && FileUpload.Uploader.Finished && !FileUpload.Uploader.Error)
                 {
+                    
                     var s = await Client.ShareFile(
                         FileUpload.Uploader.Identifier,
                         FileUpload.FirstView,
@@ -78,6 +81,8 @@ namespace frznUpload.Client
                         FileUpload.Whitelisted,
                         FileUpload.Whitelist
                         );
+                    
+
 
                     if (Created)
                         LinkText.Invoke(new Action(() => LinkText.Text = @"https://fritzen.tk/view.php?id=" + s));
@@ -123,14 +128,21 @@ namespace frznUpload.Client
 
         public new void Show()
         {
-            if (!showing)
+            if (InvokeRequired)
             {
-                base.Show();
+                Invoke(new Action(Show));
             }
             else
             {
-                BringToFront();
-                Activate();
+                if (!showing)
+                {
+                    base.Show();
+                }
+                else
+                {
+                    BringToFront();
+                    Activate();
+                }
             }
         }
 

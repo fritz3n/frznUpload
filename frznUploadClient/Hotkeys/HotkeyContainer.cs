@@ -12,27 +12,20 @@ namespace frznUpload.Client
 {
     public class HotkeyContainer : IEnumerable<HotkeyConfig>
     {
-        ClientManager Client;
         Dictionary<(ModifierKeys, Keys), HotkeyHandler> HotKeys = new Dictionary<(ModifierKeys, Keys), HotkeyHandler>();
-        MainForm Form;
-        Queue<UploadContract> UploadQueue = new Queue<UploadContract>();
 
         public HotkeyContainer(ClientManager client, MainForm form)
         {
-            Client = client;
-            Form = form;
-
-            Form.UploadFinished += Form_UploadFinished;
 
             string serialized = Properties.Settings.Default.Hotkeys;
-
+            
             string[] hotkeys = serialized.Split('|');
 
             foreach(string hotkey in hotkeys)
             {
                 if (hotkey != "")
                 {
-                    var hc = HotkeyHandler.Deserialize(this, hotkey.Replace("%bar%", "|"));
+                    var hc = HotkeyHandler.Deserialize(hotkey.Replace("%bar%", "|"));
                     if (hc == null)
                         continue;
                     hc.Enabled = true;
@@ -71,7 +64,7 @@ namespace frznUpload.Client
         {
             Remove(hotkey);
             (ModifierKeys, Keys) Key = (hotkey.Modifier, hotkey.Key);
-            var hotkeyHandler = new HotkeyHandler(this, hotkey);
+            var hotkeyHandler = new HotkeyHandler(hotkey);
             hotkeyHandler.Enabled = true;
             HotKeys.Add(Key, hotkeyHandler);
             Save();
@@ -86,32 +79,6 @@ namespace frznUpload.Client
                 HotKeys.Remove(Key);
                 Save();
             }
-        }
-
-        private void Form_UploadFinished(object sender, EventArgs e)
-        {
-            StartUpload();
-        }
-
-        public void Enqueue(List<UploadContract> contracts)
-        {
-            foreach (var c in contracts)
-            {
-                UploadQueue.Enqueue(c);
-            }
-            StartUpload();
-        }
-
-        private async void StartUpload()
-        {
-            if (Form.Uploading)
-                return;
-            if (UploadQueue.Count == 0)
-                return;
-
-            var contract = UploadQueue.Dequeue();
-            contract.Uploader = await Client.UploadFile(contract.Path, contract.Filename);
-            Form.StartUpload(contract);
         }
     }
 }

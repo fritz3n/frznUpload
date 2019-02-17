@@ -95,6 +95,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ArgumentsHandler.cs" />
     <Compile Include="AutostartHandler.cs" />
     <Compile Include="Client.cs" />
     <Compile Include="ClientManager.cs" />
@@ -104,48 +105,50 @@
     <Compile Include="Files\Screenshot.cs" />
     <Compile Include="Files\TempFileHandler.cs" />
     <Compile Include="FileUploader.cs" />
+    <Compile Include="FileUploadHandler.cs" />
     <Compile Include="GlobalSuppressions.cs" />
-    <Compile Include="HotkeyConfigControl.cs">
+    <Compile Include="Forms\HotkeyConfigControl.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="HotkeyConfigControlDesigner.cs">
+    <Compile Include="Forms\HotkeyConfigControlDesigner.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Hotkeys\HotKey.cs" />
     <Compile Include="Hotkeys\HotkeyConfig.cs" />
     <Compile Include="Hotkeys\HotkeyHandler.cs" />
     <Compile Include="Hotkeys\HotkeyContainer.cs" />
-    <Compile Include="Login.cs">
+    <Compile Include="Forms\Login.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Login.Designer.cs">
+    <Compile Include="Forms\Login.Designer.cs">
       <DependentUpon>Login.cs</DependentUpon>
     </Compile>
-    <Compile Include="Main.cs">
+    <Compile Include="Forms\Main.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include=".Designer.cs">
+    <Compile Include="Forms\.Designer.cs">
       <DependentUpon>Main.cs</DependentUpon>
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="IconHandler.cs" />
+    <Compile Include="PipeHandler.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Propmpt.cs" />
+    <Compile Include="Prompt.cs" />
     <Compile Include="RemoteFile.cs" />
-    <Compile Include="Settings.cs">
+    <Compile Include="Forms\Settings.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Settings.Designer.cs">
+    <Compile Include="Forms\Settings.Designer.cs">
       <DependentUpon>Settings.cs</DependentUpon>
     </Compile>
-    <EmbeddedResource Include="HotkeyConfigControl.resx">
+    <EmbeddedResource Include="Forms\HotkeyConfigControl.resx">
       <DependentUpon>HotkeyConfigControl.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Login.resx">
+    <EmbeddedResource Include="Forms\Login.resx">
       <DependentUpon>Login.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Main.resx">
+    <EmbeddedResource Include="Forms\Main.resx">
       <DependentUpon>Main.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
@@ -158,7 +161,7 @@
       <DependentUpon>Resources.resx</DependentUpon>
       <DesignTime>True</DesignTime>
     </Compile>
-    <EmbeddedResource Include="Settings.resx">
+    <EmbeddedResource Include="Forms\Settings.resx">
       <DependentUpon>Settings.cs</DependentUpon>
     </EmbeddedResource>
     <None Include="packages.config" />

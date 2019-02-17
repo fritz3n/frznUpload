@@ -15,7 +15,7 @@ namespace frznUpload.Client
         MainForm mainForm;
         public static ClientManager Client { get; private set; }
 
-        public IconHandler()
+        public IconHandler(string[] args)
         {
             MenuItem consoleMenuItem = new MenuItem("Show", new EventHandler(Show));
             MenuItem configMenuItem = new MenuItem("Configuration", new EventHandler(ShowConfig));
@@ -56,8 +56,19 @@ namespace frznUpload.Client
             {
                 mainForm.Show();
             }
+
+            FileUploadHandler.Init(mainForm, Client);
+            mainForm.CreateControl();
+
             //Everything is ready -> show icon
             notifyIcon.Visible = true;
+
+            var argumentsHandler = new ArgumentsHandler(mainForm);
+
+            if (args.Length != 0)
+                argumentsHandler.HandleArguments(args);
+
+            PipeHandler.Start(argumentsHandler);
         }
 
         void ShowConfig(object sender, EventArgs e)
@@ -79,6 +90,11 @@ namespace frznUpload.Client
         void Show(object sender, EventArgs e)
         {
             mainForm.Show();
+        }
+
+        public void ShowMain()
+        {
+            //if(Invok)
         }
 
         void LeftClick(object sender, MouseEventArgs e)

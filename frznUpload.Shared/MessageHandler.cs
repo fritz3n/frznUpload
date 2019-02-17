@@ -185,7 +185,7 @@ namespace frznUpload.Shared
                         graceful = !tcp.Connected;
                         ShutdownException = e;
                         Stop(graceful ? DisconnectReason.Graceful : DisconnectReason.Error);
-                        ErrorEvent.Set();
+                        ErrorEvent?.Set();
                         return;
                     }
                     
@@ -343,12 +343,13 @@ namespace frznUpload.Shared
 
             var checkResult = MessagePatterns.CheckMessage(m);
 
-            if (!checkResult.Item1)
-                throw new MessageMatchException(m, checkResult.Item2);
 
-            if (m.IsError & throwIfError)
+            if (m.IsError)
                 throw new ErrorMessageException(m);
 
+            if (!checkResult.Item1)
+                throw new MessageMatchException(m, checkResult.Item2);
+            
             return m;
         }
 

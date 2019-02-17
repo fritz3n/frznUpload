@@ -107,7 +107,7 @@ namespace frznUpload.Client
         private async Task<Client> GetNewClient(bool Login = true)
         {
             var c = new Client();
-            await c.ConnectAsync(Properties.Settings.Default.Url, Properties.Settings.Default.Port, true);
+            await c.ConnectAsync(Properties.Settings.Default.Url, Properties.Settings.Default.Port, false);
             if(Login)
                 await c.AuthWithKey(Properties.Settings.Default.KeyFile);
             return c;
@@ -119,7 +119,7 @@ namespace frznUpload.Client
             LoggedIn = false;
 
             ActiveClient = new Client();
-            await ActiveClient.ConnectAsync(Properties.Settings.Default.Url, Properties.Settings.Default.Port, true);
+            await ActiveClient.ConnectAsync(Properties.Settings.Default.Url, Properties.Settings.Default.Port, false);
             try
             {
                 LoggedIn = await ActiveClient.AuthWithKey(Properties.Settings.Default.KeyFile);
