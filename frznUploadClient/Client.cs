@@ -323,8 +323,14 @@ namespace frznUpload.Client
         }
         public async Task DoTwoFaExchangeAsync()
         {
-            mes.SendMessage(new Message(Message.MessageType.TwoFactorNeeded, false, GetTwoFaToken()));
-            await mes.WaitForMessageAsync(true, Message.MessageType.TwoFactorSuccess);
+            try
+            {
+                mes.SendMessage(new Message(Message.MessageType.TwoFactorNeeded, false, GetTwoFaToken()));
+                await mes.WaitForMessageAsync(true, Message.MessageType.TwoFactorSuccess);
+            }catch(NoUserInputException e)
+            {
+                mes.SendMessage(new Message(Message.MessageType.TwoFactorNeeded, true));
+            }
         }
 
         public string GetTwoFaToken()

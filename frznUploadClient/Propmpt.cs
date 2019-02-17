@@ -28,8 +28,19 @@ namespace frznUpload.Client
             prompt.Controls.Add(textLabel);
             prompt.AcceptButton = confirmation;
             prompt.ControlBox = false;
-            
-            return prompt.ShowDialog() == DialogResult.OK ? textBox.Text : "error";
+            prompt.ShowDialog();
+
+            if(prompt.DialogResult != DialogResult.OK || textBox.Text == "")
+            {
+                throw new NoUserInputException();
+            }
+        
+            return textBox.Text;
         }
+    }
+
+    public class NoUserInputException : Exception
+    {
+
     }
 }

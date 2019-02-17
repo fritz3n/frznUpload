@@ -165,16 +165,15 @@ namespace frznUpload.Server
 
                                 if (db.SetToken(message[0], message[1], chal.GetThumbprint()))
                                 {
-                                    DoTwoFaCheckIfNeeded();
-
-                                    mes.SendMessage(new Message(Message.MessageType.AuthSuccess));
-                                    log.WriteLine("Authenticated with a Public Key");
+                                    if (DoTwoFaCheckIfNeeded())
+                                    { 
+                                        mes.SendMessage(new Message(Message.MessageType.AuthSuccess));
+                                        log.WriteLine("Authenticated with a Public Key");
+                                        break;
+                                    }
                                 }
-                                else
-                                {
-                                    mes.SendMessage(new Message(Message.MessageType.AuthSuccess, true, "Login data not correct"));
-                                    log.WriteLine("Failed to authenticate a Public Key");
-                                }
+                                mes.SendMessage(new Message(Message.MessageType.AuthSuccess, true, "Login data not correct"));
+                                log.WriteLine("Failed to authenticate a Public Key");
 
                                 break;
 
@@ -301,9 +300,11 @@ namespace frznUpload.Server
                             case Message.MessageType.TwoFactorRemove:
                                 try
                                 {
-                                    DoTwoFaCheckIfNeeded();
-                                    db.RemoveTwoFactorSecret();
-                                    mes.SendMessage(new Message(Message.MessageType.TwoFactorRemove,false));
+                                    if (DoTwoFaCheckIfNeeded())
+                                    {
+                                        db.RemoveTwoFactorSecret();
+                                        mes.SendMessage(new Message(Message.MessageType.TwoFactorRemove, false));
+                                    }
                                 }
                                 catch(UnauthorizedAccessException e)
                                 {
@@ -364,23 +365,32 @@ namespace frznUpload.Server
         }
 
 
-        private void DoTwoFaCheckIfNeeded()
+        private bool DoTwoFaCheckIfNeeded()
         {
             //check if the user has TwoFa enabled, if yes -> send him that we need proof!
             string secret = db.GetTwoFactorSecret();
             if (db.HasTwoFa())
             {
                 mes.SendMessage(new Message(Message.MessageType.TwoFactorNeeded, false, ""));
-                Message TwoFaMessage = mes.WaitForMessage(true, Message.MessageType.TwoFactorNeeded);
+                Message twoFaMessage = mes.WaitForMessage(false, Message.MessageType.TwoFactorNeeded);
+                if(twoFaMessage.IsError == true)
+                {
+                    return false; //client send error -> user did not enter a valid thingy
+                }
                 //if he cant prove who he is -> throw him out
-                if (!TwoFactorHandler.Verify(secret, TwoFaMessage.Fields[0]))
+                if (!TwoFactorHandler.Verify(secret, twoFaMessage.Fields[0]))
                 {
                     throw new UnauthorizedAccessException("TwoFa failed!");
                 }
                 else
                 {
-                    mes.SendMessage(new Message(Message.MessageType.TwoFactorSuccess, false));
+                    mes.SendMessage(new Message(Message.MessageType.TwoFactorSuccess, false)); 
+                    return true;
                 }
+            }
+            else
+            {
+                return true;
             }
         }
 
