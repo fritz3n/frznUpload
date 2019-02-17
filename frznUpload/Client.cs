@@ -317,13 +317,13 @@ namespace frznUpload.Server
                                 {
                                     if (db.HasTwoFa())
                                     {
-                                        //no secret
-                                        mes.SendMessage(new Message(Message.MessageType.HasTwoFactor, false, 0));
+                                        //has secret
+                                        mes.SendMessage(new Message(Message.MessageType.HasTwoFactor, false, 1));
                                     }
                                     else
                                     {
-                                        //has secret
-                                        mes.SendMessage(new Message(Message.MessageType.HasTwoFactor, false, 1));
+                                        //no secret
+                                        mes.SendMessage(new Message(Message.MessageType.HasTwoFactor, false, 0));
                                     }
                                 }catch(Exception e)
                                 {
