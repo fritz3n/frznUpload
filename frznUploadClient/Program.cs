@@ -14,11 +14,19 @@ namespace frznUpload.Client
         /// The main entry point for the application.
         /// </summary>
         [STAThread]
-        static void Main()
+        static void Main(string[] args)
         {
-            Application.EnableVisualStyles();
-            Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new IconHandler());
+            if (PipeHandler.IsServer)
+            {
+
+                Application.EnableVisualStyles();
+                Application.SetCompatibleTextRenderingDefault(false);
+                Application.Run(new IconHandler(args));
+            }
+            else
+            {
+                PipeHandler.SendMessage(args);
+            }
         }
     }
 }

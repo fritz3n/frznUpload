@@ -185,7 +185,7 @@ namespace frznUpload.Shared
                         graceful = !tcp.Connected;
                         ShutdownException = e;
                         Stop(graceful ? DisconnectReason.Graceful : DisconnectReason.Error);
-                        ErrorEvent.Set();
+                        ErrorEvent?.Set();
                         return;
                     }
                     

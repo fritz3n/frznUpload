@@ -16,13 +16,10 @@ namespace frznUpload.Client.Hotkey
         public bool Enabled { get => _Enabled; set { if (value) Register(); else Unregister(); _Enabled = value; } }
 
         private HotKey Hotkey;
-        private HotkeyContainer Parent;
 
-        public HotkeyHandler(HotkeyContainer parent, HotkeyConfig config)
+        public HotkeyHandler(HotkeyConfig config)
         {
             Config = config;
-
-            Parent = parent;
 
             Hotkey = new HotKey(Config.Modifier, Config.Key);
             Hotkey.Tag = this;
@@ -34,7 +31,7 @@ namespace frznUpload.Client.Hotkey
             if (!Enabled) // Ensure that the hotkey is not triggered if removed
                 return;
 
-            Parent.Enqueue(Execute());
+            FileUploadHandler.Enqueue(Execute());
         }
 
         public List<UploadContract> Execute()
@@ -90,9 +87,9 @@ namespace frznUpload.Client.Hotkey
             return str;
         }
 
-        public static HotkeyHandler Deserialize(HotkeyContainer parent, string str)
+        public static HotkeyHandler Deserialize(string str)
         {
-            Regex r = new Regex(@"^(\d+),(\d+),(\d+),(\d+),'((?:\\'|[^\\',])*)','((?:\\'|[^\\',])*)'$");
+            Regex r = new Regex(@"^(\d+),(\d+),(\d+),(\d+),'((?:\\'|[^\\'])*)','((?:\\'|[^\\'])*)'$");
 
             Match m = r.Match(str);
 
@@ -127,7 +124,7 @@ namespace frznUpload.Client.Hotkey
                 Whitelist = Whitelist,
             };
 
-            return new HotkeyHandler(parent, config);
+            return new HotkeyHandler(config);
         }
     }
 
