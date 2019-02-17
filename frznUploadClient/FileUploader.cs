@@ -105,17 +105,24 @@ namespace frznUpload.Client
             }
             catch (SequenceBreakException e)
             {
+                try
+                {
+                    mes.SendMessage(new Message(Message.MessageType.Sequence, true));
+                }
+                catch { }
                 Close();
-                mes.SendMessage(new Message(Message.MessageType.Sequence, true));
                 Console.WriteLine(e);
                 throw new AggregateException(e);
             }
             catch (Exception e)
             {
-
+                try
+                {
+                    mes.SendMessage(new Message(Message.MessageType.None, true, e.ToString()));
+                }
+                catch { }
                 Close();
-                mes.SendMessage(new Message(Message.MessageType.None, true, e.ToString()));
-
+                Console.WriteLine(e);
                 Exception = e;
                 Error = true;
             }
