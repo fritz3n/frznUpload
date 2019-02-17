@@ -16,6 +16,8 @@ namespace frznUpload.Client
         [STAThread]
         static void Main(string[] args)
         {
+            ExplorerIntegrationHandler.Init();
+
             if (PipeHandler.IsServer)
             {
 

@@ -14,7 +14,7 @@ namespace frznUpload.Client
     {
         static public bool IsServer { get; } = false;
 
-        static private Mutex mutex = new Mutex(false, "pipeTestMutex");
+        static private Mutex mutex = new Mutex(false, "frznUploadRunning");
         static private CancellationTokenSource tokenSource = new CancellationTokenSource();
 
 
@@ -57,7 +57,7 @@ namespace frznUpload.Client
                 return;
 
             NamedPipeClientStream pipeClient =
-                    new NamedPipeClientStream(".", "pipeTestPipe",
+                    new NamedPipeClientStream(".", "frznUploadPipe",
                         PipeDirection.Out, PipeOptions.Asynchronous);
 
             Console.WriteLine("Connecting...");
@@ -95,7 +95,7 @@ namespace frznUpload.Client
 
         static private async void PipeServer(ArgumentsHandler handler, CancellationToken token)
         {
-            NamedPipeServerStream pipeServer = new NamedPipeServerStream("pipeTestPipe", PipeDirection.In, 1);
+            NamedPipeServerStream pipeServer = new NamedPipeServerStream("frznUploadPipe", PipeDirection.In, 1);
 
             var serializer = new XmlSerializer(typeof(string[]));
             
@@ -123,7 +123,7 @@ namespace frznUpload.Client
                 {
                     Console.WriteLine(e);
                     pipeServer.Dispose();
-                    pipeServer = new NamedPipeServerStream("pipeTestPipe", PipeDirection.In, 1);
+                    pipeServer = new NamedPipeServerStream("frznUploadPipe", PipeDirection.In, 1);
                 }
             }
         }

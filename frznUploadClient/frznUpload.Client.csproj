@@ -99,6 +99,7 @@
     <Compile Include="Handlers\AutostartHandler.cs" />
     <Compile Include="Client.cs" />
     <Compile Include="ClientManager.cs" />
+    <Compile Include="ExplorerIntegrationHandler.cs" />
     <Compile Include="Files\ClipboardProvider.cs" />
     <Compile Include="Files\IFileProvider.cs" />
     <Compile Include="Files\ScreenClip.cs" />
@@ -179,13 +180,22 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\frznUpload.Client.ExplorerServer\frznUpload.Client.ExplorerServer.csproj">
+      <Project>{0d282016-72f8-4805-98e9-0cf068b45150}</Project>
+      <Name>frznUpload.Client.ExplorerServer</Name>
+      <Private>False</Private>
+    </ProjectReference>
     <ProjectReference Include="..\frznUpload.Shared\frznUpload.Shared.csproj">
       <Project>{2e7648c8-b107-420f-a75a-dbe1cc763c09}</Project>
       <Name>frznUpload.Shared</Name>
+      <Private>True</Private>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="ExplorerResources\frznUpload.Client.ExplorerServer.dll" />
+    <EmbeddedResource Include="ExplorerResources\SharpShell.dll" />
     <Content Include="upload_Wr5_icon.ico" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

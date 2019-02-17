@@ -1,0 +1,27 @@
+REGEDIT4
+
+[HKEY_CLASSES_ROOT\frznUpload.Client.ExplorerServer.ExplorerHandler]
+@="frznUpload.Client.ExplorerServer.ExplorerHandler"
+
+[HKEY_CLASSES_ROOT\frznUpload.Client.ExplorerServer.ExplorerHandler\CLSID]
+@="{B3F82037-4AC0-3DCB-AE72-1FF903D98C86}"
+
+[HKEY_CLASSES_ROOT\CLSID\{B3F82037-4AC0-3DCB-AE72-1FF903D98C86}]
+@="frznUpload.Client.ExplorerServer.ExplorerHandler"
+
+[HKEY_CLASSES_ROOT\CLSID\{B3F82037-4AC0-3DCB-AE72-1FF903D98C86}\InprocServer32]
+@="mscoree.dll"
+"ThreadingModel"="Both"
+"Class"="frznUpload.Client.ExplorerServer.ExplorerHandler"
+"Assembly"="frznUpload.Client.ExplorerServer, Version=1.0.0.0, Culture=neutral, PublicKeyToken=9082c212ccb4c9f0"
+"RuntimeVersion"="v4.0.30319"
+
+[HKEY_CLASSES_ROOT\CLSID\{B3F82037-4AC0-3DCB-AE72-1FF903D98C86}\InprocServer32\1.0.0.0]
+"Class"="frznUpload.Client.ExplorerServer.ExplorerHandler"
+"Assembly"="frznUpload.Client.ExplorerServer, Version=1.0.0.0, Culture=neutral, PublicKeyToken=9082c212ccb4c9f0"
+"RuntimeVersion"="v4.0.30319"
+
+[HKEY_CLASSES_ROOT\CLSID\{B3F82037-4AC0-3DCB-AE72-1FF903D98C86}\ProgId]
+@="frznUpload.Client.ExplorerServer.ExplorerHandler"
+
+[HKEY_CLASSES_ROOT\CLSID\{B3F82037-4AC0-3DCB-AE72-1FF903D98C86}\Implemented Categories\{62C8FE65-4EBB-45E7-B440-6E39B2CDBF29}]
