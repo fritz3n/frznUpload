@@ -212,7 +212,7 @@ namespace frznUpload.Client
 
         public void StartUpload(UploadContract contract)
         {
-            StatusLabel.Text = "Uploading: " + contract.Filename;
+            StatusLabel.Invoke(new Action(() => StatusLabel.Text = "Uploading: " + contract.Filename));
             Uploading = true;
             FileUpload = contract;
             UploadTimer.Start();
