@@ -194,6 +194,7 @@
   <ItemGroup>
     <EmbeddedResource Include="ExplorerResources\frznUpload.Client.ExplorerServer.dll" />
     <EmbeddedResource Include="ExplorerResources\SharpShell.dll" />
+    <EmbeddedResource Include="ExplorerResources\ServerRegistrationManager.exe" />
     <Content Include="upload_Wr5_icon.ico" />
   </ItemGroup>
   <ItemGroup />

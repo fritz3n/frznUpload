@@ -33,15 +33,15 @@ namespace frznUpload.Client
             
             string dll = ExtractResource("frznUpload.Client.ExplorerServer.dll");
             string dependency = ExtractResource("SharpShell.dll");
+            string srm = ExtractResource("ServerRegistrationManager.exe");
 
-            string regasm = System.Runtime.InteropServices.RuntimeEnvironment.GetRuntimeDirectory() + "regasm.exe";
+            //string regasm = System.Runtime.InteropServices.RuntimeEnvironment.GetRuntimeDirectory() + "regasm.exe";
 
             Process p = new Process();
-            p.StartInfo.FileName = regasm;
+            p.StartInfo.FileName = srm;
             p.StartInfo.UseShellExecute = true;
             p.StartInfo.Verb = "runas";
-            p.StartInfo.Arguments = $"\"{dll}\"";
-            Console.WriteLine($"\"{dll}\"");
+            p.StartInfo.Arguments = $"install \"{dll}\" -codebase";
             try
             {
                 p.Start();
@@ -51,6 +51,7 @@ namespace frznUpload.Client
                 Console.WriteLine(p.ExitCode);
 
                 File.Delete(dll);
+                File.Delete(srm);
                 File.Delete(dependency);
                 SetEnabledValue(true);
                 return true;
@@ -60,6 +61,7 @@ namespace frznUpload.Client
                 MessageBox.Show("Sorry for the inconvenience, but Administrator rights are needed for this");
 
                 File.Delete(dll);
+                File.Delete(srm);
                 File.Delete(dependency);
                 return false;
             }
@@ -83,14 +85,13 @@ namespace frznUpload.Client
 
             string dll = ExtractResource("frznUpload.Client.ExplorerServer.dll");
             string dependency = ExtractResource("SharpShell.dll");
-
-            string regasm = System.Runtime.InteropServices.RuntimeEnvironment.GetRuntimeDirectory() + "regasm.exe";
+            string srm = ExtractResource("ServerRegistrationManager.exe");
 
             Process p = new Process();
-            p.StartInfo.FileName = regasm;
+            p.StartInfo.FileName = srm;
             p.StartInfo.UseShellExecute = true;
             p.StartInfo.Verb = "runas";
-            p.StartInfo.Arguments = $"/unregister \"{dll}\"";
+            p.StartInfo.Arguments = $"uninstall \"{dll}\"";
             p.Start();
             
             p.WaitForExit();
@@ -98,6 +99,7 @@ namespace frznUpload.Client
             Console.WriteLine(p.ExitCode);
 
             File.Delete(dll);
+            File.Delete(srm);
             File.Delete(dependency);
             SetEnabledValue(false);
         }

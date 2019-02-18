@@ -20,8 +20,14 @@ namespace frznUpload.Client.ExplorerServer
     [COMServerAssociation(AssociationType.AllFilesAndFolders)]
     public class ExplorerHandler : SharpContextMenu
     {
-        static Image icon = Icon.ExtractAssociatedIcon(Assembly.GetExecutingAssembly().Location).ToBitmap();
+        //static Image icon;
         
+        public ExplorerHandler()
+        {
+            //Stream stream = GetType().Assembly.GetManifestResourceStream("frznUpload.Client.ExplorerServer.upload_Wr5_icon.ico");
+            //icon = new Icon(stream).ToBitmap();
+            //stream.Dispose();
+        }
 
         protected override bool CanShowMenu()
         {
@@ -37,7 +43,7 @@ namespace frznUpload.Client.ExplorerServer
             var itemUpload = new ToolStripMenuItem
             {
                 Text = "Upload file to fritzen.tk",
-                Image = icon,
+                //Image = icon,
             };
 
             //  When we click, we'll count the lines.
