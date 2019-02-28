@@ -82,7 +82,7 @@ namespace frznUpload.Client
 
             stream = new SslStream(Tcp.GetStream(), false, new RemoteCertificateValidationCallback(ValidateServerCertificate));
 
-            await stream.AuthenticateAsClientAsync("fritzen.tk");
+            await stream.AuthenticateAsClientAsync("fritzen.ml");
 
             stp.Stop();
 

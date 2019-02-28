@@ -344,7 +344,7 @@ namespace frznUpload.Shared
             var checkResult = MessagePatterns.CheckMessage(m);
 
 
-            if (m.IsError)
+            if (m.IsError && throwIfError)
                 throw new ErrorMessageException(m);
 
             if (!checkResult.Item1)

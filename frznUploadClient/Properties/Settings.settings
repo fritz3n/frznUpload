@@ -6,7 +6,7 @@
       <Value Profile="(Default)">key.key</Value>
     </Setting>
     <Setting Name="Url" Type="System.String" Scope="User">
-      <Value Profile="(Default)">fritzen.tk</Value>
+      <Value Profile="(Default)">fritzen.ml</Value>
     </Setting>
     <Setting Name="Port" Type="System.Int16" Scope="User">
       <Value Profile="(Default)">22340</Value>

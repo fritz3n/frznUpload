@@ -49,10 +49,8 @@ namespace frznUpload.Client
                 p.WaitForExit();
 
                 Console.WriteLine(p.ExitCode);
-
-                File.Delete(dll);
+                
                 File.Delete(srm);
-                File.Delete(dependency);
                 SetEnabledValue(true);
                 return true;
             }
@@ -60,15 +58,21 @@ namespace frznUpload.Client
             {
                 MessageBox.Show("Sorry for the inconvenience, but Administrator rights are needed for this");
 
-                File.Delete(dll);
-                File.Delete(srm);
-                File.Delete(dependency);
+                try
+                {
+                    File.Delete(srm);
+                    File.Delete(dll);
+                    File.Delete(dependency);
+                }catch{ }
                 return false;
             }
         }
 
         private static string ExtractResource(string name)
         {
+            if (File.Exists(name))
+                return Directory.GetCurrentDirectory() + "/" + name;
+
             Stream stream = typeof(MainForm).Assembly.GetManifestResourceStream("frznUpload.Client.ExplorerResources." + name);
             byte[] bytes = new byte[(int)stream.Length];
             stream.Read(bytes, 0, bytes.Length);
@@ -97,10 +101,6 @@ namespace frznUpload.Client
             p.WaitForExit();
 
             Console.WriteLine(p.ExitCode);
-
-            File.Delete(dll);
-            File.Delete(srm);
-            File.Delete(dependency);
             SetEnabledValue(false);
         }
 
