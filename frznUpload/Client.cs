@@ -162,14 +162,15 @@ namespace frznUpload.Server
                                 chal = new Challenge();
 
                                 chal.SetPublicComponents(message[2], message[3]);
-
-                                if (db.SetToken(message[0], message[1], chal.GetThumbprint()))
+                                if (DoTwoFaCheckIfNeeded(message[0]))
                                 {
-                                    if (DoTwoFaCheckIfNeeded())
-                                    { 
+                                    if (db.SetToken(message[0], message[1], chal.GetThumbprint()))
+                                    {
+                                        
                                         mes.SendMessage(new Message(Message.MessageType.AuthSuccess));
                                         log.WriteLine("Authenticated with a Public Key");
                                         break;
+                                        
                                     }
                                 }
                                 mes.SendMessage(new Message(Message.MessageType.AuthSuccess, true, "Login data not correct"));
@@ -365,12 +366,22 @@ namespace frznUpload.Server
         }
 
 
-        private bool DoTwoFaCheckIfNeeded()
+        private bool DoTwoFaCheckIfNeeded(string username = null)
         {
             //check if the user has TwoFa enabled, if yes -> send him that we need proof!
-            string secret = db.GetTwoFactorSecret();
-            if (db.HasTwoFa())
+            int? id = null;
+
+            if(username == null)
             {
+                id = db.GetUserId(username);
+                
+                if (id == null)
+                    return true;
+            }
+            
+            if (db.HasTwoFa(id))
+            {
+                string secret = db.GetTwoFactorSecret(id);
                 mes.SendMessage(new Message(Message.MessageType.TwoFactorNeeded, false, ""));
                 Message twoFaMessage = mes.WaitForMessage(false, Message.MessageType.TwoFactorNeeded);
                 if(twoFaMessage.IsError == true)

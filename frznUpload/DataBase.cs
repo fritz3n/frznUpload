@@ -292,14 +292,29 @@ namespace frznUpload.Server
         /// <summary>
         /// Gets a Two Fa Secret for a given userID
         /// </summary>
-        public string GetTwoFactorSecret()
+        public string GetTwoFactorSecret(int? id = null)
         {
-            return conn.QuerySingle<string>("SELECT Two_fa_secret FROM users WHERE id=@id", new { id=userId });
+            id = id ?? userId;
+            return conn.QuerySingle<string>("SELECT Two_fa_secret FROM users WHERE id=@id", new { id });
         }
         
-        public bool HasTwoFa()
+        public bool HasTwoFa(int? id = null)
         {
-            return GetTwoFactorSecret() != "null";
+            return GetTwoFactorSecret(id) != "null";
+        }
+
+
+        /// <summary>
+        /// Gets the corresponding id to a username
+        /// </summary>
+        /// <param name="username">the username to query for</param>
+        /// <returns>the id or NULL if the user isnt found</returns>
+        public int? GetUserId(string username)
+        {
+            if (conn.QuerySingle<int>("SELECT COUNT(*) FROM users WHERE name = @username", new { username }) != 1)
+                return null;
+
+            return conn.QuerySingle<int>("SELECT id FROM users WHERE name = @username", new { username });
         }
 
         /// <summary>
