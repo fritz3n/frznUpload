@@ -397,10 +397,17 @@ namespace frznUpload.Client
               X509Chain chain,
               SslPolicyErrors sslPolicyErrors)
         {
+
+
             if (sslPolicyErrors == SslPolicyErrors.None)
                 return true;
 
             Console.WriteLine("Certificate error: {0}", sslPolicyErrors);
+
+#if DEBUG
+            Console.WriteLine("Ignoring due to debug mode");
+            return true;
+#endif
 
             // Do not allow this client to communicate with unauthenticated servers.
             return false;

@@ -371,7 +371,7 @@ namespace frznUpload.Server
             //check if the user has TwoFa enabled, if yes -> send him that we need proof!
             int? id = null;
 
-            if(username == null)
+            if(username != null)
             {
                 id = db.GetUserId(username);
                 

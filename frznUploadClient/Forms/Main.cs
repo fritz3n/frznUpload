@@ -47,7 +47,8 @@ namespace frznUpload.Client
                 loginForm.Show();
             }
 
-            CreateHandle();
+            if(!IsHandleCreated)
+                CreateHandle();
         }
         
         private async void UploadTimer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)

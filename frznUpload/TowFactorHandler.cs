@@ -8,7 +8,7 @@ namespace frznUpload.Server
 
     public static class TwoFactorHandler
     {
-        private static TwoFactorAuth tfa = new TwoFactorAuth("Fitzen.tk");
+        private static TwoFactorAuth tfa = new TwoFactorAuth("fritzen.ml");
 
         public static string CreateSecret()
         {
