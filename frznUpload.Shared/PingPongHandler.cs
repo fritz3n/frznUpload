@@ -38,7 +38,7 @@ namespace frznUpload.Shared
         {
             PingTimer.Interval = Math.Max(100, TurnaoroundTimes.Average() * 10);
 
-            if (WaitingPings.Count > 10)
+            if (WaitingPings.Count > int.MaxValue)
             {
                 mes.Stop(MessageHandler.DisconnectReason.Timeout);
                 Timeout?.Invoke(this, null);
