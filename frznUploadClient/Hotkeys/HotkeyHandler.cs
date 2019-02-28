@@ -52,7 +52,15 @@ namespace frznUpload.Client.Hotkey
                     throw new InvalidOperationException();
             }
 
-            List<UploadFile> uploads = provider.GetFile(Config.Format);
+            List<UploadFile> uploads = new List<UploadFile>();
+            try
+            {
+                uploads = provider.GetFile(Config.Format);
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show("An error occured:\n" + e.Message);
+            }
 
             var list = new List<UploadContract>();
 

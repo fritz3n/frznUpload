@@ -67,7 +67,7 @@ namespace frznUpload.Client.Files
                 }};
             }
 
-            throw new InvalidOperationException();
+            throw new InvalidOperationException("Please copy something before atmepting to upload from clipboard");
         }
     }
 }

@@ -1,7 +1,9 @@
-﻿using SharpShell.Attributes;
+﻿using Microsoft.Win32;
+using SharpShell.Attributes;
 using SharpShell.SharpContextMenu;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.IO.Pipes;
@@ -20,37 +22,50 @@ namespace frznUpload.Client.ExplorerServer
     [COMServerAssociation(AssociationType.AllFilesAndFolders)]
     public class ExplorerHandler : SharpContextMenu
     {
-        //static Image icon;
-        
+        Image icon = null;
+        private RegistryKey rkApp = Registry.CurrentUser.OpenSubKey("SOFTWARE\\" + AppName, false);
+        private const string AppName = "frznUpload";
+        private const string PathKey = "path";
+
         public ExplorerHandler()
         {
-            //Stream stream = GetType().Assembly.GetManifestResourceStream("frznUpload.Client.ExplorerServer.upload_Wr5_icon.ico");
-            //icon = new Icon(stream).ToBitmap();
-            //stream.Dispose();
+            File.AppendAllText(@"C:\Users\fritzen\Desktop\ShellLog.txt", "Started\n");
+
+            Stream stream = GetType().Assembly.GetManifestResourceStream("frznUpload.Client.ExplorerServer.upload_Wr5_icon.ico");
+            icon = new Bitmap(new Icon(stream).ToBitmap(), new Size(16, 16));
+            stream.Dispose();
         }
 
         protected override bool CanShowMenu()
         {
             //  We always show the menu.
-            return CheckIfRunning();
+            return true;
         }
 
         protected override ContextMenuStrip CreateMenu()
         {
+
             var menu = new ContextMenuStrip();
+            menu.AutoSize = true;
+            menu.ImageScalingSize = new Size(16, 16);
 
             //  Create a 'count lines' item.
             var itemUpload = new ToolStripMenuItem
-            {
-                Text = "Upload file to fritzen.tk",
-                //Image = icon,
-            };
+            (
+                "Upload file to fritzen.tk"
+            );
+            itemUpload.AutoSize = true;
+            itemUpload.ImageScaling = ToolStripItemImageScaling.SizeToFit;
+
+            itemUpload.Image = icon;
 
             //  When we click, we'll count the lines.
             itemUpload.Click += ItemUpload_Click;
 
             //  Add the item to the context menu.
             menu.Items.Add(itemUpload);
+
+            menu.PerformLayout();
 
             //  Return the menu.
             return menu;
@@ -66,10 +81,42 @@ namespace frznUpload.Client.ExplorerServer
             }
             else
             {
-                MessageBox.Show("Please start the uploader before trying to upload!");
+                StartServer(args);
             }
         }
         
+        private void StartServer(string[] args)
+        {
+            string path = GetServerPath();
+
+            if(path == null)
+            {
+                MessageBox.Show("Couldn´t find the client");
+                return;
+            }
+            
+            Process p = new Process();
+            p.StartInfo.FileName = path;
+
+            string arguments = string.Join(" ", args.Select((s) => '"' + s + '"'));
+            p.StartInfo.Arguments = arguments;
+
+            p.Start();
+        }
+
+        private string GetServerPath()
+        {
+            if (rkApp == null)
+                return null;
+
+            string path = (string)(rkApp.GetValue(PathKey) ?? "");
+
+            if (!File.Exists(path))
+                return null;
+
+            return path;
+        }
+
         /// <summary>
         /// Check if the Uploader is already running
         /// </summary>

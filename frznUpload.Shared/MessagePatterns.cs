@@ -72,7 +72,7 @@ namespace frznUpload.Shared
         static public (bool, string) CheckMessage(Message m)
         {
             if (m.IsError)
-                return (false, "Message is error");
+                return (true, "Message is error");
 
             var fields = patterns[m.Type];
 

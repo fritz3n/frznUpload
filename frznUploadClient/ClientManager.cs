@@ -11,6 +11,8 @@ namespace frznUpload.Client
 {
     public class ClientManager : IDisposable
     {
+        const bool verbose = true;
+
         Client ActiveClient;
         DateTime ActiveTime;
         TimeSpan cachedTime = new TimeSpan(0, 10, 0);
@@ -100,14 +102,15 @@ namespace frznUpload.Client
 
         public void Disconnect()
         {
-            ActiveClient.Disconnect();
-            ActiveClient.Dispose();
+            ActiveClient?.Disconnect();
+            ActiveClient?.Dispose();
+            ActiveClient = null;
         }
 
         private async Task<Client> GetNewClient(bool Login = true)
         {
             var c = new Client();
-            await c.ConnectAsync(Properties.Settings.Default.Url, Properties.Settings.Default.Port, false);
+            await c.ConnectAsync(Properties.Settings.Default.Url, Properties.Settings.Default.Port, verbose);
             if(Login)
                 await c.AuthWithKey(Properties.Settings.Default.KeyFile);
             return c;
@@ -119,7 +122,7 @@ namespace frznUpload.Client
             LoggedIn = false;
 
             ActiveClient = new Client();
-            await ActiveClient.ConnectAsync(Properties.Settings.Default.Url, Properties.Settings.Default.Port, false);
+            await ActiveClient.ConnectAsync(Properties.Settings.Default.Url, Properties.Settings.Default.Port, verbose);
             try
             {
                 LoggedIn = await ActiveClient.AuthWithKey(Properties.Settings.Default.KeyFile);
@@ -250,11 +253,14 @@ namespace frznUpload.Client
         public List<Exception> Exceptions { get; private set; }
         public Exception LastException { get => Exceptions.LastOrDefault(); }
         public int RetryCount { get; private set; }
+        public new string Message => LastException.Message;
 
         public RetryException(List<Exception> exceptions, int retryCount)
         {
             Exceptions = exceptions;
             RetryCount = retryCount;
         }
+
+        public override string ToString() => LastException.ToString();
     }
 }

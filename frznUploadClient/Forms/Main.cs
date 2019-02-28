@@ -46,7 +46,6 @@ namespace frznUpload.Client
                 loginForm.ControlBox = false;
                 loginForm.Show();
             }
-
             if(!IsHandleCreated)
                 CreateHandle();
         }
