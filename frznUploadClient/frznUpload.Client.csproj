@@ -99,7 +99,7 @@
     <Compile Include="Handlers\AutostartHandler.cs" />
     <Compile Include="Client.cs" />
     <Compile Include="ClientManager.cs" />
-    <Compile Include="ExplorerIntegrationHandler.cs" />
+    <Compile Include="Handlers\ExplorerIntegrationHandler.cs" />
     <Compile Include="Files\ClipboardProvider.cs" />
     <Compile Include="Files\IFileProvider.cs" />
     <Compile Include="Files\ScreenClip.cs" />
