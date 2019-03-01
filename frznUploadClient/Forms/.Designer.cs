@@ -29,6 +29,7 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
             this.StatusLabel = new System.Windows.Forms.Label();
             this.ProgressBar = new System.Windows.Forms.ProgressBar();
             this.AccountButton = new System.Windows.Forms.Button();
@@ -425,6 +426,7 @@
             this.Controls.Add(this.AccountButton);
             this.Controls.Add(this.ProgressBar);
             this.Controls.Add(this.StatusLabel);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "MainForm";
             this.Text = "frznUpload";
             this.Load += new System.EventHandler(this.MainForm_Load);

@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(SettingsForm));
             this.SettingsTabCtrl = new System.Windows.Forms.TabControl();
             this.HotkeyTab = new System.Windows.Forms.TabPage();
             this.HotkeyLayout = new System.Windows.Forms.FlowLayoutPanel();
@@ -35,10 +36,10 @@
             this.AutostartTab = new System.Windows.Forms.TabPage();
             this.autostartCheckbox = new System.Windows.Forms.CheckBox();
             this.accountTab = new System.Windows.Forms.TabPage();
+            this.scanLable = new System.Windows.Forms.Label();
+            this.picture_qr = new System.Windows.Forms.PictureBox();
             this.TwoFaCheckbox = new System.Windows.Forms.CheckBox();
             this.AddButton = new System.Windows.Forms.Button();
-            this.picture_qr = new System.Windows.Forms.PictureBox();
-            this.scanLable = new System.Windows.Forms.Label();
             this.SettingsTabCtrl.SuspendLayout();
             this.HotkeyTab.SuspendLayout();
             this.AutostartTab.SuspendLayout();
@@ -124,6 +125,24 @@
             this.accountTab.Text = "Account";
             this.accountTab.UseVisualStyleBackColor = true;
             // 
+            // scanLable
+            // 
+            this.scanLable.AutoSize = true;
+            this.scanLable.Location = new System.Drawing.Point(367, 31);
+            this.scanLable.Name = "scanLable";
+            this.scanLable.Size = new System.Drawing.Size(136, 13);
+            this.scanLable.TabIndex = 2;
+            this.scanLable.Text = "Scan this code in your app:";
+            this.scanLable.Visible = false;
+            // 
+            // picture_qr
+            // 
+            this.picture_qr.Location = new System.Drawing.Point(506, 27);
+            this.picture_qr.Name = "picture_qr";
+            this.picture_qr.Size = new System.Drawing.Size(256, 256);
+            this.picture_qr.TabIndex = 1;
+            this.picture_qr.TabStop = false;
+            // 
             // TwoFaCheckbox
             // 
             this.TwoFaCheckbox.AutoSize = true;
@@ -149,30 +168,13 @@
             this.AddButton.UseVisualStyleBackColor = false;
             this.AddButton.Click += new System.EventHandler(this.AddButton_Click);
             // 
-            // picture_qr
-            // 
-            this.picture_qr.Location = new System.Drawing.Point(506, 27);
-            this.picture_qr.Name = "picture_qr";
-            this.picture_qr.Size = new System.Drawing.Size(256, 256);
-            this.picture_qr.TabIndex = 1;
-            this.picture_qr.TabStop = false;
-            // 
-            // scanLable
-            // 
-            this.scanLable.AutoSize = true;
-            this.scanLable.Location = new System.Drawing.Point(367, 31);
-            this.scanLable.Name = "scanLable";
-            this.scanLable.Size = new System.Drawing.Size(136, 13);
-            this.scanLable.TabIndex = 2;
-            this.scanLable.Text = "Scan this code in your app:";
-            this.scanLable.Visible = false;
-            // 
             // SettingsForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(860, 450);
             this.Controls.Add(this.SettingsTabCtrl);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.KeyPreview = true;
             this.Name = "SettingsForm";
             this.Text = "Settings";

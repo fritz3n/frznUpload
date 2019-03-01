@@ -95,8 +95,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ArgumentsHandler.cs" />
-    <Compile Include="AutostartHandler.cs" />
+    <Compile Include="Handlers\ArgumentsHandler.cs" />
+    <Compile Include="Handlers\AutostartHandler.cs" />
     <Compile Include="Client.cs" />
     <Compile Include="ClientManager.cs" />
     <Compile Include="Files\ClipboardProvider.cs" />
@@ -104,8 +104,8 @@
     <Compile Include="Files\ScreenClip.cs" />
     <Compile Include="Files\Screenshot.cs" />
     <Compile Include="Files\TempFileHandler.cs" />
-    <Compile Include="FileUploader.cs" />
-    <Compile Include="FileUploadHandler.cs" />
+    <Compile Include="Handlers\FileUploader.cs" />
+    <Compile Include="Handlers\FileUploadHandler.cs" />
     <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="Forms\HotkeyConfigControl.cs">
       <SubType>Component</SubType>

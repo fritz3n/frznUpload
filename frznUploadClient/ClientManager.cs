@@ -212,7 +212,8 @@ namespace frznUpload.Client
         private bool EnsureActivated(bool EnsureLoggedIn = true)
         {
             if (ActiveClient == null || !ActiveClient.Connected)
-                ActivateClient().Wait();
+                if (!ActivateClient().Wait(10000))
+                    throw new TimeoutException();
 
             if (EnsureLoggedIn & !ActiveClient.IsAuthenticated)
                 return true;
