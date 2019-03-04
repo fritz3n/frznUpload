@@ -91,7 +91,7 @@ namespace frznUpload.Client
                 while ((written = await file.ReadAsync(buffer, 0, ChunkSize)) > 0)
                 {
                     mes.SendMessage(new Message(Message.MessageType.FileUpload, false, written, buffer.Clone()));
-                    //mes.Flush();
+                    mes.Flush();
                     WrittenSize += written;
                 }
 

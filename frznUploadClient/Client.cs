@@ -46,6 +46,7 @@ namespace frznUpload.Client
             Stopwatch stp = new Stopwatch();
             stp.Start();
             Tcp = new TcpClient();
+            Tcp.SendTimeout = 15000;
 
             Tcp.Connect(url, port);
 
@@ -77,6 +78,7 @@ namespace frznUpload.Client
             Stopwatch stp = new Stopwatch();
             stp.Start();
             Tcp = new TcpClient();
+            Tcp.SendTimeout = 15000;
 
             await Tcp.ConnectAsync(url, port);
 
