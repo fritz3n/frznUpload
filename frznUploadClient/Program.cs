@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Security.Cryptography;
 using frznUpload.Shared;
+using System.IO;
 
 namespace frznUpload.Client
 {
@@ -16,6 +17,10 @@ namespace frznUpload.Client
         [STAThread]
         static void Main(string[] args)
         {
+            FileInfo f = new FileInfo(System.Reflection.Assembly.GetEntryAssembly().Location);
+
+            Directory.SetCurrentDirectory(f.Directory.FullName);
+
             ExplorerIntegrationHandler.Init();
 
             if (PipeHandler.IsServer)

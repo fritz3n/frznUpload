@@ -29,8 +29,6 @@ namespace frznUpload.Client.ExplorerServer
 
         public ExplorerHandler()
         {
-            File.AppendAllText(@"C:\Users\fritzen\Desktop\ShellLog.txt", "Started\n");
-
             Stream stream = GetType().Assembly.GetManifestResourceStream("frznUpload.Client.ExplorerServer.upload_Wr5_icon.ico");
             icon = new Bitmap(new Icon(stream).ToBitmap(), new Size(16, 16));
             stream.Dispose();
