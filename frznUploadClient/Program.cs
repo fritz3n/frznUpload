@@ -17,9 +17,13 @@ namespace frznUpload.Client
         [STAThread]
         static void Main(string[] args)
         {
+            Console.WriteLine("Starting...");
+
             FileInfo f = new FileInfo(System.Reflection.Assembly.GetEntryAssembly().Location);
 
             Directory.SetCurrentDirectory(f.Directory.FullName);
+
+            Console.WriteLine("Working Directory: " + Directory.GetCurrentDirectory());
 
             ExplorerIntegrationHandler.Init();
 

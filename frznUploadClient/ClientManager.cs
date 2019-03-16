@@ -11,7 +11,7 @@ namespace frznUpload.Client
 {
     public class ClientManager : IDisposable
     {
-        const bool verbose = true;
+        const bool verbose = false;
 
         Client ActiveClient;
         DateTime ActiveTime;
