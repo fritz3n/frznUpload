@@ -162,7 +162,7 @@ namespace frznUpload.Server
                                 chal = new Challenge();
 
                                 chal.SetPublicComponents(message[2], message[3]);
-                                if (DoTwoFaCheckIfNeeded(message[0]))
+                                if (DoTwoFaCheckIfNeeded(message[0])) 
                                 {
                                     if (db.SetToken(message[0], message[1], chal.GetThumbprint()))
                                     {

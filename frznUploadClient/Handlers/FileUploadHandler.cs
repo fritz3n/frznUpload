@@ -22,17 +22,14 @@ namespace frznUpload.Client
             Form.UploadFinished += Form_UploadFinished;
         }
 
-        private static void Form_UploadFinished(object sender, EventArgs e)
-        {
-            StartUpload();
-        }
+        private static void Form_UploadFinished(object sender, EventArgs e) => StartUpload();
 
         public static void UploadFile(string filename)
         {
             if (!File.Exists(filename))
                 throw new FileNotFoundException();
-            
-            var c = new UploadContract
+
+            UploadContract c = new UploadContract
             {
                 Uploader = null,
                 Path = filename,
@@ -54,12 +51,12 @@ namespace frznUpload.Client
             if (!Directory.Exists(directory))
                 throw new FileNotFoundException();
 
-            foreach(string filename in Directory.EnumerateFiles(directory))
+            foreach (string filename in Directory.EnumerateFiles(directory))
             {
                 UploadFile(filename);
             }
 
-            foreach(string directoryName in Directory.EnumerateDirectories(directory))
+            foreach (string directoryName in Directory.EnumerateDirectories(directory))
             {
                 UploadDirectory(directoryName);
             }
@@ -67,7 +64,7 @@ namespace frznUpload.Client
 
         public static void Enqueue(List<UploadContract> contracts)
         {
-            foreach (var c in contracts)
+            foreach (UploadContract c in contracts)
             {
                 UploadQueue.Enqueue(c);
             }
@@ -87,8 +84,9 @@ namespace frznUpload.Client
             if (UploadQueue.Count == 0)
                 return;
 
-            var contract = UploadQueue.Dequeue();
-            try { 
+            UploadContract contract = UploadQueue.Dequeue();
+            try
+            {
                 contract.Uploader = await Client.UploadFile(contract.Path, contract.Filename);
             }
             catch (RetryException e)
@@ -101,8 +99,8 @@ namespace frznUpload.Client
                 }
                 throw;
             }
-            
-   Form.StartUpload(contract);
+
+            Form.StartUpload(contract);
         }
 
     }

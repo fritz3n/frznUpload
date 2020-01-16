@@ -85,9 +85,9 @@ namespace frznUpload.Client
 
 
                     if (Created)
-                        LinkText.Invoke(new Action(() => LinkText.Text = @"https://fritzen.ml/view.php?id=" + s));
+                        LinkText.Invoke(new Action(() => LinkText.Text = $@"https://{Properties.Settings.Default.Url}/view.php?id=" + s));
 
-                    SetClipboardText(@"https://fritzen.ml/view.php?id=" + s);
+                    SetClipboardText($@"https://{Properties.Settings.Default.Url}/view.php?id=" + s);
                     SystemSounds.Beep.Play();
                 }
 

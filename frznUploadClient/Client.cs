@@ -20,7 +20,7 @@ namespace frznUpload.Client
 
         public string Name { get; private set; }
         public bool IsAuthenticated { get; private set; }
-        public bool Connected { get => Tcp.Connected; }
+        public bool Connected => Tcp.Connected;
 
         private bool disposed = false;
 
@@ -45,8 +45,10 @@ namespace frznUpload.Client
             ThrowIfDisposed();
             Stopwatch stp = new Stopwatch();
             stp.Start();
-            Tcp = new TcpClient();
-            Tcp.SendTimeout = 15000;
+            Tcp = new TcpClient
+            {
+                SendTimeout = 15000
+            };
 
             Tcp.Connect(url, port);
 
@@ -63,7 +65,7 @@ namespace frznUpload.Client
             mes.OnDisconnect += OnDisconnect;
 
             mes.SendMessage(new Message(Message.MessageType.Version, false, MessageHandler.Version));
-            var m = mes.WaitForMessage(true, Message.MessageType.Version);
+            Message m = mes.WaitForMessage(true, Message.MessageType.Version);
 
             if (m[0] != MessageHandler.Version)
             {
@@ -77,8 +79,10 @@ namespace frznUpload.Client
             ThrowIfDisposed();
             Stopwatch stp = new Stopwatch();
             stp.Start();
-            Tcp = new TcpClient();
-            Tcp.SendTimeout = 15000;
+            Tcp = new TcpClient
+            {
+                SendTimeout = 15000
+            };
 
             await Tcp.ConnectAsync(url, port);
 
@@ -89,15 +93,15 @@ namespace frznUpload.Client
             stp.Stop();
 
             Console.WriteLine("encryption established: " + stp.ElapsedMilliseconds);
-            
+
             mes = new MessageHandler(Tcp, stream, verbose);
             mes.Start();
             mes.OnDisconnect += OnDisconnect;
 
             mes.SendMessage(new Message(Message.MessageType.Version, false, MessageHandler.Version));
-            var m = await mes.WaitForMessageAsync(true, Message.MessageType.Version);
+            Message m = await mes.WaitForMessageAsync(true, Message.MessageType.Version);
 
-            if(m[0] != MessageHandler.Version)
+            if (m[0] != MessageHandler.Version)
             {
                 Dispose();
                 throw new InvalidOperationException("Server version does not match Client version");
@@ -116,17 +120,17 @@ namespace frznUpload.Client
             ThrowIfDisposed();
             try
             {
-                var chal = new Challenge();
+                Challenge chal = new Challenge();
 
                 if (!File.Exists(file))
                 {
-                    var fileStrea = File.OpenWrite(file);
+                    FileStream fileStrea = File.OpenWrite(file);
                     chal.GenerateKey(4096);
                     chal.ExportKey(fileStrea);
                     fileStrea.Close();
                 }
 
-                var fileStream = File.OpenRead(file);
+                FileStream fileStream = File.OpenRead(file);
                 chal.LoadKey(fileStream);
                 fileStream.Close();
 
@@ -134,7 +138,7 @@ namespace frznUpload.Client
 
                 mes.SendMessage(new Message(Message.MessageType.ChallengeRequest, false, pub[0], pub[1]));
 
-                var m = await mes.WaitForMessageAsync(true, Message.MessageType.Challenge);
+                Message m = await mes.WaitForMessageAsync(true, Message.MessageType.Challenge);
 
                 mes.SendMessage(new Message(Message.MessageType.ChallengeResponse, false, chal.SignChallenge(m[0])));
 
@@ -164,17 +168,17 @@ namespace frznUpload.Client
             ThrowIfDisposed();
             try
             {
-                var chal = new Challenge();
+                Challenge chal = new Challenge();
 
                 if (!File.Exists(file))
                 {
-                    var fileStrea = File.OpenWrite(file);
+                    FileStream fileStrea = File.OpenWrite(file);
                     chal.GenerateKey(4096);
                     chal.ExportKey(fileStrea);
                     fileStrea.Close();
                 }
 
-                var fileStream = File.OpenRead(file);
+                FileStream fileStream = File.OpenRead(file);
                 chal.LoadKey(fileStream);
                 fileStream.Close();
 
@@ -183,14 +187,15 @@ namespace frznUpload.Client
                 mes.SendMessage(new Message(Message.MessageType.Auth, false, username, password, pub[0], pub[1]));
 
                 Message rec = await mes.WaitForMessageAsync(false);
-                if(rec.IsError == true)
+                if (rec.IsError == true)
                 {
                     throw new Exception("Recived an error: " + rec.ToString());
                 }
-                else if(rec.Type == Message.MessageType.AuthSuccess)
+                else if (rec.Type == Message.MessageType.AuthSuccess)
                 {
                     //auth recived all good.
-                }else if (rec.Type == Message.MessageType.TwoFactorNeeded)
+                }
+                else if (rec.Type == Message.MessageType.TwoFactorNeeded)
                 {
                     //Two fa needed
                     await DoTwoFaExchangeAsync();
@@ -241,7 +246,7 @@ namespace frznUpload.Client
             ThrowIfDisposed();
             try
             {
-                var up = new FileUploader(mes, this, path, singleUse, Filename);
+                FileUploader up = new FileUploader(mes, this, path, singleUse, Filename);
                 up.Start();
                 return up;
             }
@@ -265,7 +270,7 @@ namespace frznUpload.Client
 
             mes.SendMessage(new Message(Message.MessageType.ShareRequest, false, fileIdentifier, firstView ? 1 : 0, isPublic ? 1 : 0, publicRegistered ? 1 : 0, whitelisted ? 1 : 0, whitelist));
 
-            var m = await mes.WaitForMessageAsync(true, Message.MessageType.ShareResponse);
+            Message m = await mes.WaitForMessageAsync(true, Message.MessageType.ShareResponse);
 
             return m[0];
         }
@@ -274,15 +279,15 @@ namespace frznUpload.Client
         {
             ThrowIfDisposed();
             mes.SendMessage(new Message(Message.MessageType.FileListRequest));
-            var m = await mes.WaitForMessageAsync(true, Message.MessageType.FileList);
+            Message m = await mes.WaitForMessageAsync(true, Message.MessageType.FileList);
 
-            var list = new List<RemoteFile>();
+            List<RemoteFile> list = new List<RemoteFile>();
 
             for (int i = 1; i < m[0] + 1; i++)
             {
                 Message fileInfo = m[i];
 
-                var file = new RemoteFile
+                RemoteFile file = new RemoteFile
                 {
                     Filename = fileInfo[0],
                     File_extension = fileInfo[1],
@@ -301,15 +306,15 @@ namespace frznUpload.Client
         {
             ThrowIfDisposed();
             mes.SendMessage(new Message(Message.MessageType.FileListRequest));
-            var m = await mes.WaitForMessageAsync(true, Message.MessageType.FileList);
+            Message m = await mes.WaitForMessageAsync(true, Message.MessageType.FileList);
 
-            var list = new List<RemoteFile>();
+            List<RemoteFile> list = new List<RemoteFile>();
 
             for (int i = 1; i < m[0] + 1; i++)
             {
                 Message fileInfo = m[i];
 
-                var file = new RemoteFile
+                RemoteFile file = new RemoteFile
                 {
                     Filename = fileInfo[0],
                     File_extension = fileInfo[1],
@@ -329,16 +334,14 @@ namespace frznUpload.Client
             {
                 mes.SendMessage(new Message(Message.MessageType.TwoFactorNeeded, false, GetTwoFaToken()));
                 await mes.WaitForMessageAsync(true, Message.MessageType.TwoFactorSuccess);
-            }catch(NoUserInputException e)
+            }
+            catch (NoUserInputException e)
             {
                 mes.SendMessage(new Message(Message.MessageType.TwoFactorNeeded, true));
             }
         }
 
-        public string GetTwoFaToken()
-        {
-            return Prompt.ShowDialog("Pleas enter your Two factor authentication token", "Further authentication required");
-        }
+        public string GetTwoFaToken() => Prompt.ShowDialog("Pleas enter your Two factor authentication token", "Further authentication required");
 
         public async Task RemoveTwoFaAsync()
         {
@@ -361,7 +364,7 @@ namespace frznUpload.Client
                 throw new Exception("Error while deleting Two factor authentication", e);
             }
         }
-        
+
         public async Task<bool> GetHasTwoFaEnabled()
         {
             mes.SendMessage(new Message(Message.MessageType.HasTwoFactor, false));
@@ -383,9 +386,9 @@ namespace frznUpload.Client
             return m.Fields[0];
         }
 
-    /// <summary>
-    /// Asks the server to delete a file
-    /// </summary>
+        /// <summary>
+        /// Asks the server to delete a file
+        /// </summary>
         public async Task DeleteFileAsync(string file_identifier)
         {
             mes.SendMessage(new Message(Message.MessageType.DeleteFile, false, file_identifier));

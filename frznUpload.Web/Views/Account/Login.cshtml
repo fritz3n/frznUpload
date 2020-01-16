@@ -1,0 +1,25 @@
+﻿@model (bool,string)
+@{
+    ViewData["Title"] = "Login";
+}
+
+@if (!string.IsNullOrEmpty(Model.Item2))
+{
+    <div class="alert @(Model.Item1 ? "alert-danger" : "alert-primary")">@Model.Item2</div>
+}
+
+<h4>Login</h4>
+
+<form asp-action="Login">
+    <div class="form-group">
+        <label class="control-label">Username</label>
+        <input class="form-control" name="name" />
+    </div>
+    <div class="form-group">
+        <label class="control-label">Password</label>
+        <input class="form-control" name="password" />
+    </div>
+    <div class="form-group">
+        <input type="submit" value="Login" class="btn btn-primary" />
+    </div>
+</form>

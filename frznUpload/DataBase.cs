@@ -1,15 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using Dapper;
 using MySql.Data;
 using MySql.Data.MySqlClient;
-using Dapper;
+using System;
+using System.Collections.Generic;
 using System.Security.Cryptography;
+using System.Text;
 
 namespace frznUpload.Server
 {
     class DataBase : IDisposable
     {
+        static Random rnd = new Random();
+
         MySqlConnection conn;
         int userId;
         public bool IsAuthenticated { get; private set; }
@@ -17,7 +19,7 @@ namespace frznUpload.Server
 
         public DataBase()
         {
-            string connStr = "server=192.168.2.187;user=frznUpload;database=frznUpload;port=3306;password=BLANKCHRIS";
+            string connStr = "server=192.168.178.2;user=frznUpload;database=frznUpload;port=3306;password=BLANKCHRIS";
 
 
             conn = new MySqlConnection(connStr);
@@ -33,6 +35,9 @@ namespace frznUpload.Server
 
         public List<Share> GetShares(string fileIdentifier)
         {
+            if (string.IsNullOrWhiteSpace(fileIdentifier))
+                throw new ArgumentException("Parameter is invalid", nameof(fileIdentifier));
+
             ThrowIfNotAuthenticated();
 
             return conn.Query<Share>("SELECT * FROM shares WHERE file_identifier = @fileIdentifier", new { fileIdentifier }).AsList();
@@ -40,6 +45,9 @@ namespace frznUpload.Server
 
         public bool CheckTokenExists(byte[] token)
         {
+            if (token == null)
+                throw new ArgumentNullException(nameof(token));
+
             return conn.QuerySingle<int>("SELECT COUNT(*) FROM tokens WHERE signature = @tp", new { tp = token }) >= 1;
         }
 
@@ -54,19 +62,18 @@ namespace frznUpload.Server
 
         public string GetAvailableFileIdentifier()
         {
-            string identifier = "";
+            string identifier;
 
             do
             {
                 identifier = GenerateFileIdentifier();
             } while (conn.QuerySingle<int>("SELECT COUNT(*) FROM files WHERE identifier = @ident", new { ident = identifier }) != 0);
 
-            return identifier;
+            return "";
         }
 
         private string GenerateFileIdentifier()
         {
-            Random rnd = new Random();
             byte[] rndBytes = new byte[96];
             rnd.NextBytes(rndBytes);
 
@@ -87,7 +94,6 @@ namespace frznUpload.Server
 
         private string GenerateShareIdentifier()
         {
-            Random rnd = new Random();
             byte[] rndBytes = new byte[5];
             rnd.NextBytes(rndBytes);
 
@@ -138,7 +144,7 @@ namespace frznUpload.Server
 
             string HashString = User.Name + password + User.Salt;
 
-            using (var sha = new SHA512CryptoServiceProvider())
+            using (SHA512CryptoServiceProvider sha = new SHA512CryptoServiceProvider())
             {
                 return Convert.ToBase64String(sha.ComputeHash(Encoding.Default.GetBytes(HashString)));
             }
@@ -207,10 +213,7 @@ namespace frznUpload.Server
                 throw new ArgumentException("Not Authenticated");
         }
 
-        public void Dispose()
-        {
-            conn.Dispose();
-        }
+        public void Dispose() => conn.Dispose();
 
         ~DataBase() => Dispose();
 
@@ -228,44 +231,29 @@ namespace frznUpload.Server
         /// <summary>
         /// Gets a filename for a given identifier
         /// </summary>
-        public string GetFileName(string file_identifier)
-        {
-            return conn.QuerySingle<string>("SELECT filename FROM files WHERE identifier=@file_identifier", new { file_identifier });
-        }
+        public string GetFileName(string file_identifier) => conn.QuerySingle<string>("SELECT filename FROM files WHERE identifier=@file_identifier", new { file_identifier });
         /// <summary>
         /// Gets the extension for a given identifier
         /// </summary>
-        public string GetFileExtension(string file_identifier)
-        {
-            return conn.QuerySingle<string>("SELECT file_extension FROM files WHERE identifier=@file_identifier", new { file_identifier });
-        }
+        public string GetFileExtension(string file_identifier) => conn.QuerySingle<string>("SELECT file_extension FROM files WHERE identifier=@file_identifier", new { file_identifier });
 
         /// <summary>
         /// Get a full filename for a given file_identifier (e.g picrure.png)
         /// </summary>
-        public string GetFullFileName(string file_identifier)
-        {
-            return GetFileName(file_identifier) + GetFileExtension(file_identifier);
-        }
+        public string GetFullFileName(string file_identifier) => GetFileName(file_identifier) + GetFileExtension(file_identifier);
 
         /// <summary>
         /// Gets the userId of a file
         /// </summary>
         /// <param name="file_identifier">The file_identifier to be used</param>
         /// <returns>the userId</returns>
-        public int GeTwonerOfFile(string file_identifier)
-        {
-            return conn.QuerySingle<int>("SELECT user_id FROM files WHERE identifier=@file_identifier", new { file_identifier });
-        }
+        public int GeTwonerOfFile(string file_identifier) => conn.QuerySingle<int>("SELECT user_id FROM files WHERE identifier=@file_identifier", new { file_identifier });
 
         /// <summary>
         /// Checks if the user owns this file
         /// </summary>
         /// <param name="file_identifier">the file_identifier to be checked</param>
-        public bool UserOwnsFile(string file_identifier)
-        {
-            return GeTwonerOfFile(file_identifier) == userId; 
-        }
+        public bool UserOwnsFile(string file_identifier) => GeTwonerOfFile(file_identifier) == userId;
 
         /// <summary>
         /// Deletes a file (Including from the fs) and all shares with it
@@ -297,11 +285,8 @@ namespace frznUpload.Server
             id = id ?? userId;
             return conn.QuerySingle<string>("SELECT Two_fa_secret FROM users WHERE id=@id", new { id });
         }
-        
-        public bool HasTwoFa(int? id = null)
-        {
-            return GetTwoFactorSecret(id) != "null";
-        }
+
+        public bool HasTwoFa(int? id = null) => GetTwoFactorSecret(id) != "null";
 
 
         /// <summary>
@@ -320,19 +305,10 @@ namespace frznUpload.Server
         /// <summary>
         /// Sets a TwoFa secret in the db
         /// </summary>
-        public void SetTwoFactorSecret(string val)
-        {
-            conn.Execute("UPDATE users SET Two_fa_secret=@val WHERE id=@id", new { val, id = userId });
-        }
-        
-        public void RemoveTwoFactorSecret()
-        {
-            conn.Execute("UPDATE users SET Two_fa_secret=null WHERE id=@id", new { id = userId });
-        }
+        public void SetTwoFactorSecret(string val) => conn.Execute("UPDATE users SET Two_fa_secret=@val WHERE id=@id", new { val, id = userId });
 
-        public string GetUsername()
-        {
-            return conn.QuerySingle<string>("SELECT name FROM users WHERE id=@id",new { id = userId});
-        }
-    }       
+        public void RemoveTwoFactorSecret() => conn.Execute("UPDATE users SET Two_fa_secret=null WHERE id=@id", new { id = userId });
+
+        public string GetUsername() => conn.QuerySingle<string>("SELECT name FROM users WHERE id=@id", new { id = userId });
+    }
 }

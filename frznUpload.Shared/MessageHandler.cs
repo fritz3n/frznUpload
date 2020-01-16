@@ -29,8 +29,11 @@ namespace frznUpload.Shared
         
         private readonly bool Verbose = false;
         IMessageLogger VerboseLogger;
-        Queue<Message> IncomingQueue = new Queue<Message>();
-        Queue<Message> OutgoingQueue = new Queue<Message>();
+
+        //TODO: Make Cues Concurrent !!!!!
+
+        Queue<Message> IncomingQueue = new Queue<Message>();//TODO: Make Cues Concurrent !!!!! //TODO: Make Cues Concurrent !!!!!
+        Queue<Message> OutgoingQueue = new Queue<Message>();//TODO: Make Cues Concurrent !!!!! //TODO: Make Cues Concurrent !!!!!
         SslStream stream;
         TcpClient tcp;
 #pragma warning disable IDE0044 // Add readonly modifier

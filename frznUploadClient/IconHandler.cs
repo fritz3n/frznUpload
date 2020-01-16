@@ -15,7 +15,7 @@ namespace frznUpload.Client
         MainForm mainForm;
         public static ClientManager Client { get; private set; }
 
-        public IconHandler(string[] args)
+        public IconHandler(string[] args) 
         {
             MenuItem consoleMenuItem = new MenuItem("Show", new EventHandler(Show));
             MenuItem configMenuItem = new MenuItem("Configuration", new EventHandler(ShowConfig));

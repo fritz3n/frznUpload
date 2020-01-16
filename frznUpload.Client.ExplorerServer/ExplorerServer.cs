@@ -43,19 +43,23 @@ namespace frznUpload.Client.ExplorerServer
         protected override ContextMenuStrip CreateMenu()
         {
 
-            var menu = new ContextMenuStrip();
-            menu.AutoSize = true;
-            menu.ImageScalingSize = new Size(16, 16);
+            ContextMenuStrip menu = new ContextMenuStrip
+            {
+                AutoSize = true,
+                ImageScalingSize = new Size(16, 16)
+            };
 
             //  Create a 'count lines' item.
-            var itemUpload = new ToolStripMenuItem
+            ToolStripMenuItem itemUpload = new ToolStripMenuItem
             (
                 "Upload file to fritzen.tk"
-            );
-            itemUpload.AutoSize = true;
-            itemUpload.ImageScaling = ToolStripItemImageScaling.SizeToFit;
+            )
+            {
+                AutoSize = true,
+                ImageScaling = ToolStripItemImageScaling.SizeToFit,
 
-            itemUpload.Image = icon;
+                Image = icon
+            };
 
             //  When we click, we'll count the lines.
             itemUpload.Click += ItemUpload_Click;
@@ -82,17 +86,17 @@ namespace frznUpload.Client.ExplorerServer
                 StartServer(args);
             }
         }
-        
+
         private void StartServer(string[] args)
         {
             string path = GetServerPath();
 
-            if(path == null)
+            if (path == null)
             {
                 MessageBox.Show("Couldn´t find the client");
                 return;
             }
-            
+
             Process p = new Process();
             p.StartInfo.FileName = path;
 
@@ -128,13 +132,11 @@ namespace frznUpload.Client.ExplorerServer
             try
             {
                 running = !mutex.WaitOne(TimeSpan.Zero, true);
-            }
-            catch (AbandonedMutexException e)
+            } catch (AbandonedMutexException)
             {
                 running = true;
                 Console.WriteLine("Mutex abandoned");
-            }
-            finally
+            } finally
             {
                 mutex.Dispose();
             }
@@ -156,9 +158,9 @@ namespace frznUpload.Client.ExplorerServer
 
             pipeClient.Connect();
 
-            var serializer = new XmlSerializer(typeof(string[]));
+            XmlSerializer serializer = new XmlSerializer(typeof(string[]));
 
-            var writer = new StreamWriter(pipeClient);
+            StreamWriter writer = new StreamWriter(pipeClient);
 
             using (StringWriter stringWriter = new StringWriter())
             {
