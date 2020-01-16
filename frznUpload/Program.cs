@@ -1,4 +1,5 @@
-﻿using System;
+﻿using frznUpload.Shared;
+using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Security;
@@ -8,7 +9,6 @@ using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading;
 using System.Threading.Tasks;
-using frznUpload.Shared;
 
 namespace frznUpload.Server
 {
@@ -39,7 +39,7 @@ namespace frznUpload.Server
             Logger.WriteLineStatic("Version: " + MessageHandler.Version);
 
             IPAddress address = IPAddress.Any;
-            var listener = new TcpListener(address, 22340);
+            TcpListener listener = new TcpListener(address, 22340);
 
 
             string certdir = "../certs/cert.pfx";
@@ -55,26 +55,33 @@ namespace frznUpload.Server
 
             Logger.WriteLineStatic("Server initialized");
 
-            var v = ConnectionAcceptor(listener).Result;
+            try
+            {
+                bool v = ConnectionAcceptor(listener).Result;
+            }
+            catch (Exception e)
+            {
+                Logger.WriteLineStatic("Exception:\n\n" + e);
+            }
         }
 
-        static private async Task<bool> ConnectionAcceptor(TcpListener tcp)
+        private static async Task<bool> ConnectionAcceptor(TcpListener tcp)
         {
             while (true)
             {
-                var cli = await tcp.AcceptTcpClientAsync();
-                
+                TcpClient cli = await tcp.AcceptTcpClientAsync();
+
                 Logger.WriteLineStatic("Connection established with " + cli.Client.RemoteEndPoint);
 
-                var Client = new Client(cli, Cert, Verbose);
+                Client Client = new Client(cli, Cert, Verbose);
 
                 clients.Add(Client);
 
                 Client.OnDispose += Client_OnDispose;
-                
+
                 Client.Start();
             }
-            
+
         }
 
         private static void Client_OnDispose(object sender, EventArgs e)
