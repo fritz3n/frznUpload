@@ -19,7 +19,7 @@ namespace frznUpload.Server
 
         public DataBase()
         {
-            string connStr = "server=192.168.178.2;user=frznUpload;database=frznUpload;port=3306;password=BLANKCHRIS";
+            string connStr = "server=localhost;user=frznUpload;database=frznUpload;port=3306;password=BLANKCHRIS";
 
 
             conn = new MySqlConnection(connStr);

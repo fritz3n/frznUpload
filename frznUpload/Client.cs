@@ -47,10 +47,7 @@ namespace frznUpload.Server
             log.WriteLine("Client initialized");
         }
 
-        private void OnDisconnect(object sender, MessageHandler.DisconnectReason disconnectReason)
-        {
-            log.WriteLine("Disconnected: " + disconnectReason);
-        }
+        private void OnDisconnect(object sender, MessageHandler.DisconnectReason disconnectReason) => log.WriteLine("Disconnected: " + disconnectReason);
 
         public void Start()
         {
@@ -61,7 +58,7 @@ namespace frznUpload.Server
             new Thread(() => ClientLoop(tokenSource.Token)).Start();
 #pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
         }
-        
+
         public void Stop()
         {
             tokenSource?.Cancel();
@@ -73,7 +70,7 @@ namespace frznUpload.Server
             try
             {
                 mes.SendMessage(new Message(Message.MessageType.Version, false, MessageHandler.Version));
-                var m = mes.WaitForMessage(true, Message.MessageType.Version);
+                Message m = mes.WaitForMessage(true, Message.MessageType.Version);
 
                 log.WriteLine("Client Version: " + m[0]);
 
@@ -92,7 +89,8 @@ namespace frznUpload.Server
                         t.Start();
 
                         message = await t;
-                    }catch(GracefulShutdownException)
+                    }
+                    catch (GracefulShutdownException)
                     {
                         log.WriteLine("Client disconnected");
 
@@ -113,7 +111,7 @@ namespace frznUpload.Server
                         return;
                     }
 
-                    
+
 
                     if (message.IsError)
                     {
@@ -128,20 +126,20 @@ namespace frznUpload.Server
                         {
                             case Message.MessageType.ChallengeRequest:
 
-                                var chal = new Challenge();
+                                Challenge chal = new Challenge();
                                 chal.SetPublicComponents(message[0], message[1]);
                                 if (!db.CheckTokenExists(chal.GetThumbprint()))
                                 {
                                     mes.SendMessage(new Message(Message.MessageType.Challenge, true, "Token not registered"));
                                     break;
                                 }
-                                
+
                                 mes.SendMessage(new Message(Message.MessageType.Challenge, false, chal.GenerateChallenge(8)));
                                 m = mes.WaitForMessage(true, Message.MessageType.ChallengeResponse);
-                                
+
                                 bool auth = chal.ValidateChallenge(m[0]);
 
-                                if(auth == false)
+                                if (auth == false)
                                 {
                                     mes.SendMessage(new Message(Message.MessageType.ChallengeApproved, true, "Challenge failed"));
                                     log.WriteLine("Failed to authenticate using Public Key");
@@ -162,15 +160,15 @@ namespace frznUpload.Server
                                 chal = new Challenge();
 
                                 chal.SetPublicComponents(message[2], message[3]);
-                                if (DoTwoFaCheckIfNeeded(message[0])) 
+                                if (DoTwoFaCheckIfNeeded(message[0]))
                                 {
                                     if (db.SetToken(message[0], message[1], chal.GetThumbprint()))
                                     {
-                                        
+
                                         mes.SendMessage(new Message(Message.MessageType.AuthSuccess));
                                         log.WriteLine("Authenticated with a Public Key");
                                         break;
-                                        
+
                                     }
                                 }
                                 mes.SendMessage(new Message(Message.MessageType.AuthSuccess, true, "Login data not correct"));
@@ -211,12 +209,12 @@ namespace frznUpload.Server
 
                             case Message.MessageType.FileListRequest:
 
-                                var fileList = db.GetFiles();
+                                List<Sql_File> fileList = db.GetFiles();
 
                                 dynamic[] Fields = new dynamic[1 + fileList.Count];
                                 Fields[0] = fileList.Count;
 
-                                for(int i = 0; i < fileList.Count; i++)
+                                for (int i = 0; i < fileList.Count; i++)
                                 {
                                     Fields[i + 1] = new Message(Message.MessageType.FileInfo, false, fileList[i].Filename, fileList[i].File_extension, fileList[i].Identifier, fileList[i].Size, BitConverter.GetBytes(fileList[i].Tags));
                                 }
@@ -266,13 +264,13 @@ namespace frznUpload.Server
                                 try
                                 {
                                     //delete the file from the fs
-                                    FileHandler.DeleteFile(file_identifier,db.GetFullFileName(file_identifier));
+                                    FileHandler.DeleteFile(file_identifier, db.GetFullFileName(file_identifier));
                                     //delete all database records of it
                                     db.DeleteFile(file_identifier);
                                     mes.SendMessage(new Message(Message.MessageType.DeleteFile, false, ""));
                                     log.WriteLine("Deleted file: " + file_identifier.Substring(0, 10));
                                 }
-                                catch(Exception e)
+                                catch (Exception e)
                                 {
                                     if (e.GetType() != typeof(UnauthorizedAccessException) && e.GetType() != typeof(ArgumentException))
                                     {
@@ -307,7 +305,7 @@ namespace frznUpload.Server
                                         mes.SendMessage(new Message(Message.MessageType.TwoFactorRemove, false));
                                     }
                                 }
-                                catch(UnauthorizedAccessException e)
+                                catch (UnauthorizedAccessException e)
                                 {
                                     log.WriteLine(e.Message);
                                     Dispose();
@@ -327,7 +325,8 @@ namespace frznUpload.Server
                                         //no secret
                                         mes.SendMessage(new Message(Message.MessageType.HasTwoFactor, false, 0));
                                     }
-                                }catch(Exception e)
+                                }
+                                catch (Exception e)
                                 {
                                     log.WriteLine("Error while testitng if user has TwoFa: " + e.Message);
                                     mes.SendMessage(new Message(Message.MessageType.HasTwoFactor, true));
@@ -340,7 +339,8 @@ namespace frznUpload.Server
                         }
                     }
                 }
-            }catch(SequenceBreakException e)
+            }
+            catch (SequenceBreakException e)
             {
                 log.WriteLine(e);
                 try
@@ -351,7 +351,8 @@ namespace frznUpload.Server
 
                 log.WriteLine("Shutting down because of a non-recoverable error");
                 Dispose();
-            } catch(Exception e)
+            }
+            catch (Exception e)
             {
                 log.WriteLine(e);
                 try
@@ -371,20 +372,20 @@ namespace frznUpload.Server
             //check if the user has TwoFa enabled, if yes -> send him that we need proof!
             int? id = null;
 
-            if(username != null)
+            if (username != null)
             {
                 id = db.GetUserId(username);
-                
+
                 if (id == null)
                     return true;
             }
-            
+
             if (db.HasTwoFa(id))
             {
                 string secret = db.GetTwoFactorSecret(id);
                 mes.SendMessage(new Message(Message.MessageType.TwoFactorNeeded, false, ""));
                 Message twoFaMessage = mes.WaitForMessage(false, Message.MessageType.TwoFactorNeeded);
-                if(twoFaMessage.IsError == true)
+                if (twoFaMessage.IsError == true)
                 {
                     return false; //client send error -> user did not enter a valid thingy
                 }
@@ -395,7 +396,7 @@ namespace frznUpload.Server
                 }
                 else
                 {
-                    mes.SendMessage(new Message(Message.MessageType.TwoFactorSuccess, false)); 
+                    mes.SendMessage(new Message(Message.MessageType.TwoFactorSuccess, false));
                     return true;
                 }
             }
