@@ -5,12 +5,12 @@ using System.Threading.Tasks;
 
 namespace frznUpload.Web.Models
 {
-    public class Token
-    {
-        public int Id { get; set; }
-        public int UserId { get; set; }
-        public byte[] Signature { get; set; }
-        public DateTime Created { get; set; }
-        public DateTime Last_used { get; set; }
-    }
+	public class Token
+	{
+		public int Id { get; set; }
+		public virtual User User { get; set; }
+		public byte[] Signature { get; set; }
+		public DateTime Created { get; set; }
+		public DateTime Last_used { get; set; }
+	}
 }

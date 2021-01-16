@@ -1,79 +1,106 @@
 ﻿using frznUpload.Web.Data;
 using frznUpload.Web.Models;
+using frznUpload.Web.Server;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Authentication;
 using System.Security.Cryptography;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace frznUpload.Web
 {
-    public class UserManager
-    {
-        private frznUploadContext context;
+	public class UserManager
+	{
+		private Database context;
 
-        public UserManager(frznUploadContext context)
-        {
-            this.context = context;
-        }
+		public UserManager(Database context)
+		{
+			this.context = context;
+		}
 
 
-        public async Task SignIn(HttpContext httpContext, string name, string password, bool isPersistent = false)
-        {
+		public async Task<SignInResult> SignIn(HttpContext httpContext, string name, string password, bool isPersistent, string twoFa = null)
+		{
+			User user = context.Users.Where(u => u.Name == name).First();
 
-            User user = context.Users.Where(u => u.Name == name).First();
+			if (HashPassword(user, password) != user.Hash)
+				return SignInResult.Failed;
 
-            if (await HashPassword(user, password) != user.Hash)
-                throw new UnauthorizedAccessException();
+			if (user.TwoFaSecret != null)
+			{
+				if (twoFa is null)
+					return SignInResult.TwoFactorRequired;
 
-            ClaimsIdentity identity = new ClaimsIdentity(this.GetUserClaims(user), CookieAuthenticationDefaults.AuthenticationScheme);
-            ClaimsPrincipal principal = new ClaimsPrincipal(identity);
-            
-            await httpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal);
-        }
+				if (!TwoFactorHandler.Verify(user.TwoFaSecret, twoFa))
+					return SignInResult.Failed;
+			}
 
-        public async void SignOut(HttpContext httpContext)
-        {
-            await httpContext.SignOutAsync();
-        }
+			var identity = new ClaimsIdentity(GetUserClaims(user), CookieAuthenticationDefaults.AuthenticationScheme);
+			var principal = new ClaimsPrincipal(identity);
 
-        public async Task<string> HashPassword(User user, string password)
-        {
-            if (string.IsNullOrEmpty(user.Hash))
-            {
-                using (RandomNumberGenerator rng = new RNGCryptoServiceProvider())
-                {
-                    byte[] tokenData = new byte[24];
-                    rng.GetBytes(tokenData);
+			var authProperties = new AuthenticationProperties
+			{
+				AllowRefresh = true,
 
-                    user.Salt = Convert.ToBase64String(tokenData);
-                }
+				IsPersistent = isPersistent,
+			};
 
-                context.Users.Update(user);
-                await context.SaveChangesAsync();
-            }
+			await httpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal);
+			return SignInResult.Success;
+		}
 
-            string HashString = user.Name + password + user.Salt;
+		public async void SignOut(HttpContext httpContext)
+		{
+			await httpContext.SignOutAsync();
+		}
 
-            using (SHA512CryptoServiceProvider sha = new SHA512CryptoServiceProvider())
-            {
-                return Convert.ToBase64String(sha.ComputeHash(Encoding.Default.GetBytes(HashString)));
-            }
+		public async Task RegisterUser(string name, string password)
+		{
+			var user = new User()
+			{
+				Name = name,
+				Salt = GetSalt(),
+			};
+			user.Hash = HashPassword(user, password);
+			context.Users.Add(user);
+			await context.SaveChangesAsync();
+		}
 
-        }
+		public string HashPassword(User user, string password)
+		{
+			string HashString = user.Name + password + user.Salt;
 
-        private IEnumerable<Claim> GetUserClaims(User user)
-        {
-            List<Claim> claims = new List<Claim>();
+			using (var sha = new SHA512CryptoServiceProvider())
+			{
+				return Convert.ToBase64String(sha.ComputeHash(Encoding.Default.GetBytes(HashString)));
+			}
 
-            claims.Add(new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()));
-            claims.Add(new Claim(ClaimTypes.Name, user.Name));
-            return claims;
-        }
-    }
+		}
+
+		private string GetSalt()
+		{
+			using (RandomNumberGenerator rng = new RNGCryptoServiceProvider())
+			{
+				byte[] tokenData = new byte[24];
+				rng.GetBytes(tokenData);
+
+				return Convert.ToBase64String(tokenData);
+			}
+		}
+
+		private IEnumerable<Claim> GetUserClaims(User user)
+		{
+			var claims = new List<Claim>();
+
+			claims.Add(new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()));
+			claims.Add(new Claim(ClaimTypes.Name, user.Name));
+			return claims;
+		}
+	}
 }

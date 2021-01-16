@@ -34,11 +34,9 @@ namespace frznUpload.Client.ExplorerServer
             stream.Dispose();
         }
 
-        protected override bool CanShowMenu()
-        {
+        protected override bool CanShowMenu() =>
             //  We always show the menu.
-            return true;
-        }
+            true;
 
         protected override ContextMenuStrip CreateMenu()
         {
@@ -132,11 +130,13 @@ namespace frznUpload.Client.ExplorerServer
             try
             {
                 running = !mutex.WaitOne(TimeSpan.Zero, true);
-            } catch (AbandonedMutexException)
+            }
+            catch (AbandonedMutexException)
             {
                 running = true;
                 Console.WriteLine("Mutex abandoned");
-            } finally
+            }
+            finally
             {
                 mutex.Dispose();
             }

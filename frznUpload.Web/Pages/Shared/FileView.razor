@@ -1,0 +1,30 @@
+﻿@using Microsoft.AspNetCore.StaticFiles
+
+
+@switch (mimeType[0])
+ {
+    case "image":
+        //<ImageView SourcePath="@SourcePath"/>
+        break;
+
+
+}
+
+
+@code {
+    [Parameter]
+    public string FileExtension { get; set; }
+
+    [Parameter]
+    public string SourcePath { get; set; }
+
+    private string[] mimeType;
+
+    protected override void OnParametersSet()
+    {
+        base.OnParametersSet();
+        string contentType;
+        new FileExtensionContentTypeProvider().TryGetContentType("." + FileExtension, out contentType);
+        mimeType = (contentType ?? "application/octet-stream").Split('/');
+    }
+}

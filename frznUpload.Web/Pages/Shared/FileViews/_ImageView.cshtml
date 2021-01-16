@@ -1,0 +1,11 @@
+﻿@model FileViewInfo
+
+<img id="image" src ="@Model.SourcePath" alt="@HttpUtility.JavaScriptStringEncode(Model.FileName)"/>
+
+@section Scripts {
+    <script src="/lib/viewerjs/viewer.min.js"></script>
+}
+
+@section Css {
+    <link href="/lib/viewerjs/viewer.min.css" rel="stylesheet">
+}
