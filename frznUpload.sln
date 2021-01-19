@@ -3,19 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.29001.49
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "frznUpload.Server", "frznUpload\frznUpload.Server.csproj", "{56630600-0F21-4909-8AAF-B63C6418F9FF}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "frznUpload.Client", "frznUploadClient\frznUpload.Client.csproj", "{B25EA5B9-06E0-48A1-A664-8639A021F067}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "frznUpload.Test", "frznUpload.Test\frznUpload.Test.csproj", "{3376FB36-39F9-4EEA-A9F8-157E77707E43}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "frznUpload.Shared", "frznUpload.Shared\frznUpload.Shared.csproj", "{2E7648C8-B107-420F-A75A-DBE1CC763C09}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ServerTests", "ServerTests\ServerTests.csproj", "{1F67D2EA-D57F-441B-BF89-5F14280B37AA}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "frznUpload.Client.ExplorerServer", "frznUpload.Client.ExplorerServer\frznUpload.Client.ExplorerServer.csproj", "{0D282016-72F8-4805-98E9-0CF068B45150}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "frznUpload.Web.Old", "frznUpload.Web.Old\frznUpload.Web.Old.csproj", "{17DAE48E-C58C-42C5-BA32-F6E220625FB9}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "frznUpload.Web", "frznUpload.Web\frznUpload.Web.csproj", "{E06F40ED-A06C-4CE5-9523-B0634775E295}"
 EndProject
@@ -27,14 +19,6 @@ Global
 		Server|Any CPU = Server|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{56630600-0F21-4909-8AAF-B63C6418F9FF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{56630600-0F21-4909-8AAF-B63C6418F9FF}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{56630600-0F21-4909-8AAF-B63C6418F9FF}.Logged|Any CPU.ActiveCfg = Logged|Any CPU
-		{56630600-0F21-4909-8AAF-B63C6418F9FF}.Logged|Any CPU.Build.0 = Logged|Any CPU
-		{56630600-0F21-4909-8AAF-B63C6418F9FF}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{56630600-0F21-4909-8AAF-B63C6418F9FF}.Release|Any CPU.Build.0 = Release|Any CPU
-		{56630600-0F21-4909-8AAF-B63C6418F9FF}.Server|Any CPU.ActiveCfg = Release|Any CPU
-		{56630600-0F21-4909-8AAF-B63C6418F9FF}.Server|Any CPU.Build.0 = Release|Any CPU
 		{B25EA5B9-06E0-48A1-A664-8639A021F067}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{B25EA5B9-06E0-48A1-A664-8639A021F067}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B25EA5B9-06E0-48A1-A664-8639A021F067}.Logged|Any CPU.ActiveCfg = Logged|Any CPU
@@ -43,14 +27,6 @@ Global
 		{B25EA5B9-06E0-48A1-A664-8639A021F067}.Release|Any CPU.Build.0 = Release|Any CPU
 		{B25EA5B9-06E0-48A1-A664-8639A021F067}.Server|Any CPU.ActiveCfg = Release|Any CPU
 		{B25EA5B9-06E0-48A1-A664-8639A021F067}.Server|Any CPU.Build.0 = Release|Any CPU
-		{3376FB36-39F9-4EEA-A9F8-157E77707E43}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{3376FB36-39F9-4EEA-A9F8-157E77707E43}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{3376FB36-39F9-4EEA-A9F8-157E77707E43}.Logged|Any CPU.ActiveCfg = Logged|Any CPU
-		{3376FB36-39F9-4EEA-A9F8-157E77707E43}.Logged|Any CPU.Build.0 = Logged|Any CPU
-		{3376FB36-39F9-4EEA-A9F8-157E77707E43}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{3376FB36-39F9-4EEA-A9F8-157E77707E43}.Release|Any CPU.Build.0 = Release|Any CPU
-		{3376FB36-39F9-4EEA-A9F8-157E77707E43}.Server|Any CPU.ActiveCfg = Release|Any CPU
-		{3376FB36-39F9-4EEA-A9F8-157E77707E43}.Server|Any CPU.Build.0 = Release|Any CPU
 		{2E7648C8-B107-420F-A75A-DBE1CC763C09}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{2E7648C8-B107-420F-A75A-DBE1CC763C09}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2E7648C8-B107-420F-A75A-DBE1CC763C09}.Logged|Any CPU.ActiveCfg = Logged|Any CPU
@@ -75,14 +51,6 @@ Global
 		{0D282016-72F8-4805-98E9-0CF068B45150}.Release|Any CPU.Build.0 = Release|Any CPU
 		{0D282016-72F8-4805-98E9-0CF068B45150}.Server|Any CPU.ActiveCfg = Release|Any CPU
 		{0D282016-72F8-4805-98E9-0CF068B45150}.Server|Any CPU.Build.0 = Release|Any CPU
-		{17DAE48E-C58C-42C5-BA32-F6E220625FB9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{17DAE48E-C58C-42C5-BA32-F6E220625FB9}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{17DAE48E-C58C-42C5-BA32-F6E220625FB9}.Logged|Any CPU.ActiveCfg = Debug|Any CPU
-		{17DAE48E-C58C-42C5-BA32-F6E220625FB9}.Logged|Any CPU.Build.0 = Debug|Any CPU
-		{17DAE48E-C58C-42C5-BA32-F6E220625FB9}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{17DAE48E-C58C-42C5-BA32-F6E220625FB9}.Release|Any CPU.Build.0 = Release|Any CPU
-		{17DAE48E-C58C-42C5-BA32-F6E220625FB9}.Server|Any CPU.ActiveCfg = Debug|Any CPU
-		{17DAE48E-C58C-42C5-BA32-F6E220625FB9}.Server|Any CPU.Build.0 = Debug|Any CPU
 		{E06F40ED-A06C-4CE5-9523-B0634775E295}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{E06F40ED-A06C-4CE5-9523-B0634775E295}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E06F40ED-A06C-4CE5-9523-B0634775E295}.Logged|Any CPU.ActiveCfg = Debug|Any CPU

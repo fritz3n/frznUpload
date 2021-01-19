@@ -14,5 +14,8 @@
     <Setting Name="Url" Type="System.String" Scope="User">
       <Value Profile="(Default)">localhost</Value>
     </Setting>
+    <Setting Name="ShareGenUrl" Type="System.String" Scope="User">
+      <Value Profile="(Default)">https://localhost:5001/v/</Value>
+    </Setting>
   </Settings>
 </SettingsFile>
