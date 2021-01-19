@@ -1,0 +1,23 @@
+﻿@model FileViewInfo
+
+<div id="textContainer" data-source="@Model.SourcePath" data-mime="@Model.MimeType">
+    <div id="textOverlay">
+        <div class="spinner-border text-primary" role="status">
+            <span class="sr-only">Loading...</span>
+        </div>
+    </div>
+    <div>
+        <h6>@Model.FileName</h6>
+    </div>
+
+</div>
+
+@Html.PartialSection("Css",
+            @<link href="/lib/codemirror/codemirror.min.css" rel="stylesheet">
+,@<link href="/css/TextViewer.css" rel="stylesheet">
+)
+
+@Html.PartialSection("Scripts",
+            @<script src="/lib/codemirror/codemirror.min.js"></script>
+,@<script src="/js/TextViewer.js"></script>
+)

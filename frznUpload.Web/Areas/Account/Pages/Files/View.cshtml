@@ -1,0 +1,22 @@
+﻿@page "{fileId}"
+@model frznUpload.Web.Areas.Account.Pages.Files.ViewModel
+@using frznUpload.Web.Pages.Shared
+@{
+}
+
+<div>
+    @await Html.PartialFileView(Model.FileViewInfo)
+</div>
+
+
+<div class="row justify-content-center size" style="font-size: 1.5em;">
+    <div class="m-2">
+        <a asp-controller="Download" asp-action="DownloadFile" asp-route-fileId="@Model.FileIdentifier"><i class="fas fa-download text-secondary"></i></a>
+    </div>
+    <div class="m-2">
+        <a asp-area="Account" asp-page="/Files/Delete" asp-route-id="@Model.FileId" title="Remove File">
+            <i class="fas fa-dumpster text-secondary"></i>
+        </a>
+    </div>
+    
+</div>

@@ -127,9 +127,9 @@ namespace frznUpload.Test
 
 				byte[][] pub = chal.GetPublicComponents();
 
-				mes.SendMessage(new Message(Message.MessageType.Auth, false, username, password, pub[0], pub[1]));
+				mes.SendMessage(new Message(Message.MessageType.CertRequest, false, username, password, pub[0], pub[1]));
 
-				mes.WaitForMessage(true, Message.MessageType.AuthSuccess);
+				mes.WaitForMessage(true, Message.MessageType.CertSuccess);
 
 				return await AuthWithKey(file);
 			}

@@ -15,8 +15,10 @@ namespace frznUpload.Web.Server
 	{
 		private readonly Database database;
 		private User user;
-		private byte[] token;
+		private string serial;
 		private Random rnd = new();
+
+		public string SerialNumber => serial;
 
 		public bool IsAuthenticated { get; private set; }
 		public string Name
@@ -35,10 +37,13 @@ namespace frznUpload.Web.Server
 			this.database = database;
 		}
 
-		public void SetUser(byte[] token)
+		public void SetUser(string serial)
 		{
-			user = database.Tokens.SingleOrDefault(t => t.Signature == token)?.User ?? throw new KeyNotFoundException();
-			this.token = token;
+			Token token = database.Tokens.SingleOrDefault(t => t.Serial == serial);
+			user = token?.User ?? throw new KeyNotFoundException();
+			token.LastUsed = DateTime.Now;
+			database.SaveChanges();
+			this.serial = serial;
 			IsAuthenticated = true;
 		}
 
@@ -47,7 +52,7 @@ namespace frznUpload.Web.Server
 			if (!IsAuthenticated)
 				return;
 
-			database.Tokens.Remove(database.Tokens.Where(t => t.Signature == token).FirstOrDefault());
+			database.Tokens.Remove(database.Tokens.Where(t => t.Serial == serial).FirstOrDefault());
 			database.SaveChanges();
 			IsAuthenticated = false;
 		}
@@ -79,24 +84,8 @@ namespace frznUpload.Web.Server
 
 		}
 
-		public bool SetToken(string username, string password, byte[] token)
+		public bool IsValid(string username, string password)
 		{
-			bool exists = database.Tokens.Count(t => t.Signature == token) > 0;
-
-			if (exists)
-			{
-				Token dbToken = database.Tokens.SingleOrDefault(t => t.Signature == token);
-
-				if (dbToken != null)
-				{
-					if (dbToken.User.Name == username)
-					{
-						return true;
-					}
-					return false;
-				}
-			}
-
 			User user = database.Users.SingleOrDefault(u => u.Name == username);
 
 			if (user is null)
@@ -105,14 +94,32 @@ namespace frznUpload.Web.Server
 			if (user.Name != username)
 				return false;
 
-			if (user.Hash != HashPassword(user, password))
-				return false;
+			return user.Hash == HashPassword(user, password);
+		}
+
+		public bool RemoveSerial(string serial)
+		{
+			Token token = database.Tokens.FirstOrDefault(t => t.Serial == serial);
+			if (token is not null)
+			{
+				database.Tokens.Remove(token);
+				database.SaveChanges();
+				return true;
+			}
+			return false;
+		}
+
+		public bool SetSerial(string username, string serial, DateTime validUntil, string machineName)
+		{
+			User user = database.Users.SingleOrDefault(u => u.Name == username);
 
 			database.Tokens.Add(new Token
 			{
 				User = user,
-				Signature = token,
-				Created = DateTime.Now
+				Serial = serial,
+				Created = DateTime.Now,
+				Name = machineName,
+				ValidUntil = validUntil
 			});
 
 			database.SaveChanges();
@@ -127,15 +134,15 @@ namespace frznUpload.Web.Server
 		}
 
 
-		public bool CheckTokenExists(byte[] token)
+		public bool CheckTokenExists(string serial)
 		{
-			if (token == null)
-				throw new ArgumentNullException(nameof(token));
+			if (serial == null)
+				throw new ArgumentNullException(nameof(serial));
 
-			return database.Tokens.Any(t => t.Signature == token);
+			return database.Tokens.Any(t => t.Serial == serial);
 		}
 
-		public string CreateFile(string identifier, string filename, string extension, int size)
+		public string CreateFile(string identifier, string filename, string extension, string path, int size)
 		{
 			ThrowIfNotAuthenticated();
 
@@ -145,6 +152,7 @@ namespace frznUpload.Web.Server
 				Filename = filename,
 				Extension = extension,
 				Size = size,
+				Path = path,
 				User = user
 			});
 
@@ -195,7 +203,7 @@ namespace frznUpload.Web.Server
 			return s.Substring(0, 6);
 		}
 
-		public string SetFileShare(string fileIdentifier, bool firstView = false, bool isPublic = true, bool publicRegistered = true, bool whitelisted = false, IEnumerable<int> whitelist = null)
+		public string SetFileShare(string fileIdentifier, bool firstView = false, bool isPublic = true, bool publicRegistered = true, bool whitelisted = false, IEnumerable<string> whitelist = null)
 		{
 			ThrowIfNotAuthenticated();
 			File file = database.Files.SingleOrDefault(f => f.Identifier == fileIdentifier);
@@ -212,7 +220,8 @@ namespace frznUpload.Web.Server
 				Public = isPublic,
 				PublicRegistered = publicRegistered,
 				Whitelisted = whitelisted,
-				Whitelist = whitelist
+				Whitelist = whitelist,
+				Created = DateTime.Now
 			});
 
 			database.SaveChanges();

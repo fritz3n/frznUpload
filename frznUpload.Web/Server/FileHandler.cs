@@ -1,4 +1,5 @@
 ﻿using frznUpload.Shared;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -10,26 +11,27 @@ namespace frznUpload.Web.Server
 {
 	static class FileHandler
 	{
-		const string directory = "../files/";
-		const string backupDirectory = directory + "/deleted/";
+		static string directory;
 		const int chunksSize = 16384;
 
-		static FileHandler()
+
+		public static void Init(IConfiguration config)
 		{
-			//Check if dirs exsist, if not create them
+			directory = config.GetValue<string>("FileDirectory");
+
+			//Check if dir exsist, if not create it
 			if (!Directory.Exists(directory))
 				Directory.CreateDirectory(directory);
-			if (!Directory.Exists(backupDirectory))
-				Directory.CreateDirectory(backupDirectory);
 		}
 
 		public static async Task<(bool, string)> ReceiveFile(Message message, MessageHandler mes, DatabaseHandler db)
 		{
-			int size = message[2];
+			int size = message[3];
 			int written = 0;
 
 			string filename = message[0];
 			string extension = message[1];
+			string path = message[2];
 
 			string identifier = db.GetAvailableFileIdentifier();
 
@@ -37,7 +39,7 @@ namespace frznUpload.Web.Server
 
 
 
-			string localFilename = directory + identifier + ".file";
+			string localFilename = Path.Combine(directory, identifier + ".file");
 
 			FileStream file = File.Open(localFilename, FileMode.Create, FileAccess.Write);
 
@@ -110,20 +112,15 @@ namespace frznUpload.Web.Server
 			}
 			else
 			{
-				db.CreateFile(identifier, filename, extension, size);
+				db.CreateFile(identifier, filename, extension, path, size);
 			}
 
 			return (!error, identifier);
 		}
 
-		/// <summary>
-		/// Deletes a File from the fs
-		/// </summary>
-		/// <param name="file_name">the file to be deleted</param>
-		/// <param name="fullname">The name of the file, as given on upload</param>
-		public static void DeleteFile(string file_name)
+		public static void DeleteFile(string identifier)
 		{
-			string localFileName = directory + file_name + ".file";
+			string localFileName = Path.Combine(directory, identifier + ".file");
 			//Delete the file from the fs
 			File.Delete(localFileName);
 		}

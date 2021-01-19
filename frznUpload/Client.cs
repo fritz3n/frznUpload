@@ -1,4 +1,5 @@
 ﻿using frznUpload.Shared;
+using frznUpload.Web.Server.;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -10,7 +11,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace frznUpload.Server
+namespace frznUpload.Web.Server
 {
 	class Client : IDisposable
 	{
@@ -25,7 +26,7 @@ namespace frznUpload.Server
 
 		public event EventHandler OnDispose;
 
-		public Client(TcpClient tcp, X509Certificate2 Cert, bool verbose = false)
+		public Client(TcpClient tcp, X509Certificate2 Cert, CertificateHandler certificateHandler, bool verbose = false)
 		{
 			log = new Logger();
 
@@ -124,40 +125,7 @@ namespace frznUpload.Server
 					{
 						switch (message.Type)
 						{
-							case Message.MessageType.ChallengeRequest:
-
-								var chal = new Challenge();
-								chal.SetPublicComponents(message[0], message[1]);
-								if (!db.CheckTokenExists(chal.GetThumbprint()))
-								{
-									mes.SendMessage(new Message(Message.MessageType.Challenge, true, "Token not registered"));
-									break;
-								}
-
-								mes.SendMessage(new Message(Message.MessageType.Challenge, false, chal.GenerateChallenge(8)));
-								m = mes.WaitForMessage(true, Message.MessageType.ChallengeResponse);
-
-								bool auth = chal.ValidateChallenge(m[0]);
-
-								if (auth == false)
-								{
-									mes.SendMessage(new Message(Message.MessageType.ChallengeApproved, true, "Challenge failed"));
-									log.WriteLine("Failed to authenticate using Public Key");
-									break;
-								}
-
-								db.SetUser(chal.GetThumbprint());
-								IsAuthenticated = true;
-
-								mes.SendMessage(new Message(Message.MessageType.ChallengeApproved, false, db.Name));
-
-								log.WriteLine("Authenticated using Public Key");
-								log.WriteLine("Username: ", db.Name);
-								log.Id = db.Name;
-								break;
-
-							case Message.MessageType.Auth:
-								chal = new Challenge();
+							case Message.MessageType.CertRequest:
 
 								chal.SetPublicComponents(message[2], message[3]);
 								if (DoTwoFaCheckIfNeeded(message[0]))
@@ -165,13 +133,13 @@ namespace frznUpload.Server
 									if (db.SetToken(message[0], message[1], chal.GetThumbprint()))
 									{
 
-										mes.SendMessage(new Message(Message.MessageType.AuthSuccess));
+										mes.SendMessage(new Message(Message.MessageType.CertSuccess));
 										log.WriteLine("Authenticated with a Public Key");
 										break;
 
 									}
 								}
-								mes.SendMessage(new Message(Message.MessageType.AuthSuccess, true, "Login data not correct"));
+								mes.SendMessage(new Message(Message.MessageType.CertSuccess, true, "Login data not correct"));
 								log.WriteLine("Failed to authenticate a Public Key");
 
 								break;
@@ -186,10 +154,10 @@ namespace frznUpload.Server
 					{
 						switch (message.Type)
 						{
-							case Message.MessageType.DeauthRequest:
+							case Message.MessageType.CertRevokeRequest:
 								db.Deauthenticate();
 								IsAuthenticated = false;
-								mes.SendMessage(new Message(Message.MessageType.DeauthSuccess));
+								mes.SendMessage(new Message(Message.MessageType.CertRevokeSuccess));
 
 								log.WriteLine("Deauthenticated");
 

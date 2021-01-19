@@ -2,6 +2,7 @@
 using frznUpload.Shared;
 using frznUpload.Web.Data;
 using frznUpload.Web.Models;
+using frznUpload.Web.Server.Certificates;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -24,50 +25,69 @@ namespace frznUpload.Web.Server
 		private CancellationTokenSource tokenSource;
 		private DatabaseHandler db;
 		private ILogger<Client> log;
+		private readonly CertificateHandler certificateHandler;
+		private VerificationResult verificationResult;
+		private string verificationSerial;
 
 		public bool IsAuthenticated { get; private set; }
 
 		public event EventHandler OnDispose;
 
-		public Client(TcpClient tcp, X509Certificate2 Cert, DatabaseHandler db, ILogger<Client> log, bool verbose)
+		public Client(TcpClient tcp, DatabaseHandler db, ILogger<Client> log, CertificateHandler handler, bool verbose)
 		{
 			log.LogInformation("Client born");
 
 			Tcp = tcp;
 			this.db = db;
 			this.log = log;
-			stream = new SslStream(tcp.GetStream(), false, new RemoteCertificateValidationCallback(ValidateServerCertificate));
+			certificateHandler = handler;
+			stream = new SslStream(tcp.GetStream(), false, new RemoteCertificateValidationCallback(ValidateServerCertificate), new LocalCertificateSelectionCallback(Selection));
 
-			stream.AuthenticateAsServer(Cert, true, true);
-
-			log.LogDebug("Encryption established");
+			stream.AuthenticateAsServer(handler.Certificate, true, false);
 
 			mes = new MessageHandler(tcp, stream, verbose, new MessageLogger(log));
 			mes.OnDisconnect += OnDisconnect;
 			mes.Start();
 
+			if (verificationResult == VerificationResult.Valid || verificationResult == VerificationResult.ValidArchival)
+			{
+				db.SetUser(verificationSerial);
+				IsAuthenticated = true;
+				mes.SendMessage(new Message(Message.MessageType.AuthSuccess, false, db.Name));
+			}
+
+
+			log.LogDebug("Encryption established");
+
+
 			log.LogDebug("Client initialized");
 		}
-		private static bool ValidateServerCertificate(
+		private bool ValidateServerCertificate(
 			  object sender,
 			  X509Certificate certificate,
 			  X509Chain chain,
 			  SslPolicyErrors sslPolicyErrors)
 		{
 
-
-			if (sslPolicyErrors == SslPolicyErrors.None)
+			if (sslPolicyErrors == SslPolicyErrors.RemoteCertificateNotAvailable)
+			{
+				verificationResult = VerificationResult.None;
 				return true;
+			}
 
-			Console.WriteLine("Certificate error: {0}", sslPolicyErrors);
+			verificationResult = certificateHandler.Verify(certificate);
 
-#if DEBUG
-			Console.WriteLine("Ignoring due to debug mode");
+			if (verificationResult == VerificationResult.Invalid)
+				return false;
+
+			verificationSerial = certificate.GetSerialNumberString();
+
 			return true;
-#endif
+		}
 
-			// Do not allow this client to communicate with unauthenticated servers.
-			return false;
+		private X509Certificate Selection(object sender, string targetHost, X509CertificateCollection localCertificates, X509Certificate? remoteCertificate, string[] acceptableIssuers)
+		{
+			return localCertificates.Cast<X509Certificate>().First();
 		}
 
 		private void OnDisconnect(object sender, MessageHandler.DisconnectReason disconnectReason) => log.LogInformation("Disconnected: " + disconnectReason);
@@ -146,53 +166,22 @@ namespace frznUpload.Web.Server
 					{
 						switch (message.Type)
 						{
-							case Message.MessageType.ChallengeRequest:
+							case Message.MessageType.CertRequest:
 
-								var chal = new Challenge();
-								chal.SetPublicComponents(message[0], message[1]);
-								if (!db.CheckTokenExists(chal.GetThumbprint()))
-								{
-									mes.SendMessage(new Message(Message.MessageType.Challenge, true, "Token not registered"));
-									break;
-								}
-
-								mes.SendMessage(new Message(Message.MessageType.Challenge, false, chal.GenerateChallenge(8)));
-								m = mes.WaitForMessage(true, Message.MessageType.ChallengeResponse);
-
-								bool auth = chal.ValidateChallenge(m[0]);
-
-								if (auth == false)
-								{
-									mes.SendMessage(new Message(Message.MessageType.ChallengeApproved, true, "Challenge failed"));
-									log.LogInformation("Failed to authenticate using Public Key");
-									break;
-								}
-
-								db.SetUser(chal.GetThumbprint());
-								IsAuthenticated = true;
-
-								mes.SendMessage(new Message(Message.MessageType.ChallengeApproved, false, db.Name));
-
-								log.LogDebug("Authenticated using Public Key");
-								log.LogDebug("Username: " + db.Name);
-								break;
-
-							case Message.MessageType.Auth:
-								chal = new Challenge();
-
-								chal.SetPublicComponents(message[2], message[3]);
 								if (DoTwoFaCheckIfNeeded(message[0]))
 								{
-									if (db.SetToken(message[0], message[1], chal.GetThumbprint()))
+									if (db.IsValid(message[0], message[1]))
 									{
+										CertificationResult result = certificateHandler.Certify(new[] { message[2] as byte[], message[3] as byte[] });
+										db.SetSerial(message[0], result.SerialNumber, result.ValidUntil, message[4]);
 
-										mes.SendMessage(new Message(Message.MessageType.AuthSuccess));
+										mes.SendMessage(new Message(Message.MessageType.CertSuccess, false, result.Rawdata));
 										log.LogDebug("Authenticated with a Public Key");
 										break;
 
 									}
 								}
-								mes.SendMessage(new Message(Message.MessageType.AuthSuccess, true, "Login data not correct"));
+								mes.SendMessage(new Message(Message.MessageType.CertSuccess, true, "Login data not correct"));
 								log.LogInformation("Failed to authenticate a Public Key");
 
 								break;
@@ -207,12 +196,24 @@ namespace frznUpload.Web.Server
 					{
 						switch (message.Type)
 						{
-							case Message.MessageType.DeauthRequest:
+							case Message.MessageType.CertRevokeRequest:
 								db.Deauthenticate();
 								IsAuthenticated = false;
-								mes.SendMessage(new Message(Message.MessageType.DeauthSuccess));
+								mes.SendMessage(new Message(Message.MessageType.CertRevokeSuccess));
 
 								log.LogInformation("Deauthenticated");
+
+								break;
+
+
+							case Message.MessageType.CertRenewRequest:
+								CertificationResult result = certificateHandler.Certify(new[] { message[2] as byte[], message[3] as byte[] });
+								db.SetSerial(message[0], result.SerialNumber, result.ValidUntil, message[4]);
+								db.RemoveSerial(db.SerialNumber);
+
+								mes.SendMessage(new Message(Message.MessageType.CertRenewSuccess, false, result.Rawdata));
+
+								log.LogInformation("Certificate renewed");
 
 								break;
 
@@ -236,7 +237,7 @@ namespace frznUpload.Web.Server
 
 								for (int i = 0; i < fileList.Count; i++)
 								{
-									Fields[i + 1] = new Message(Message.MessageType.FileInfo, false, fileList[i].Filename, fileList[i].Extension, fileList[i].Identifier, fileList[i].Size, BitConverter.GetBytes(fileList[i].Tags));
+									Fields[i + 1] = new Message(Message.MessageType.FileInfo, false, fileList[i].Filename, fileList[i].Extension, fileList[i].Identifier, fileList[i].Size, fileList[i].Path);
 								}
 
 								mes.SendMessage(new Message(Message.MessageType.FileList, false, Fields));
@@ -271,7 +272,7 @@ namespace frznUpload.Web.Server
 									message[2] == 1,
 									message[3] == 1,
 									message[4] == 1,
-									(message[5] as string).Split(';', StringSplitOptions.RemoveEmptyEntries).Select(s => int.Parse(s))
+									(message[5] as string).Split(';', StringSplitOptions.RemoveEmptyEntries)
 									);
 
 								mes.SendMessage(new Message(Message.MessageType.ShareResponse, false, id));

@@ -10,122 +10,122 @@ using System.Xml.Serialization;
 
 namespace frznUpload.Client
 {
-    static class PipeHandler
-    {
-        static public bool IsServer { get; } = false;
+	static class PipeHandler
+	{
+		public static bool IsServer { get; } = false;
 
-        static private Mutex mutex = new Mutex(false, "frznUploadRunning");
-        static private CancellationTokenSource tokenSource = new CancellationTokenSource();
+		private static Mutex mutex = new Mutex(false, "frznUploadRunning");
+		private static CancellationTokenSource tokenSource = new CancellationTokenSource();
 
 
-        static PipeHandler()
-        {
-            Console.WriteLine("Checking if this is the first instance:");
+		static PipeHandler()
+		{
+			Console.WriteLine("Checking if this is the first instance:");
 
-            try
-            {
-                IsServer = mutex.WaitOne(TimeSpan.Zero, true);
-            }
-            catch (AbandonedMutexException e)
-            {
-                IsServer = false;
-                Console.WriteLine("Mutex abandoned");
-            }
+			try
+			{
+				IsServer = mutex.WaitOne(TimeSpan.Zero, true);
+			}
+			catch (AbandonedMutexException)
+			{
+				IsServer = false;
+				Console.WriteLine("Mutex abandoned");
+			}
 
-            Console.WriteLine("\t" + IsServer);
-        }
+			Console.WriteLine("\t" + IsServer);
+		}
 
-        /// <summary>
-        /// Release the Mutex and stop the NamedPipeServer
-        /// </summary>
-        static public void Close()
-        {
-            if (IsServer)
-            {
-                mutex.ReleaseMutex();
-                tokenSource.Cancel();
-            }
-        }
+		/// <summary>
+		/// Release the Mutex and stop the NamedPipeServer
+		/// </summary>
+		public static void Close()
+		{
+			if (IsServer)
+			{
+				mutex.ReleaseMutex();
+				tokenSource.Cancel();
+			}
+		}
 
-        /// <summary>
-        /// Sends arguments to the running server, if this isnt the server
-        /// </summary>
-        /// <param name="arguments">the arguments to be sent</param>
-        static public void SendMessage(string[] arguments)
-        {
-            if (IsServer)
-                return;
+		/// <summary>
+		/// Sends arguments to the running server, if this isnt the server
+		/// </summary>
+		/// <param name="arguments">the arguments to be sent</param>
+		public static void SendMessage(string[] arguments)
+		{
+			if (IsServer)
+				return;
 
-            NamedPipeClientStream pipeClient =
-                    new NamedPipeClientStream(".", "frznUploadPipe",
-                        PipeDirection.Out, PipeOptions.Asynchronous);
+			var pipeClient =
+					new NamedPipeClientStream(".", "frznUploadPipe",
+						PipeDirection.Out, PipeOptions.Asynchronous);
 
-            Console.WriteLine("Connecting...");
+			Console.WriteLine("Connecting...");
 
-            pipeClient.Connect();
+			pipeClient.Connect();
 
-            var serializer = new XmlSerializer(typeof(string[]));
-            
-            var writer = new StreamWriter(pipeClient);
+			var serializer = new XmlSerializer(typeof(string[]));
 
-            using (StringWriter stringWriter = new StringWriter())
-            {
-                serializer.Serialize(stringWriter, arguments);
+			var writer = new StreamWriter(pipeClient);
 
-                writer.Write(stringWriter.ToString());
-            }
+			using (var stringWriter = new StringWriter())
+			{
+				serializer.Serialize(stringWriter, arguments);
 
-            Console.WriteLine("Sent!");
+				writer.Write(stringWriter.ToString());
+			}
 
-            writer.Dispose();
-            pipeClient.Dispose();
-        }
+			Console.WriteLine("Sent!");
 
-        /// <summary>
-        /// Starts the Named pipe server, if this is the server
-        /// </summary>
-        /// <param name="handler">An ArgumentsHandler to handle the incoming Messages from clients</param>
-        static public void Start(ArgumentsHandler handler)
-        {
-            if (!IsServer)
-                return;
+			writer.Dispose();
+			pipeClient.Dispose();
+		}
 
-            new Thread(() => PipeServer(handler, tokenSource.Token)).Start();
-        }
+		/// <summary>
+		/// Starts the Named pipe server, if this is the server
+		/// </summary>
+		/// <param name="handler">An ArgumentsHandler to handle the incoming Messages from clients</param>
+		public static void Start(ArgumentsHandler handler)
+		{
+			if (!IsServer)
+				return;
 
-        static private async void PipeServer(ArgumentsHandler handler, CancellationToken token)
-        {
-            NamedPipeServerStream pipeServer = new NamedPipeServerStream("frznUploadPipe", PipeDirection.In, 1);
+			new Thread(() => PipeServer(handler, tokenSource.Token)).Start();
+		}
 
-            var serializer = new XmlSerializer(typeof(string[]));
-            
+		private static async void PipeServer(ArgumentsHandler handler, CancellationToken token)
+		{
+			var pipeServer = new NamedPipeServerStream("frznUploadPipe", PipeDirection.In, 1);
 
-            while (true)
-            {
-                try
-                {
-                    await pipeServer.WaitForConnectionAsync(token);
-                    var reader = new StreamReader(pipeServer, Encoding.UTF8, false, 100, true);
+			var serializer = new XmlSerializer(typeof(string[]));
 
-                    string s = reader.ReadToEnd();
-                    Console.WriteLine("incoming Message:\n" + s);
-                    
 
-                    using(StringReader stringReader = new StringReader(s))
-                    {
-                        handler.HandleArguments((string[])serializer.Deserialize(stringReader));
-                    }
-                    
-                    reader.Dispose();
-                    pipeServer.Disconnect();
-                }
-                catch (IOException e)
-                {
-                    Console.WriteLine(e);
-                    pipeServer.Dispose();
-                    pipeServer = new NamedPipeServerStream("frznUploadPipe", PipeDirection.In, 1);
-                }
-            }
-        }
-    }
+			while (true)
+			{
+				try
+				{
+					await pipeServer.WaitForConnectionAsync(token);
+					var reader = new StreamReader(pipeServer, Encoding.UTF8, false, 100, true);
+
+					string s = reader.ReadToEnd();
+					Console.WriteLine("incoming Message:\n" + s);
+
+
+					using (var stringReader = new StringReader(s))
+					{
+						handler.HandleArguments((string[])serializer.Deserialize(stringReader));
+					}
+
+					reader.Dispose();
+					pipeServer.Disconnect();
+				}
+				catch (IOException e)
+				{
+					Console.WriteLine(e);
+					pipeServer.Dispose();
+					pipeServer = new NamedPipeServerStream("frznUploadPipe", PipeDirection.In, 1);
+				}
+			}
+		}
+	}
 }

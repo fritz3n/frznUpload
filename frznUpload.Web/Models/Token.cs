@@ -9,8 +9,11 @@ namespace frznUpload.Web.Models
 	{
 		public int Id { get; set; }
 		public virtual User User { get; set; }
-		public byte[] Signature { get; set; }
+		public string Serial { get; set; }
+		public string Name { get; set; }
+
 		public DateTime Created { get; set; }
-		public DateTime Last_used { get; set; }
+		public DateTime LastUsed { get; set; }
+		public DateTime ValidUntil { get; set; }
 	}
 }

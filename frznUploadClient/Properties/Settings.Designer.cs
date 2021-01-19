@@ -12,7 +12,7 @@ namespace frznUpload.Client.Properties {
     
     
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "16.3.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "16.8.1.0")]
     internal sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase {
         
         private static Settings defaultInstance = ((Settings)(global::System.Configuration.ApplicationSettingsBase.Synchronized(new Settings())));
@@ -25,25 +25,13 @@ namespace frznUpload.Client.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("key.key")]
+        [global::System.Configuration.DefaultSettingValueAttribute("client.pfx")]
         public string KeyFile {
             get {
                 return ((string)(this["KeyFile"]));
             }
             set {
                 this["KeyFile"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("fritzen.ml")]
-        public string Url {
-            get {
-                return ((string)(this["Url"]));
-            }
-            set {
-                this["Url"] = value;
             }
         }
         
@@ -68,6 +56,30 @@ namespace frznUpload.Client.Properties {
             }
             set {
                 this["Hotkeys"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("localhost")]
+        public string Url {
+            get {
+                return ((string)(this["Url"]));
+            }
+            set {
+                this["Url"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("https://localhost:5001/v/")]
+        public string ShareGenUrl {
+            get {
+                return ((string)(this["ShareGenUrl"]));
+            }
+            set {
+                this["ShareGenUrl"] = value;
             }
         }
     }

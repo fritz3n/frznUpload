@@ -1,4 +1,5 @@
-﻿using frznUpload.Shared;
+﻿using frznUpload.Client.Handlers;
+using frznUpload.Shared;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -54,15 +55,37 @@ namespace frznUpload.Client
 
 			stream = new SslStream(Tcp.GetStream(), false, new RemoteCertificateValidationCallback(ValidateServerCertificate));
 
-			stream.AuthenticateAsClient("fritzen.ml");
+			if (CertificateHandler.ContainsCertificate)
+			{
+				stream.AuthenticateAsClient(url, new X509Certificate2Collection() { CertificateHandler.Certificate }, true);
+
+				mes = new MessageHandler(Tcp, stream, verbose);
+				mes.Start();
+				mes.OnDisconnect += OnDisconnect;
+
+				Message message = mes.WaitForMessage(Message.MessageType.AuthSuccess);
+
+				if (!message.IsError)
+				{
+					IsAuthenticated = true;
+					Name = message[0];
+				}
+
+			}
+			else
+			{
+				stream.AuthenticateAsClient(url);
+
+				IsAuthenticated = false;
+				mes = new MessageHandler(Tcp, stream, verbose);
+				mes.Start();
+				mes.OnDisconnect += OnDisconnect;
+			}
 
 			stp.Stop();
 
 			Console.WriteLine("encryption established: " + stp.ElapsedMilliseconds);
 
-			mes = new MessageHandler(Tcp, stream, verbose);
-			mes.Start();
-			mes.OnDisconnect += OnDisconnect;
 
 			mes.SendMessage(new Message(Message.MessageType.Version, false, MessageHandler.Version));
 			Message m = mes.WaitForMessage(true, Message.MessageType.Version);
@@ -86,17 +109,39 @@ namespace frznUpload.Client
 
 			await Tcp.ConnectAsync(url, port);
 
-			stream = new SslStream(Tcp.GetStream(), false, new RemoteCertificateValidationCallback(ValidateServerCertificate));
+			stream = new SslStream(Tcp.GetStream(), false, new RemoteCertificateValidationCallback(ValidateServerCertificate), new LocalCertificateSelectionCallback(Selection));
 
-			await stream.AuthenticateAsClientAsync("fritzen.ml");
 
 			stp.Stop();
 
 			Console.WriteLine("encryption established: " + stp.ElapsedMilliseconds);
 
-			mes = new MessageHandler(Tcp, stream, verbose);
-			mes.Start();
-			mes.OnDisconnect += OnDisconnect;
+
+			if (CertificateHandler.ContainsCertificate)
+			{
+				await stream.AuthenticateAsClientAsync(url, new X509Certificate2Collection(new X509Certificate2[] { CertificateHandler.Certificate }), true);
+
+				mes = new MessageHandler(Tcp, stream, verbose);
+				mes.Start();
+				mes.OnDisconnect += OnDisconnect;
+
+				Message message = await mes.WaitForMessageAsync(Message.MessageType.AuthSuccess);
+
+				if (!message.IsError)
+				{
+					IsAuthenticated = true;
+					Name = message[0];
+				}
+			}
+			else
+			{
+				await stream.AuthenticateAsClientAsync(url);
+
+				IsAuthenticated = false;
+				mes = new MessageHandler(Tcp, stream, verbose);
+				mes.Start();
+				mes.OnDisconnect += OnDisconnect;
+			}
 
 			mes.SendMessage(new Message(Message.MessageType.Version, false, MessageHandler.Version));
 			Message m = await mes.WaitForMessageAsync(true, Message.MessageType.Version);
@@ -108,6 +153,11 @@ namespace frznUpload.Client
 			}
 		}
 
+		private X509Certificate Selection(object sender, string targetHost, X509CertificateCollection localCertificates, X509Certificate remoteCertificate, string[] acceptableIssuers)
+		{
+			return localCertificates.Cast<X509Certificate>().FirstOrDefault();
+		}
+
 		public void Disconnect()
 		{
 			ThrowIfDisposed();
@@ -115,98 +165,51 @@ namespace frznUpload.Client
 			Tcp?.Close();
 		}
 
-		public async Task<bool> AuthWithKey(string file)
+		public async Task RenewCert()
 		{
 			ThrowIfDisposed();
-			try
-			{
-				var chal = new Challenge();
 
-				if (!File.Exists(file))
-				{
-					FileStream fileStrea = File.OpenWrite(file);
-					chal.GenerateKey(4096);
-					chal.ExportKey(fileStrea);
-					fileStrea.Close();
-				}
+			string machineName = Environment.OSVersion + " - " + Environment.MachineName;
 
-				FileStream fileStream = File.OpenRead(file);
-				chal.LoadKey(fileStream);
-				fileStream.Close();
+			byte[][] key = CertificateHandler.GenerateKeyPair();
+			mes.SendMessage(new Message(Message.MessageType.CertRenewRequest, false, key[0], key[1], machineName));
 
-				byte[][] pub = chal.GetPublicComponents();
-
-				mes.SendMessage(new Message(Message.MessageType.ChallengeRequest, false, pub[0], pub[1]));
-
-				Message m = await mes.WaitForMessageAsync(true, Message.MessageType.Challenge);
-
-				mes.SendMessage(new Message(Message.MessageType.ChallengeResponse, false, chal.SignChallenge(m[0])));
-
-				m = mes.WaitForMessage(true, Message.MessageType.ChallengeApproved);
-
-				Name = m[0];
-				IsAuthenticated = true;
-
-				return true;
-
-			}
-			catch (SequenceBreakException e)
-			{
-				mes.SendMessage(new Message(Message.MessageType.Sequence, true));
-				Console.WriteLine(e);
-				return false;
-			}
-			catch (Exception e)
-			{
-				Console.WriteLine(e);
-				return false;
-			}
+			Message rec = await mes.WaitForMessageAsync(true, Message.MessageType.CertRenewSuccess);
+			CertificateHandler.NewCertificate(rec[0]);
 		}
 
-		public async Task<bool> AuthWithPass(string username, string password, string file)
+		public async Task<bool> AuthWithPass(string username, string password)
 		{
 			ThrowIfDisposed();
 			try
 			{
-				var chal = new Challenge();
 
-				if (!File.Exists(file))
-				{
-					FileStream fileStrea = File.OpenWrite(file);
-					chal.GenerateKey(4096);
-					chal.ExportKey(fileStrea);
-					fileStrea.Close();
-				}
+				string machineName = Environment.OSVersion + " - " + Environment.MachineName;
 
-				FileStream fileStream = File.OpenRead(file);
-				chal.LoadKey(fileStream);
-				fileStream.Close();
-
-				byte[][] pub = chal.GetPublicComponents();
-
-				mes.SendMessage(new Message(Message.MessageType.Auth, false, username, password, pub[0], pub[1]));
+				byte[][] key = CertificateHandler.GenerateKeyPair();
+				mes.SendMessage(new Message(Message.MessageType.CertRequest, false, username, password, key[0], key[1], machineName));
 
 				Message rec = await mes.WaitForMessageAsync(false);
 				if (rec.IsError == true)
 				{
 					throw new Exception("Recived an error: " + rec.ToString());
 				}
-				else if (rec.Type == Message.MessageType.AuthSuccess)
+				else if (rec.Type == Message.MessageType.CertSuccess)
 				{
-					//auth recived all good.
+					CertificateHandler.NewCertificate(rec[0]);
+					return true;
 				}
 				else if (rec.Type == Message.MessageType.TwoFactorNeeded)
 				{
 					//Two fa needed
 					await DoTwoFaExchangeAsync();
+					return true;
 				}
 				else
 				{
 					//unexpected message
 					throw new Exception("Unexpected message: " + rec.ToString());
 				}
-
-				return await AuthWithKey(file);
 			}
 			catch (SequenceBreakException e)
 			{
@@ -226,8 +229,8 @@ namespace frznUpload.Client
 			ThrowIfDisposed();
 			try
 			{
-				mes.SendMessage(new Message(Message.MessageType.DeauthRequest));
-				await mes.WaitForMessageAsync(true, Message.MessageType.DeauthSuccess);
+				mes.SendMessage(new Message(Message.MessageType.CertRevokeRequest));
+				await mes.WaitForMessageAsync(true, Message.MessageType.CertRevokeSuccess);
 				IsAuthenticated = false;
 			}
 			catch (SequenceBreakException e)
@@ -293,7 +296,7 @@ namespace frznUpload.Client
 					File_extension = fileInfo[1],
 					Identifier = fileInfo[2],
 					Size = fileInfo[3],
-					Tags = BitConverter.ToInt64(fileInfo[4], 0)
+					Path = fileInfo[4]
 				};
 
 				list.Add(file);
@@ -320,7 +323,7 @@ namespace frznUpload.Client
 					File_extension = fileInfo[1],
 					Identifier = fileInfo[2],
 					Size = fileInfo[3],
-					Tags = BitConverter.ToInt64(fileInfo[4], 0)
+					Path = fileInfo[4]
 				};
 
 				list.Add(file);
@@ -335,7 +338,7 @@ namespace frznUpload.Client
 				mes.SendMessage(new Message(Message.MessageType.TwoFactorNeeded, false, GetTwoFaToken()));
 				await mes.WaitForMessageAsync(true, Message.MessageType.TwoFactorSuccess);
 			}
-			catch (NoUserInputException e)
+			catch (NoUserInputException)
 			{
 				mes.SendMessage(new Message(Message.MessageType.TwoFactorNeeded, true));
 			}

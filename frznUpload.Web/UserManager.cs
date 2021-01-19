@@ -17,17 +17,17 @@ namespace frznUpload.Web
 {
 	public class UserManager
 	{
-		private Database context;
+		private Database database;
 
 		public UserManager(Database context)
 		{
-			this.context = context;
+			database = context;
 		}
 
 
 		public async Task<SignInResult> SignIn(HttpContext httpContext, string name, string password, bool isPersistent, string twoFa = null)
 		{
-			User user = context.Users.Where(u => u.Name == name).First();
+			User user = database.Users.Where(u => u.Name == name).First();
 
 			if (HashPassword(user, password) != user.Hash)
 				return SignInResult.Failed;
@@ -47,7 +47,6 @@ namespace frznUpload.Web
 			var authProperties = new AuthenticationProperties
 			{
 				AllowRefresh = true,
-
 				IsPersistent = isPersistent,
 			};
 
@@ -60,6 +59,39 @@ namespace frznUpload.Web
 			await httpContext.SignOutAsync();
 		}
 
+		public async Task<bool> ChangePassword(HttpContext context, string oldPassword, string newPassword)
+		{
+			User user = GetUser(context);
+			if (user is null)
+				return false;
+			if (HashPassword(user, oldPassword) != user.Hash)
+				return false;
+			user.Hash = HashPassword(user, newPassword);
+			await database.SaveChangesAsync();
+			return true;
+		}
+
+
+		public User GetUser(HttpContext context, Database db = null)
+		{
+			db ??= database;
+			if (!context.User.Identity.IsAuthenticated)
+				return null;
+			int id = int.Parse(context.User.FindFirst(ClaimTypes.NameIdentifier).Value);
+			return db.Users.FirstOrDefault(u => u.Id == id);
+		}
+
+		public async Task<bool> DeleteUser(HttpContext context)
+		{
+			User user = GetUser(context);
+			if (user is null)
+				return false;
+			SignOut(context);
+			database.Users.Remove(user);
+			await database.SaveChangesAsync();
+			return true;
+		}
+
 		public async Task RegisterUser(string name, string password)
 		{
 			var user = new User()
@@ -68,8 +100,8 @@ namespace frznUpload.Web
 				Salt = GetSalt(),
 			};
 			user.Hash = HashPassword(user, password);
-			context.Users.Add(user);
-			await context.SaveChangesAsync();
+			database.Users.Add(user);
+			await database.SaveChangesAsync();
 		}
 
 		public string HashPassword(User user, string password)

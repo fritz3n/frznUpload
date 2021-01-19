@@ -1,0 +1,16 @@
+﻿@model FileViewInfo
+    <div class="videoContainer">
+        <video id="player" playsinline controls>
+            <source src="@Model.SourcePath" type="@Model.MimeType" />
+        </video>
+    </div>
+
+    @Html.PartialSection("Css",
+            @<link href="/lib/plyr/plyr.min.css" rel="stylesheet">
+,@<link href="/css/VideoViewer.css" rel="stylesheet">
+)
+
+    @Html.PartialSection("Scripts",
+            @<script src="/lib/plyr/plyr.min.js"></script>
+,@<script src="/js/VideoViewer.js"></script>
+)

@@ -3,16 +3,16 @@
   <Profiles />
   <Settings>
     <Setting Name="KeyFile" Type="System.String" Scope="User">
-      <Value Profile="(Default)">key.key</Value>
-    </Setting>
-    <Setting Name="Url" Type="System.String" Scope="User">
-      <Value Profile="(Default)">fritzen.ml</Value>
+      <Value Profile="(Default)">client.pfx</Value>
     </Setting>
     <Setting Name="Port" Type="System.Int16" Scope="User">
       <Value Profile="(Default)">22340</Value>
     </Setting>
     <Setting Name="Hotkeys" Type="System.String" Scope="User">
       <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="Url" Type="System.String" Scope="User">
+      <Value Profile="(Default)">localhost</Value>
     </Setting>
   </Settings>
 </SettingsFile>

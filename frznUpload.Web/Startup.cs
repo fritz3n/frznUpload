@@ -1,4 +1,5 @@
 using frznUpload.Web.Server;
+using frznUpload.Web.Server.Certificates;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -34,12 +35,16 @@ namespace frznUpload.Web
 
 			services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie();
 
-			services.AddRazorPages();
+			services.AddRazorPages().AddRazorPagesOptions(options =>
+			{
+				options.Conventions.AuthorizeAreaFolder("Account", "/");
+			});
 			services.AddControllers().AddRazorRuntimeCompilation();
 			services.AddDbContext<Data.Database>(options => options.UseLazyLoadingProxies().UseSqlServer(Configuration.GetConnectionString("Database")));
 
 			services.AddTransient<DatabaseHandler>();
 			services.AddTransient<UserManager>();
+			services.AddSingleton<CertificateHandler>();
 			services.AddHostedService<ServerService>();
 		}
 
@@ -69,6 +74,14 @@ namespace frznUpload.Web
 
 			app.UseEndpoints(endpoints =>
 			{
+				endpoints.MapControllerRoute(
+					name: "downloadShare",
+					pattern: "/d/{shareId}",
+					defaults: new { controller = "Download", action = "DownloadShare" });
+				endpoints.MapControllerRoute(
+					name: "downloadFile",
+					pattern: "/Account/Files/d/{fileId}",
+					defaults: new { controller = "Download", action = "DownloadFile" });
 				endpoints.MapControllers();
 				endpoints.MapRazorPages();
 			});

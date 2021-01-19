@@ -1,0 +1,19 @@
+﻿@model FileViewInfo
+<div class="audioContainer">
+    <div>
+        <h5>@Model.FileName</h5>
+    </div>
+    <audio id="player" playsinline controls>
+        <source src="@Model.SourcePath" type="@Model.MimeType" />
+    </audio>
+</div>
+
+@Html.PartialSection("Css",
+            @<link href="/lib/plyr/plyr.min.css" rel="stylesheet">
+,@<link href="/css/AudioViewer.css" rel="stylesheet">
+)
+
+@Html.PartialSection("Scripts",
+            @<script src="/lib/plyr/plyr.min.js"></script>
+,@<script src="/js/VideoViewer.js"></script>
+)

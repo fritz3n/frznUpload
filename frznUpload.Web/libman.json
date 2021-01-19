@@ -11,6 +11,19 @@
         "viewer.esm.min.js",
         "viewer.common.min.js"
       ]
+    },
+    {
+      "library": "font-awesome@5.15.2",
+      "destination": "wwwroot/lib/font-awesome/"
+    },
+    {
+      "library": "plyr@3.6.3",
+      "destination": "wwwroot/lib/plyr/"
+    }
+    ,
+    {
+      "library": "codemirror@5.59.1",
+      "destination": "wwwroot/lib/codemirror/"
     }
   ]
 }

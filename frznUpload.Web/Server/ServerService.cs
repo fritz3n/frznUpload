@@ -1,5 +1,6 @@
 ﻿using frznUpload.Shared;
 using frznUpload.Web.Data;
+using frznUpload.Web.Server.Certificates;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -53,6 +54,7 @@ namespace frznUpload.Web.Server
 
 		private async Task<bool> ConnectionAcceptor(TcpListener tcp)
 		{
+			FileHandler.Init(config);
 			while (true)
 			{
 				Task<TcpClient> accept = tcp.AcceptTcpClientAsync();
@@ -63,20 +65,27 @@ namespace frznUpload.Web.Server
 
 				logger.LogInformation("Connection established with " + cli.Client.RemoteEndPoint);
 
-				IServiceScope scope = provider.CreateScope();
+				try
+				{
+					IServiceScope scope = provider.CreateScope();
 
-				DatabaseHandler db = scope.ServiceProvider.GetRequiredService<DatabaseHandler>();
-				ILogger<Client> log = scope.ServiceProvider.GetRequiredService<ILogger<Client>>();
+					DatabaseHandler db = scope.ServiceProvider.GetRequiredService<DatabaseHandler>();
+					CertificateHandler certHandler = scope.ServiceProvider.GetRequiredService<CertificateHandler>();
+					ILogger<Client> log = scope.ServiceProvider.GetRequiredService<ILogger<Client>>();
 
-				bool verbose = config.GetValue("Verbose", false);
+					bool verbose = config.GetValue("Verbose", false);
 
-				var Client = new Client(cli, Cert, db, log, verbose);
+					var Client = new Client(cli, db, log, certHandler, verbose);
 
-				clients.Add((scope, Client));
+					clients.Add((scope, Client));
 
-				Client.OnDispose += Client_OnDispose;
+					Client.OnDispose += Client_OnDispose;
 
-				Client.Start();
+					Client.Start();
+				}
+				catch (Exception)
+				{
+				}
 			}
 
 		}
@@ -153,6 +162,7 @@ namespace frznUpload.Web.Server
 
 			var x509 = new X509Certificate2(stream.ToArray(), password, X509KeyStorageFlags.PersistKeySet | X509KeyStorageFlags.Exportable);
 
+			string serial = string.Concat(serialNumber.ToByteArray().Select(b => b.ToString("X2")));
 
 			listener.Start();
 

@@ -1,11 +1,15 @@
 ﻿@model FileViewInfo
+    <div class="outerImageContainer">
+        <img id="image" src="@Model.SourcePath" alt="@HttpUtility.JavaScriptStringEncode(Model.FileName)" />
+    </div>
 
-<img id="image" src ="@Model.SourcePath" alt="@HttpUtility.JavaScriptStringEncode(Model.FileName)"/>
+@Html.PartialSection("Css",
+        @<link href="/lib/viewerjs/viewer.min.css" rel="stylesheet">
+,@<link href="/css/ImageViewer.css" rel="stylesheet">
+)
 
-@section Scripts {
-    <script src="/lib/viewerjs/viewer.min.js"></script>
-}
+    @Html.PartialSection("Scripts",
+        @<script src="/lib/viewerjs/viewer.min.js"></script>
+,@<script src="/js/VideoViewer.js"></script>
+)
 
-@section Css {
-    <link href="/lib/viewerjs/viewer.min.css" rel="stylesheet">
-}

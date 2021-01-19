@@ -1,0 +1,73 @@
+﻿@page
+@model frznUpload.Web.Areas.Account.Pages.Shares.DetailsModel
+
+@{
+    ViewData["Title"] = "Details";
+}
+
+<h1>Details</h1>
+
+<div>
+    <h4>Share</h4>
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Share.Identifier)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Share.Identifier)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Share.FirstView)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Share.FirstView)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Share.FirstViewCookie)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Share.FirstViewCookie)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Share.Public)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Share.Public)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Share.PublicRegistered)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Share.PublicRegistered)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Share.Whitelisted)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Share.Whitelisted)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Share.WhitelistText)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Share.WhitelistText)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Share.Created)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Share.Created)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Share.LastAccessed)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Share.LastAccessed)
+        </dd>
+    </dl>
+</div>
+<div>
+    <a asp-page="./Edit" asp-route-id="@Model.Share.Id">Edit</a> |
+    <a asp-page="./Index">Back to List</a>
+</div>

@@ -1,3 +1,14 @@
 ﻿@model FileViewInfo
 @{
 }
+
+    <div class="row flex-column align-items-center">
+        <div>
+            <h5>@Model.FileName</h5>
+        </div>
+        <div>
+            <h1>
+                <a asp-page="@Model.SourcePath" title="Download file"><i class="fas fa-file-download"></i></a>
+            </h1>
+        </div>
+    </div>

@@ -1,0 +1,62 @@
+﻿@page
+@model frznUpload.Web.Areas.Account.Pages.Files.IndexModel
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Index</h1>
+
+<p>
+    <a asp-page="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Files[0].Identifier)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Files[0].Filename)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Files[0].Extension)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Files[0].Size)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Files[0].Path)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model.Files) {
+        <tr>
+            <td>
+                @(item.Identifier.Substring(0, Math.Min(item.Identifier.Length, 10)) + "...")
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Filename)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Extension)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Size)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Path)
+            </td>
+            <td>
+                <a asp-page="./Edit" asp-route-id="@item.Id">Edit</a> |
+                <a asp-page="./Details" asp-route-id="@item.Id">Details</a> |
+                <a asp-page="./Delete" asp-route-id="@item.Id">Delete</a> |
+                <a asp-page="./View" asp-route-fileId="@item.Identifier">View</a> |
+                <a asp-page="/Shares/Index" asp-route-fileId="@item.Identifier">Shares</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

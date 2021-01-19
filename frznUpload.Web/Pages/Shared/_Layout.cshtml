@@ -6,7 +6,9 @@
     <title>@ViewData["Title"] - frznUpload.Web</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" />
+    <link href="/lib/font-awesome/css/all.css" rel="stylesheet">
     @RenderSection("Css", required: false)
+    @Html.RenderPartialSection("Css")
 </head>
 <body>
     <header>
@@ -30,16 +32,19 @@
                         @if (Context.User.Identity.IsAuthenticated)
                         {
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-page="/Account/Logout">Logout</a>
+                                <a class="nav-link text-dark" asp-area="Account" asp-page="/Index">Account</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-page="/Login/Logout">Logout</a>
                             </li>
                         }
                         else
                         {
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-page="/Account/Login">Login</a>
+                                <a class="nav-link text-dark" asp-area="" asp-page="/Login/Login">Login</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-page="/Account/Register">Register</a>
+                                <a class="nav-link text-dark" asp-area="" asp-page="/Login/Register">Register</a>
                             </li>
                         }
                     </ul>
@@ -64,5 +69,6 @@
     <script src="~/js/site.js" asp-append-version="true"></script>
 
     @RenderSection("Scripts", required: false)
+    @Html.RenderPartialSection("Scripts")
 </body>
 </html>

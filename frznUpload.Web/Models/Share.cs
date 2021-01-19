@@ -22,14 +22,17 @@ namespace frznUpload.Web.Models
 		public bool Whitelisted { get; set; }
 		public string WhitelistText { get; set; }
 
+		public DateTime Created { get; set; }
+		public DateTime LastAccessed { get; set; }
+
 		[NotMapped]
-		public IEnumerable<int> Whitelist
+		public IEnumerable<string> Whitelist
 		{
 			get
 			{
 				if (string.IsNullOrWhiteSpace(WhitelistText))
-					return Enumerable.Empty<int>();
-				return WhitelistText.Split(',').Select(item => int.Parse(item));
+					return Enumerable.Empty<string>();
+				return WhitelistText.Split(',');
 			}
 
 			set => WhitelistText = string.Join(',', value);

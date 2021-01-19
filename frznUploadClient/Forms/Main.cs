@@ -92,9 +92,12 @@ namespace frznUpload.Client
 
 
 					if (Created)
-						LinkText.Invoke(new Action(() => LinkText.Text = $@"https://{Properties.Settings.Default.Url}/view.php?id=" + s));
+					{
+						string link = Properties.Settings.Default.ShareGenUrl + s;
+						LinkText.Invoke(new Action(() => LinkText.Text = link));
 
-					SetClipboardText($@"https://{Properties.Settings.Default.Url}/view.php?id=" + s);
+						SetClipboardText(link);
+					}
 					SystemSounds.Beep.Play();
 				}
 

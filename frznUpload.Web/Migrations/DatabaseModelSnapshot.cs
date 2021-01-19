@@ -35,11 +35,11 @@ namespace frznUpload.Web.Migrations
                     b.Property<string>("Identifier")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("Path")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<int>("Size")
                         .HasColumnType("int");
-
-                    b.Property<long>("Tags")
-                        .HasColumnType("bigint");
 
                     b.Property<int?>("UserId")
                         .HasColumnType("int");
@@ -58,6 +58,9 @@ namespace frznUpload.Web.Migrations
                         .HasColumnType("int")
                         .UseIdentityColumn();
 
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("datetime2");
+
                     b.Property<int?>("FileId")
                         .HasColumnType("int");
 
@@ -69,6 +72,9 @@ namespace frznUpload.Web.Migrations
 
                     b.Property<string>("Identifier")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("LastAccessed")
+                        .HasColumnType("datetime2");
 
                     b.Property<bool>("Public")
                         .HasColumnType("bit");
@@ -99,14 +105,20 @@ namespace frznUpload.Web.Migrations
                     b.Property<DateTime>("Created")
                         .HasColumnType("datetime2");
 
-                    b.Property<DateTime>("Last_used")
+                    b.Property<DateTime>("LastUsed")
                         .HasColumnType("datetime2");
 
-                    b.Property<byte[]>("Signature")
-                        .HasColumnType("varbinary(max)");
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Serial")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int?>("UserId")
                         .HasColumnType("int");
+
+                    b.Property<DateTime>("ValidUntil")
+                        .HasColumnType("datetime2");
 
                     b.HasKey("Id");
 

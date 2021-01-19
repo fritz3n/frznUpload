@@ -1,4 +1,5 @@
-﻿using System;
+﻿using frznUpload.Client.Handlers;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
@@ -9,100 +10,103 @@ using System.Windows.Forms;
 
 namespace frznUpload.Client
 {
-    class IconHandler : ApplicationContext
-    {
-        NotifyIcon notifyIcon = new NotifyIcon();
-        MainForm mainForm;
-        public static ClientManager Client { get; private set; }
+	class IconHandler : ApplicationContext
+	{
+		NotifyIcon notifyIcon = new NotifyIcon();
+		MainForm mainForm;
+		public static ClientManager Client { get; private set; }
 
-        public IconHandler(string[] args) 
-        {
-            MenuItem consoleMenuItem = new MenuItem("Show", new EventHandler(Show));
-            MenuItem configMenuItem = new MenuItem("Configuration", new EventHandler(ShowConfig));
-            MenuItem exitMenuItem = new MenuItem("Exit", new EventHandler(Exit));
+		public IconHandler(string[] args)
+		{
+			var consoleMenuItem = new MenuItem("Show", new EventHandler(Show));
+			var configMenuItem = new MenuItem("Configuration", new EventHandler(ShowConfig));
+			var exitMenuItem = new MenuItem("Exit", new EventHandler(Exit));
 
 
-            notifyIcon.Icon = Icon.ExtractAssociatedIcon(Assembly.GetExecutingAssembly().Location); ;
-            notifyIcon.ContextMenu = new ContextMenu(new MenuItem[]
-                { consoleMenuItem, configMenuItem, exitMenuItem });
-            notifyIcon.MouseClick += new MouseEventHandler(LeftClick);
-            //Dont show icon untill everything is set ups
-            notifyIcon.Visible = false;
+			notifyIcon.Icon = Icon.ExtractAssociatedIcon(Assembly.GetExecutingAssembly().Location); ;
+			notifyIcon.ContextMenu = new ContextMenu(new MenuItem[]
+				{ consoleMenuItem, configMenuItem, exitMenuItem });
+			notifyIcon.MouseClick += new MouseEventHandler(LeftClick);
+			//Dont show icon untill everything is set ups
+			notifyIcon.Visible = false;
 
-            Client = new ClientManager();
+			CertificateHandler.Load();
 
-            try
-            {
-                Client.Connect().Wait();
-            }catch(AggregateException ex)
-            {
-                MessageBox.Show("Couldn´t connect:\n" + ex.InnerException.Message);
+			Client = new ClientManager();
 
-                Exit();
-                return;
-            }
-            catch(Exception e)
-            {
-                MessageBox.Show("Couldn´t connect:\n" + e.Message);
+			try
+			{
+				Client.Connect().Wait();
+			}
+			catch (AggregateException ex)
+			{
+				MessageBox.Show("Couldn´t connect:\n" + ex.InnerException.Message);
 
-                Exit();
-                return;
-            }
+				Exit();
+				return;
+			}
+			catch (Exception e)
+			{
+				MessageBox.Show("Couldn´t connect:\n" + e.Message);
 
-            mainForm = new MainForm(Client);
+				Exit();
+				return;
+			}
 
-            //if client is not logged in -> show a login prompt
-            if(Client.LoggedIn == false)
-            {
-                mainForm.Show();
-            }
+			mainForm = new MainForm(Client);
 
-            FileUploadHandler.Init(mainForm, Client);
-            mainForm.CreateControl();
+			//if client is not logged in -> show a login prompt
+			if (Client.LoggedIn == false)
+			{
+				mainForm.Show();
+			}
 
-            //Everything is ready -> show icon
-            notifyIcon.Visible = true;
+			FileUploadHandler.Init(mainForm, Client);
+			mainForm.CreateControl();
 
-            var argumentsHandler = new ArgumentsHandler(mainForm);
+			//Everything is ready -> show icon
+			notifyIcon.Visible = true;
 
-            if (args.Length != 0)
-                argumentsHandler.HandleArguments(args);
+			var argumentsHandler = new ArgumentsHandler(mainForm);
 
-            PipeHandler.Start(argumentsHandler);
-        }
+			if (args.Length != 0)
+				argumentsHandler.HandleArguments(args);
 
-        void ShowConfig(object sender, EventArgs e)
-        {
-            mainForm.ShowLogin();
-        }
+			PipeHandler.Start(argumentsHandler);
+		}
 
-        void Exit(object sender, EventArgs e)
-        {
-            Exit();
-        }
+		void ShowConfig(object sender, EventArgs e)
+		{
+			mainForm.ShowLogin();
+		}
 
-        void Exit()
-        {
-            Application.Exit();
-            Environment.Exit(0);
-        }
+		void Exit(object sender, EventArgs e)
+		{
+			Exit();
+		}
 
-        void Show(object sender, EventArgs e)
-        {
-            mainForm.Show();
-        }
+		void Exit()
+		{
+			Application.Exit();
+			Environment.Exit(0);
+		}
 
-        public void ShowMain()
-        {
-            //if(Invok)
-        }
+		void Show(object sender, EventArgs e)
+		{
+			mainForm.Show();
+		}
 
-        void LeftClick(object sender, MouseEventArgs e)
-        {
-            if (e.Button == MouseButtons.Left)
-            {
-                mainForm?.Show();
-            }
-        }
-    }
+		public void ShowMain()
+		{
+			//if(Invok)
+		}
+
+		void LeftClick(object sender, MouseEventArgs e)
+		{
+			if (e.Button == MouseButtons.Left)
+			{
+				mainForm?.Show();
+			}
+		}
+	}
 }

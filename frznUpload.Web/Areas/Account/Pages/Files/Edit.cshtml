@@ -1,0 +1,52 @@
+﻿@page
+@model frznUpload.Web.Areas.Account.Pages.Files.EditModel
+
+@{
+    ViewData["Title"] = "Edit";
+}
+
+<h1>Edit</h1>
+
+<h4>File</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="File.Id" />
+            <div class="form-group">
+                <label asp-for="File.Identifier" class="control-label"></label>
+                <input asp-for="File.Identifier" class="form-control" />
+                <span asp-validation-for="File.Identifier" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="File.Filename" class="control-label"></label>
+                <input asp-for="File.Filename" class="form-control" />
+                <span asp-validation-for="File.Filename" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="File.Extension" class="control-label"></label>
+                <input asp-for="File.Extension" class="form-control" />
+                <span asp-validation-for="File.Extension" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="File.Size" class="control-label"></label>
+                <input asp-for="File.Size" class="form-control" />
+                <span asp-validation-for="File.Size" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="File.Path" class="control-label"></label>
+                <input asp-for="File.Path" class="form-control" />
+                <span asp-validation-for="File.Path" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-page="./Index">Back to List</a>
+</div>
+
