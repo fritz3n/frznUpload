@@ -6,7 +6,7 @@ services:
     restart: "unless-stopped"
     build:
       context: .
-      dockerfile: frznUpload.Web/Dockerfile
+      dockerfile: Dockerfile
     ports:
       - "8080:8080"
       - "4443:443"
