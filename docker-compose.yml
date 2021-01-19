@@ -1,0 +1,34 @@
+version: '3.4'
+
+services:
+  frznupload.web:
+    image: ${DOCKER_REGISTRY-}frznuploadweb
+    restart: "unless-stopped"
+    build:
+      context: .
+      dockerfile: frznUpload.Web/Dockerfile
+    ports:
+      - "8080:8080"
+      - "4443:443"
+    networks:
+      - internal
+    volumes:
+      - "./fritzen.xyz.pfx:/files/fritzen.xyz.pfx"
+    depends_on:
+      - sql
+
+  sql:
+    image: mcr.microsoft.com/mssql/server:2017-CU8-ubuntu
+    hostname: 'sql'
+    ports:
+      - "3306:3306"
+    restart: "unless-stopped"
+    environment:
+      - ACCEPT_EULA=Y
+      - SA_PASSWORD=yourStrong(!)Password
+      - MSSQL_PID=Express
+    networks:
+      - internal
+
+networks:
+  internal:

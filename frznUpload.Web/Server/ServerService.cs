@@ -105,65 +105,6 @@ namespace frznUpload.Web.Server
 			IPAddress address = IPAddress.Any;
 			var listener = new TcpListener(address, 22340);
 
-
-			string certdir = "../certs/cert.pfx";
-
-#if DEBUG
-			certdir = "fritzen.xyz.pfx";
-#endif
-			logger.LogInformation("Loading keyfile: " + certdir);
-
-			Cert = new X509Certificate2(certdir, "FECBA15DE2919B0FF055E2C0A513261399B894691F208FE8AD54878824390902B2FC2753354FF173747F8B8079353ABCA10DEAED03482E419087CD044A5868F6", X509KeyStorageFlags.Exportable);
-
-
-			AsymmetricCipherKeyPair keypair = DotNetUtilities.GetRsaKeyPair((Cert.PrivateKey as RSA));
-			var randomGenerator = new CryptoApiRandomGenerator();
-			var random = new SecureRandom(randomGenerator);
-			var certificateGenerator = new X509V3CertificateGenerator();
-			BigInteger serialNumber = BigIntegers.CreateRandomInRange(BigInteger.One, BigInteger.ValueOf(long.MaxValue), random);
-			certificateGenerator.SetSerialNumber(serialNumber);
-
-
-			var subjectDN = new X509Name("CN=frznUpload.Client");
-			var issuerDN = new X509Name("CN=fritzen.xyz");
-			certificateGenerator.SetIssuerDN(issuerDN);
-			certificateGenerator.SetSubjectDN(subjectDN);
-
-			DateTime notBefore = DateTime.UtcNow.Date;
-			DateTime notAfter = notBefore.AddDays(2);
-
-			certificateGenerator.SetNotBefore(notBefore);
-			certificateGenerator.SetNotAfter(notAfter);
-
-			AsymmetricCipherKeyPair subjectKeyPair;
-			var keyGenerationParameters = new KeyGenerationParameters(random, 2048);
-			var keyPairGenerator = new RsaKeyPairGenerator();
-			keyPairGenerator.Init(keyGenerationParameters);
-			subjectKeyPair = keyPairGenerator.GenerateKeyPair();
-
-			certificateGenerator.SetPublicKey(subjectKeyPair.Public);
-
-			AsymmetricCipherKeyPair issuerKeyPair = subjectKeyPair;
-			ISignatureFactory signatureFactory = new Asn1SignatureFactory("SHA256WITHRSA", keypair.Private, random);
-			// Selfsign certificate
-			Org.BouncyCastle.X509.X509Certificate certificate = certificateGenerator.Generate(signatureFactory);
-
-			var store = new Pkcs12Store();
-			string friendlyName = certificate.SubjectDN.ToString();
-			var certificateEntry = new X509CertificateEntry(certificate);
-			store.SetCertificateEntry(friendlyName, certificateEntry);
-			store.SetKeyEntry(friendlyName, new AsymmetricKeyEntry(subjectKeyPair.Private), new[] { certificateEntry });
-			const string password = "password";
-
-			var stream = new MemoryStream();
-			store.Save(stream, password.ToCharArray(), random);
-
-			File.WriteAllBytes("client.pfx", stream.ToArray());
-
-			var x509 = new X509Certificate2(stream.ToArray(), password, X509KeyStorageFlags.PersistKeySet | X509KeyStorageFlags.Exportable);
-
-			string serial = string.Concat(serialNumber.ToByteArray().Select(b => b.ToString("X2")));
-
 			listener.Start();
 
 			logger.LogInformation("Server initialized");
