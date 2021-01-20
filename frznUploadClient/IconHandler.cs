@@ -18,14 +18,12 @@ namespace frznUpload.Client
 
 		public IconHandler(string[] args)
 		{
-			var consoleMenuItem = new MenuItem("Show", new EventHandler(Show));
-			var configMenuItem = new MenuItem("Configuration", new EventHandler(ShowConfig));
-			var exitMenuItem = new MenuItem("Exit", new EventHandler(Exit));
-
-
 			notifyIcon.Icon = Icon.ExtractAssociatedIcon(Assembly.GetExecutingAssembly().Location); ;
-			notifyIcon.ContextMenu = new ContextMenu(new MenuItem[]
-				{ consoleMenuItem, configMenuItem, exitMenuItem });
+			notifyIcon.ContextMenuStrip = new System.Windows.Forms.ContextMenuStrip();
+			notifyIcon.ContextMenuStrip.Items.Add("Show", null, Show);
+			notifyIcon.ContextMenuStrip.Items.Add("Configuration", null, ShowConfig);
+			notifyIcon.ContextMenuStrip.Items.Add("Exit", null, Exit);
+
 			notifyIcon.MouseClick += new MouseEventHandler(LeftClick);
 			//Dont show icon untill everything is set ups
 			notifyIcon.Visible = false;
@@ -96,10 +94,6 @@ namespace frznUpload.Client
 			mainForm.Show();
 		}
 
-		public void ShowMain()
-		{
-			//if(Invok)
-		}
 
 		void LeftClick(object sender, MouseEventArgs e)
 		{

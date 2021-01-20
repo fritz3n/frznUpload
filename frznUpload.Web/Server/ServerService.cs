@@ -64,31 +64,35 @@ namespace frznUpload.Web.Server
 				TcpClient cli = await accept;
 
 				logger.LogInformation("Connection established with " + cli.Client.RemoteEndPoint);
-
-				try
+				_ = Task.Run(() =>
 				{
-					IServiceScope scope = provider.CreateScope();
+					try
+					{
+						IServiceScope scope = provider.CreateScope();
 
-					DatabaseHandler db = scope.ServiceProvider.GetRequiredService<DatabaseHandler>();
-					CertificateHandler certHandler = scope.ServiceProvider.GetRequiredService<CertificateHandler>();
-					ILogger<Client> log = scope.ServiceProvider.GetRequiredService<ILogger<Client>>();
+						DatabaseHandler db = scope.ServiceProvider.GetRequiredService<DatabaseHandler>();
+						CertificateHandler certHandler = scope.ServiceProvider.GetRequiredService<CertificateHandler>();
+						ILogger<Client> log = scope.ServiceProvider.GetRequiredService<ILogger<Client>>();
 
-					bool verbose = config.GetValue("Verbose", false);
+						bool verbose = config.GetValue("Verbose", false);
 
-					var Client = new Client(cli, db, log, certHandler, verbose);
+						var Client = new Client(cli, db, log, certHandler, verbose);
 
-					clients.Add((scope, Client));
+						clients.Add((scope, Client));
 
-					Client.OnDispose += Client_OnDispose;
+						Client.OnDispose += Client_OnDispose;
 
-					Client.Start();
-				}
-				catch (Exception)
-				{
-				}
+						Client.Start();
+					}
+					catch (Exception e)
+					{
+						logger.LogError(e, "Error while initializing client");
+					}
+				});
 			}
-
 		}
+
+
 
 		private void Client_OnDispose(object sender, EventArgs e)
 		{

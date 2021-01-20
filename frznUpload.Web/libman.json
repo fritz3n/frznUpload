@@ -14,11 +14,7 @@
     },
     {
       "library": "font-awesome@5.15.2",
-      "destination": "wwwroot/lib/font-awesome/",
-      "files": [
-        "css/all.min.css",
-        "js/all.min.js"
-      ]
+      "destination": "wwwroot/lib/font-awesome/"
     },
     {
       "library": "plyr@3.6.3",
