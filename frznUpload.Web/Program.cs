@@ -22,7 +22,7 @@ namespace frznUpload.Web
 				using (Database database = scope.ServiceProvider.GetService<Database>())
 					database.Database.Migrate();
 
-				ILogger logger = scope.ServiceProvider.GetService<ILogger>();
+				ILogger<Program> logger = scope.ServiceProvider.GetService<ILogger<Program>>();
 				IConfiguration config = scope.ServiceProvider.GetService<IConfiguration>();
 
 				logger.LogInformation(((IConfigurationRoot)config).GetDebugView());
@@ -39,7 +39,7 @@ namespace frznUpload.Web
 
 				config.AddJsonFile("appsettings.json", optional: true)
 					.AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true)
-					.AddJsonFile("/config/appsettings.json");
+					.AddJsonFile("/config/appsettings.json", optional: true);
 
 				config.AddEnvironmentVariables();
 			})

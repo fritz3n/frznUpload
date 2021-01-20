@@ -23,5 +23,4 @@ RUN dotnet publish "frznUpload.Web.csproj" -c Release -o /app/publish
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
-#RUN dotnet dev-certs https
-ENTRYPOINT ["dotnet", "frznUpload.Web.dll", "--urls http://*:80"]
+ENTRYPOINT ["dotnet", "frznUpload.Web.dll"]
