@@ -12,20 +12,16 @@ namespace frznUpload.Web.Pages.Login
 	public class RegisterModel : PageModel
 	{
 		private readonly UserManager userManager;
-		private readonly ILogger<RegisterModel> _logger;
 
 		public RegisterModel(
-			UserManager userManager,
-			ILogger<RegisterModel> logger)
+			UserManager userManager)
 		{
 			this.userManager = userManager;
-			_logger = logger;
 		}
 
 		[BindProperty]
 		public InputModel Input { get; set; }
 
-		public string ReturnUrl { get; set; }
 
 		public class InputModel
 		{
@@ -45,19 +41,17 @@ namespace frznUpload.Web.Pages.Login
 			public string ConfirmPassword { get; set; }
 		}
 
-		public async Task OnGetAsync(string returnUrl = null)
+		public void OnGet()
 		{
-			ReturnUrl = returnUrl;
 		}
 
-		public async Task<IActionResult> OnPostAsync(string returnUrl = null)
+		public async Task<IActionResult> OnPostAsync()
 		{
-			returnUrl = returnUrl ?? Url.Content("/Login");
 			if (ModelState.IsValid)
 			{
 				await userManager.RegisterUser(Input.Name, Input.Password);
 
-				RedirectToPage(returnUrl);
+				RedirectToPage(Url.Content("/Login/Login"));
 			}
 
 			// If we got this far, something failed, redisplay form
