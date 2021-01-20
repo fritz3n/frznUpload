@@ -6,6 +6,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
+using System.ServiceProcess;
 
 namespace frznUpload.Web
 {
@@ -14,9 +16,17 @@ namespace frznUpload.Web
 		public static void Main(string[] args)
 		{
 			IHost host = CreateHostBuilder(args).Build();
+
 			using (IServiceScope scope = host.Services.CreateScope())
-			using (Database database = scope.ServiceProvider.GetService<Database>())
-				database.Database.Migrate();
+			{
+				using (Database database = scope.ServiceProvider.GetService<Database>())
+					database.Database.Migrate();
+
+				ILogger logger = scope.ServiceProvider.GetService<ILogger>();
+				IConfiguration config = scope.ServiceProvider.GetService<IConfiguration>();
+
+				logger.LogInformation(((IConfigurationRoot)config).GetDebugView());
+			}
 
 			host.Run();
 		}
