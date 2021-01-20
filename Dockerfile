@@ -7,11 +7,14 @@ EXPOSE 443
 
 FROM mcr.microsoft.com/dotnet/sdk:5.0-buster-slim AS build
 WORKDIR /src
+RUN dotnet tool install -g Microsoft.Web.LibraryManager.Cli
+ENV PATH="$PATH:/root/.dotnet/tools"
 COPY ["frznUpload.Web/frznUpload.Web.csproj", "frznUpload.Web/"]
 COPY ["frznUpload.Shared/frznUpload.Shared.csproj", "frznUpload.Shared/"]
 RUN dotnet restore "frznUpload.Web/frznUpload.Web.csproj"
 COPY . .
 WORKDIR "/src/frznUpload.Web"
+RUN libman restore
 RUN dotnet build "frznUpload.Web.csproj" -c Release -o /app/build
 
 FROM build AS publish

@@ -14,11 +14,20 @@
     },
     {
       "library": "font-awesome@5.15.2",
-      "destination": "wwwroot/lib/font-awesome/"
+      "destination": "wwwroot/lib/font-awesome/",
+      "files": [
+        "css/all.min.css",
+        "js/all.min.js"
+      ]
     },
     {
       "library": "plyr@3.6.3",
-      "destination": "wwwroot/lib/plyr/"
+      "destination": "wwwroot/lib/plyr/",
+      "files": [
+        "plyr.min.css",
+        "plyr.min.js.map",
+        "plyr.min.js"
+      ]
     },
     {
       "library": "codemirror@5.59.1",
@@ -41,7 +50,10 @@
     },
     {
       "library": "jquery-validate@1.19.2",
-      "destination": "wwwroot/lib/jquery-validate/"
+      "destination": "wwwroot/lib/jquery-validate/",
+      "files": [
+        "jquery.validate.min.js"
+      ]
     },
     {
       "library": "jquery-validation-unobtrusive@3.2.11",
