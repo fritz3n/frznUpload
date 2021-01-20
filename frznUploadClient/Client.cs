@@ -114,7 +114,6 @@ namespace frznUpload.Client
 
 			stp.Stop();
 
-			Console.WriteLine("encryption established: " + stp.ElapsedMilliseconds);
 
 
 			if (CertificateHandler.ContainsCertificate)
@@ -142,6 +141,7 @@ namespace frznUpload.Client
 				mes.Start();
 				mes.OnDisconnect += OnDisconnect;
 			}
+			Console.WriteLine("encryption established: " + stp.ElapsedMilliseconds);
 
 			mes.SendMessage(new Message(Message.MessageType.Version, false, MessageHandler.Version));
 			Message m = await mes.WaitForMessageAsync(true, Message.MessageType.Version);

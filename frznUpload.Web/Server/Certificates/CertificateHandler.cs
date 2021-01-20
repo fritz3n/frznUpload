@@ -1,5 +1,6 @@
 ﻿using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using Org.BouncyCastle.Asn1.X509;
 using Org.BouncyCastle.Asn1.X9;
 using Org.BouncyCastle.Bcpg;
@@ -22,6 +23,7 @@ using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
+using System.Timers;
 using System.Web;
 
 namespace frznUpload.Web.Server.Certificates
@@ -32,25 +34,47 @@ namespace frznUpload.Web.Server.Certificates
 		const string pemPrivkeyName = "privkey";
 
 		private readonly IConfiguration config;
+		private readonly ILogger<CertificateHandler> logger;
 		List<CertificateAndKey> archive;
 		CertificateAndKey currentCert;
+		Timer reloadTimer = new Timer(86400000D); // 24 Hours
+
 
 		public System.Security.Cryptography.X509Certificates.X509Certificate Certificate => currentCert.X509Certificate;
 
-		public CertificateHandler(IConfiguration configuration)
+		public CertificateHandler(IConfiguration configuration, ILogger<CertificateHandler> logger)
 		{
 			config = configuration;
+			this.logger = logger;
+			reloadTimer.Elapsed += ReloadTimer_Elapsed;
+			reloadTimer.Start();
+
+			LoadCertificates();
+		}
+
+		private void ReloadTimer_Elapsed(object sender, ElapsedEventArgs e)
+		{
 			LoadCertificates();
 		}
 
 		private void LoadCertificates()
 		{
-			IConfigurationSection section = config.GetSection("Certificates");
-			if (section.GetValue("UsePem", false))
-				LoadCertificatesPem(section);
-			else
-				LoadCertificatesPfx(section);
+			logger.LogInformation("Loading certificates");
 
+			try
+			{
+
+				IConfigurationSection section = config.GetSection("Certificates");
+				if (section.GetValue("UsePem", false))
+					LoadCertificatesPem(section);
+				else
+					LoadCertificatesPfx(section);
+			}
+			catch (Exception e)
+			{
+				logger.LogError(e, "Error while loading certificates");
+			}
+			logger.LogInformation("{0} certificates loaded", archive?.Count ?? 0 + 1);
 		}
 
 
