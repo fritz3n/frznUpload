@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Configuration;
 using System.Data;
 using System.Drawing;
 using System.IO;
@@ -93,7 +94,7 @@ namespace frznUpload.Client
 
 					if (Created)
 					{
-						string link = Properties.Settings.Default.ShareGenUrl + s;
+						string link = Config.AppSettings["ShareGenUrl"].Value + s;
 						LinkText.Invoke(new Action(() => LinkText.Text = link));
 
 						SetClipboardText(link);

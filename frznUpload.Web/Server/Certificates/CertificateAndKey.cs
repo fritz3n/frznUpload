@@ -47,8 +47,8 @@ namespace frznUpload.Web.Server.Certificates
 
 			var random = new SecureRandom(new CryptoApiRandomGenerator());
 			var stream = new MemoryStream();
-			store.Save(stream, "a".ToCharArray(), random);
-			X509Certificate = new System.Security.Cryptography.X509Certificates.X509Certificate2(stream.ToArray());
+			store.Save(stream, "".ToCharArray(), random);
+			X509Certificate = new System.Security.Cryptography.X509Certificates.X509Certificate2(stream.ToArray(), "");
 
 		}
 

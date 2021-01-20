@@ -2,6 +2,7 @@
 using frznUpload.Shared;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.IO;
 using System.Linq;
 using System.Security.Cryptography.X509Certificates;
@@ -118,7 +119,7 @@ namespace frznUpload.Client
 		private async Task<Client> GetNewClient()
 		{
 			var c = new Client();
-			await c.ConnectAsync(Properties.Settings.Default.Url, Properties.Settings.Default.Port, verbose);
+			await c.ConnectAsync(Config.AppSettings["Url"].Value, int.Parse(Config.AppSettings["Port"].Value), verbose);
 			return c;
 		}
 
@@ -128,7 +129,7 @@ namespace frznUpload.Client
 			LoggedIn = false;
 
 			ActiveClient = new Client();
-			await ActiveClient.ConnectAsync(Properties.Settings.Default.Url, Properties.Settings.Default.Port, verbose);
+			await ActiveClient.ConnectAsync(Config.AppSettings["Url"].Value, int.Parse(Config.AppSettings["Port"].Value), verbose);
 
 			LoggedIn = ActiveClient.IsAuthenticated;
 

@@ -8,6 +8,7 @@ using Org.BouncyCastle.Security;
 using Org.BouncyCastle.X509;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
@@ -33,7 +34,7 @@ namespace frznUpload.Client.Handlers
 		{
 			try
 			{
-				Certificate = new System.Security.Cryptography.X509Certificates.X509Certificate2(Properties.Settings.Default.KeyFile, password);
+				Certificate = new System.Security.Cryptography.X509Certificates.X509Certificate2(Config.AppSettings["CertFile"].Value, password);
 			}
 			catch (Exception) { }
 			return ContainsCertificate;
@@ -42,7 +43,7 @@ namespace frznUpload.Client.Handlers
 		public static void Clear()
 		{
 			Certificate = null;
-			File.Delete(Properties.Settings.Default.KeyFile);
+			File.Delete(Config.AppSettings["CertFile"].Value);
 		}
 
 		public static byte[][] GenerateKeyPair()
@@ -91,13 +92,7 @@ namespace frznUpload.Client.Handlers
 
 			Certificate = new X509Certificate2(stream.ToArray(), password, X509KeyStorageFlags.Exportable);
 			byte[] data = Certificate.Export(X509ContentType.Pfx, password);
-			File.WriteAllBytes(Properties.Settings.Default.KeyFile, data);
-
-			//Certificate = new X509Certificate2(certificateData, (string)null, X509KeyStorageFlags.Exportable);
-			//Certificate.PrivateKey = DotNetUtilities.ToRSA(privateKey);
-			/*
-			byte[] data = Certificate.Export(X509ContentType.Pfx);
-			File.WriteAllBytes(Properties.Settings.Default.KeyFile, data);*/
+			File.WriteAllBytes(Config.AppSettings["CertFile"].Value, data);
 
 		}
 	}
