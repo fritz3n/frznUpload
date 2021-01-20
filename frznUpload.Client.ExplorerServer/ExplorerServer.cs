@@ -18,161 +18,160 @@ using System.Xml.Serialization;
 
 namespace frznUpload.Client.ExplorerServer
 {
-    [ComVisible(true)]
-    [COMServerAssociation(AssociationType.AllFilesAndFolders)]
-    public class ExplorerHandler : SharpContextMenu
-    {
-        Image icon = null;
-        private RegistryKey rkApp = Registry.CurrentUser.OpenSubKey("SOFTWARE\\" + AppName, false);
-        private const string AppName = "frznUpload";
-        private const string PathKey = "path";
+	[ComVisible(true)]
+	[COMServerAssociation(AssociationType.AllFilesAndFolders)]
+	public class ExplorerHandler : SharpContextMenu
+	{
+		Image icon = null;
+		private RegistryKey rkApp = Registry.CurrentUser.OpenSubKey("SOFTWARE\\" + AppName, false);
+		private const string AppName = "frznUpload";
+		private const string PathKey = "path";
 
-        public ExplorerHandler()
-        {
-            Stream stream = GetType().Assembly.GetManifestResourceStream("frznUpload.Client.ExplorerServer.upload_Wr5_icon.ico");
-            icon = new Bitmap(new Icon(stream).ToBitmap(), new Size(16, 16));
-            stream.Dispose();
-        }
+		public ExplorerHandler()
+		{
+			Stream stream = GetType().Assembly.GetManifestResourceStream("frznUpload.Client.ExplorerServer.upload_Wr5_icon.ico");
+			icon = new Bitmap(new Icon(stream).ToBitmap(), new Size(16, 16));
+			stream.Dispose();
+		}
 
-        protected override bool CanShowMenu() =>
-            //  We always show the menu.
-            true;
+		protected override bool CanShowMenu() =>
+			//  We always show the menu.
+			true;
 
-        protected override ContextMenuStrip CreateMenu()
-        {
+		protected override ContextMenuStrip CreateMenu()
+		{
 
-            ContextMenuStrip menu = new ContextMenuStrip
-            {
-                AutoSize = true,
-                ImageScalingSize = new Size(16, 16)
-            };
+			var menu = new ContextMenuStrip
+			{
+				AutoSize = true,
+				ImageScalingSize = new Size(16, 16)
+			};
 
-            //  Create a 'count lines' item.
-            ToolStripMenuItem itemUpload = new ToolStripMenuItem
-            (
-                "Upload file to fritzen.tk"
-            )
-            {
-                AutoSize = true,
-                ImageScaling = ToolStripItemImageScaling.SizeToFit,
+			//  Create a 'count lines' item.
+			var itemUpload = new ToolStripMenuItem
+			(
+				"Upload file to fritzen.xyz"
+			)
+			{
+				AutoSize = true,
+				ImageScaling = ToolStripItemImageScaling.SizeToFit,
+				Image = icon
+			};
 
-                Image = icon
-            };
+			//  When we click, we'll count the lines.
+			itemUpload.Click += ItemUpload_Click;
 
-            //  When we click, we'll count the lines.
-            itemUpload.Click += ItemUpload_Click;
+			//  Add the item to the context menu.
+			menu.Items.Add(itemUpload);
 
-            //  Add the item to the context menu.
-            menu.Items.Add(itemUpload);
+			menu.PerformLayout();
 
-            menu.PerformLayout();
+			//  Return the menu.
+			return menu;
+		}
 
-            //  Return the menu.
-            return menu;
-        }
+		private void ItemUpload_Click(object sender, EventArgs e)
+		{
+			string[] args = SelectedItemPaths.ToArray();
 
-        private void ItemUpload_Click(object sender, EventArgs e)
-        {
-            string[] args = SelectedItemPaths.ToArray();
+			if (CheckIfRunning())
+			{
+				SendMessage(args);
+			}
+			else
+			{
+				StartServer(args);
+			}
+		}
 
-            if (CheckIfRunning())
-            {
-                SendMessage(args);
-            }
-            else
-            {
-                StartServer(args);
-            }
-        }
+		private void StartServer(string[] args)
+		{
+			string path = GetServerPath();
 
-        private void StartServer(string[] args)
-        {
-            string path = GetServerPath();
+			if (path == null)
+			{
+				MessageBox.Show("Couldn´t find the client");
+				return;
+			}
 
-            if (path == null)
-            {
-                MessageBox.Show("Couldn´t find the client");
-                return;
-            }
+			var p = new Process();
+			p.StartInfo.FileName = path;
 
-            Process p = new Process();
-            p.StartInfo.FileName = path;
+			string arguments = string.Join(" ", args.Select((s) => '"' + s + '"'));
+			p.StartInfo.Arguments = arguments;
 
-            string arguments = string.Join(" ", args.Select((s) => '"' + s + '"'));
-            p.StartInfo.Arguments = arguments;
+			p.Start();
+		}
 
-            p.Start();
-        }
+		private string GetServerPath()
+		{
+			if (rkApp == null)
+				return null;
 
-        private string GetServerPath()
-        {
-            if (rkApp == null)
-                return null;
+			string path = (string)(rkApp.GetValue(PathKey) ?? "");
 
-            string path = (string)(rkApp.GetValue(PathKey) ?? "");
+			if (!File.Exists(path))
+				return null;
 
-            if (!File.Exists(path))
-                return null;
+			return path;
+		}
 
-            return path;
-        }
+		/// <summary>
+		/// Check if the Uploader is already running
+		/// </summary>
+		/// <returns></returns>
+		private bool CheckIfRunning()
+		{
+			bool running;
 
-        /// <summary>
-        /// Check if the Uploader is already running
-        /// </summary>
-        /// <returns></returns>
-        private bool CheckIfRunning()
-        {
-            bool running;
+			var mutex = new Mutex(false, "frznUploadRunning");
 
-            Mutex mutex = new Mutex(false, "frznUploadRunning");
+			try
+			{
+				running = !mutex.WaitOne(TimeSpan.Zero, true);
+			}
+			catch (AbandonedMutexException)
+			{
+				running = true;
+				Console.WriteLine("Mutex abandoned");
+			}
+			finally
+			{
+				mutex.Dispose();
+			}
 
-            try
-            {
-                running = !mutex.WaitOne(TimeSpan.Zero, true);
-            }
-            catch (AbandonedMutexException)
-            {
-                running = true;
-                Console.WriteLine("Mutex abandoned");
-            }
-            finally
-            {
-                mutex.Dispose();
-            }
+			return running;
+		}
 
-            return running;
-        }
+		/// <summary>
+		/// Sends arguments to the running server
+		/// </summary>
+		/// <param name="arguments">the arguments to be sent</param>
+		private void SendMessage(string[] arguments)
+		{
+			var pipeClient =
+					new NamedPipeClientStream(".", "frznUploadPipe",
+						PipeDirection.Out, PipeOptions.Asynchronous);
 
-        /// <summary>
-        /// Sends arguments to the running server
-        /// </summary>
-        /// <param name="arguments">the arguments to be sent</param>
-        private void SendMessage(string[] arguments)
-        {
-            NamedPipeClientStream pipeClient =
-                    new NamedPipeClientStream(".", "frznUploadPipe",
-                        PipeDirection.Out, PipeOptions.Asynchronous);
+			Console.WriteLine("Connecting...");
 
-            Console.WriteLine("Connecting...");
+			pipeClient.Connect();
 
-            pipeClient.Connect();
+			var serializer = new XmlSerializer(typeof(string[]));
 
-            XmlSerializer serializer = new XmlSerializer(typeof(string[]));
+			var writer = new StreamWriter(pipeClient);
 
-            StreamWriter writer = new StreamWriter(pipeClient);
+			using (var stringWriter = new StringWriter())
+			{
+				serializer.Serialize(stringWriter, arguments);
 
-            using (StringWriter stringWriter = new StringWriter())
-            {
-                serializer.Serialize(stringWriter, arguments);
+				writer.Write(stringWriter.ToString());
+			}
 
-                writer.Write(stringWriter.ToString());
-            }
+			Console.WriteLine("Sent!");
 
-            Console.WriteLine("Sent!");
-
-            writer.Dispose();
-            pipeClient.Dispose();
-        }
-    }
+			writer.Dispose();
+			pipeClient.Dispose();
+		}
+	}
 }

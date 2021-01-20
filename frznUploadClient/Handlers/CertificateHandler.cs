@@ -59,19 +59,6 @@ namespace frznUpload.Client.Handlers
 			byte[] mod = publicKey.Modulus.ToByteArray();
 
 			return new[] { exp, mod };
-			/*X9ECParameters curve = ECNamedCurveTable.GetByName("secp256r1");
-			var domainParams = new ECDomainParameters(curve.Curve, curve.G, curve.N, curve.H, curve.GetSeed());
-
-			var secureRandom = new SecureRandom();
-			var keyParams = new ECKeyGenerationParameters(domainParams, secureRandom);
-
-			var generator = new ECKeyPairGenerator("ECDSA");
-			generator.Init(keyParams);
-			Org.BouncyCastle.Crypto.AsymmetricCipherKeyPair keyPair = generator.GenerateKeyPair();
-			privateKey = keyPair.Private as ECPrivateKeyParameters;
-			var publicKey = keyPair.Public as ECPublicKeyParameters;
-
-			return publicKey.Q.GetEncoded();*/
 
 		}
 
@@ -94,6 +81,7 @@ namespace frznUpload.Client.Handlers
 			byte[] data = Certificate.Export(X509ContentType.Pfx, password);
 			File.WriteAllBytes(Config.AppSettings["CertFile"].Value, data);
 
+			Certificate = new X509Certificate2(Config.AppSettings["CertFile"].Value, password);
 		}
 	}
 }

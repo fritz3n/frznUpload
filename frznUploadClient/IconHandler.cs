@@ -34,7 +34,7 @@ namespace frznUpload.Client
 
 			try
 			{
-				Client.Connect().Wait();
+				Task.Run(() => Client.Connect()).Wait();
 			}
 			catch (AggregateException ex)
 			{

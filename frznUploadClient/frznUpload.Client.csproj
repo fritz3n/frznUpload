@@ -8,6 +8,7 @@
 
 		<RootNamespace>frznUpload.Client</RootNamespace>
 		<AssemblyName>frznUpload.Client</AssemblyName>
+		<ApplicationIcon>upload_Wr5_icon.ico</ApplicationIcon>
 	</PropertyGroup>
 
 	<ItemGroup>
