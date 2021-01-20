@@ -84,8 +84,8 @@ namespace frznUpload.Web.Server.Certificates
 			certificateGenerator.SetSerialNumber(serialNumber);
 			DateTime notBefore = DateTime.UtcNow.Date;
 			DateTime notAfter = notBefore.AddDays(10);
-			var subjectDN = new X509Name("CN=fritzen.xyz.Client");
-			var issuerDN = new X509Name("CN=fritzen.xyz");
+			var subjectDN = new X509Name("CN=fritzenUpload.Client");
+			var issuerDN = new X509Name("CN=fritzenUpload");
 			certificateGenerator.SetIssuerDN(issuerDN);
 			certificateGenerator.SetSubjectDN(subjectDN);
 

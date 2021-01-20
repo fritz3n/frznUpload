@@ -9,11 +9,12 @@ services:
       dockerfile: frznUpload.Web/Dockerfile
     ports:
       - "8080:8080"
-      - "4443:443"
+      - "22340:22340"
     networks:
       - internal
     volumes:
-      - "./fritzen.xyz.pfx:/files/fritzen.xyz.pfx"
+      - "./fritzen.xyz.pfx:/certs/fritzen.xyz.pfx"
+      - "./files/:/files/"
     depends_on:
       - sql
 
