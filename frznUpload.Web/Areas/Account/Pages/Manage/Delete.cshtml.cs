@@ -48,7 +48,7 @@ namespace frznUpload.Web.Areas.Account.Pages.Manage
 					return Page();
 				}
 
-				return Redirect("/Account/Index");
+				return Redirect("/Login/Register");
 			}
 
 			// If we got this far, something failed, redisplay form

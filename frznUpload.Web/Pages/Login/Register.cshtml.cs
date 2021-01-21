@@ -49,9 +49,9 @@ namespace frznUpload.Web.Pages.Login
 		{
 			if (ModelState.IsValid)
 			{
-				await userManager.RegisterUser(Input.Name, Input.Password);
-
-				RedirectToPage("/Login/Login");
+				if (await userManager.RegisterUser(Input.Name, Input.Password))
+					return RedirectToPage("/Login/Login");
+				ModelState.AddModelError("", "Name is already taken");
 			}
 
 			// If we got this far, something failed, redisplay form

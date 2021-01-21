@@ -92,16 +92,22 @@ namespace frznUpload.Web
 			return true;
 		}
 
-		public async Task RegisterUser(string name, string password)
+		public async Task<bool> RegisterUser(string name, string password)
 		{
+			if (database.Users.Any(u => u.Name == name))
+				return false;
+
 			var user = new User()
 			{
 				Name = name,
 				Salt = GetSalt(),
 			};
+
+
 			user.Hash = HashPassword(user, password);
 			database.Users.Add(user);
 			await database.SaveChangesAsync();
+			return true;
 		}
 
 		public string HashPassword(User user, string password)
