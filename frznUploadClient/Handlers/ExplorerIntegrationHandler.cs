@@ -11,152 +11,152 @@ using System.Windows.Forms;
 
 namespace frznUpload.Client
 {
-    static class ExplorerIntegrationHandler
-    {
-        private static RegistryKey rkApp = Registry.CurrentUser.CreateSubKey("SOFTWARE\\" + AppName);
-        private const string AppName = "frznUpload";
-        private const string PathKey = "path";
-        private const string EnabledKey = "explorerEnabled";
+	static class ExplorerIntegrationHandler
+	{
+		private static RegistryKey rkApp = Registry.CurrentUser.CreateSubKey("SOFTWARE\\" + AppName);
+		private const string AppName = "frznUpload";
+		private const string PathKey = "path";
+		private const string EnabledKey = "explorerEnabled";
 
-        public static void Init()
-        {
-            if (!IsPathNull() && !PathIsSame())
-            {
-                SetToCurrentPath();
-            }
-        }
+		public static void Init()
+		{
+			if (!IsPathNull() && !PathIsSame())
+			{
+				SetToCurrentPath();
+			}
+		}
 
-        public static bool Enable()
-        {
-            if (IsEnabled())
-                return true;
-            
-            string dll = ExtractResource("frznUpload.Client.ExplorerServer.dll");
-            string dependency = ExtractResource("SharpShell.dll");
-            string srm = ExtractResource("ServerRegistrationManager.exe");
+		public static bool Enable()
+		{
+			if (IsEnabled())
+				return true;
 
-            //string regasm = System.Runtime.InteropServices.RuntimeEnvironment.GetRuntimeDirectory() + "regasm.exe";
+			string dll = ExtractResource("frznUpload.Client.ExplorerServer.dll");
+			string dependency = ExtractResource("SharpShell.dll");
+			string srm = ExtractResource("ServerRegistrationManager.exe");
 
-            Process p = new Process();
-            p.StartInfo.FileName = srm;
-            p.StartInfo.UseShellExecute = true;
-            p.StartInfo.Verb = "runas";
-            p.StartInfo.Arguments = $"install \"{dll}\" -codebase";
-            try
-            {
-                p.Start();
-                
-                p.WaitForExit();
+			//string regasm = System.Runtime.InteropServices.RuntimeEnvironment.GetRuntimeDirectory() + "regasm.exe";
 
-                Console.WriteLine(p.ExitCode);
-                
-                File.Delete(srm);
-                SetEnabledValue(true);
-                return true;
-            }
-            catch
-            {
-                MessageBox.Show("Sorry for the inconvenience, but Administrator rights are needed for this");
+			var p = new Process();
+			p.StartInfo.FileName = srm;
+			p.StartInfo.UseShellExecute = true;
+			p.StartInfo.Verb = "runas";
+			p.StartInfo.Arguments = $"install \"{dll}\" -codebase";
+			try
+			{
+				p.Start();
 
-                try
-                {
-                    File.Delete(srm);
-                    File.Delete(dll);
-                    File.Delete(dependency);
-                }catch{ }
-                return false;
-            }
-        }
+				p.WaitForExit();
 
-        private static string ExtractResource(string name)
-        {
-            if (File.Exists(name))
-                return Directory.GetCurrentDirectory() + "/" + name;
+				Console.WriteLine(p.ExitCode);
 
-            Stream stream = typeof(MainForm).Assembly.GetManifestResourceStream("frznUpload.Client.ExplorerResources." + name);
-            byte[] bytes = new byte[(int)stream.Length];
-            stream.Read(bytes, 0, bytes.Length);
-            File.WriteAllBytes(name, bytes);
-            stream.Dispose();
+				File.Delete(srm);
+				SetEnabledValue(true);
+				return true;
+			}
+			catch
+			{
+				MessageBox.Show("Sorry for the inconvenience, but Administrator rights are needed for this");
 
-            return Directory.GetCurrentDirectory() + "/" + name;
-        }
+				try
+				{
+					File.Delete(srm);
+					File.Delete(dll);
+					File.Delete(dependency);
+				}
+				catch { }
+				return false;
+			}
+		}
 
-        public static void Disable()
-        {
-            if (!IsEnabled())
-                return;
+		private static string ExtractResource(string name)
+		{
+			if (File.Exists(name))
+				return Directory.GetCurrentDirectory() + "/" + name;
 
-            string dll = ExtractResource("frznUpload.Client.ExplorerServer.dll");
-            string dependency = ExtractResource("SharpShell.dll");
-            string srm = ExtractResource("ServerRegistrationManager.exe");
+			Stream stream = typeof(MainForm).Assembly.GetManifestResourceStream("frznUpload.Client.ExplorerResources." + name);
+			byte[] bytes = new byte[(int)stream.Length];
+			stream.Read(bytes, 0, bytes.Length);
+			File.WriteAllBytes(name, bytes);
+			stream.Dispose();
 
-            Process p = new Process();
-            p.StartInfo.FileName = srm;
-            p.StartInfo.UseShellExecute = true;
-            p.StartInfo.Verb = "runas";
-            p.StartInfo.Arguments = $"uninstall \"{dll}\"";
-            p.Start();
-            
-            p.WaitForExit();
+			return Directory.GetCurrentDirectory() + "/" + name;
+		}
 
-            Console.WriteLine(p.ExitCode);
-            SetEnabledValue(false);
-        }
+		public static void Disable()
+		{
+			if (!IsEnabled())
+				return;
 
-        public static bool IsEnabled()
-        {
-            if (IsEnabledNull())
-                return false;
+			string dll = ExtractResource("frznUpload.Client.ExplorerServer.dll");
+			string srm = ExtractResource("ServerRegistrationManager.exe");
 
-            try
-            {
-                return (string)rkApp.GetValue(EnabledKey) == "true" ? true : false;
-            }
-            catch
-            {
-                return false;
-            }
-        }
+			var p = new Process();
+			p.StartInfo.FileName = srm;
+			p.StartInfo.UseShellExecute = true;
+			p.StartInfo.Verb = "runas";
+			p.StartInfo.Arguments = $"uninstall \"{dll}\"";
+			p.Start();
 
-        public static bool IsPathNull()
-        {
-            return rkApp.GetValue(PathKey) == null;
-        }
+			p.WaitForExit();
 
-        public static bool IsEnabledNull()
-        {
-            return rkApp.GetValue(EnabledKey) == null;
-        }
+			Console.WriteLine(p.ExitCode);
+			SetEnabledValue(false);
+		}
 
-        public static bool PathIsSame()
-        {
-            if ((string)rkApp.GetValue(PathKey) == GetExecutingPath())
-            {
-                return true;
-            }
-            return false;
-        }
+		public static bool IsEnabled()
+		{
+			if (IsEnabledNull())
+				return false;
 
-        public static string GetExecutingPath()
-        {
-            return System.Windows.Forms.Application.ExecutablePath;
-        }
+			try
+			{
+				return (string)rkApp.GetValue(EnabledKey) == "true" ? true : false;
+			}
+			catch
+			{
+				return false;
+			}
+		}
 
-        public static void SetPathValue(string val)
-        {
-            rkApp.SetValue(PathKey, val);
-        }
+		public static bool IsPathNull()
+		{
+			return rkApp.GetValue(PathKey) == null;
+		}
 
-        public static void SetEnabledValue(bool val)
-        {
-            rkApp.SetValue(EnabledKey, val ? "true" : "false");
-        }
+		public static bool IsEnabledNull()
+		{
+			return rkApp.GetValue(EnabledKey) == null;
+		}
 
-        public static void SetToCurrentPath()
-        {
-            SetPathValue(GetExecutingPath());
-        }
-        
-    }
+		public static bool PathIsSame()
+		{
+			if ((string)rkApp.GetValue(PathKey) == GetExecutingPath())
+			{
+				return true;
+			}
+			return false;
+		}
+
+		public static string GetExecutingPath()
+		{
+			return System.Windows.Forms.Application.ExecutablePath;
+		}
+
+		public static void SetPathValue(string val)
+		{
+			rkApp.SetValue(PathKey, val);
+		}
+
+		public static void SetEnabledValue(bool val)
+		{
+			rkApp.SetValue(EnabledKey, val ? "true" : "false");
+		}
+
+		public static void SetToCurrentPath()
+		{
+			SetPathValue(GetExecutingPath());
+		}
+
+	}
 }

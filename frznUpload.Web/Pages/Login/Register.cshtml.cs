@@ -51,7 +51,7 @@ namespace frznUpload.Web.Pages.Login
 			{
 				await userManager.RegisterUser(Input.Name, Input.Password);
 
-				RedirectToPage(Url.Content("/Login/Login"));
+				RedirectToPage("/Login/Login");
 			}
 
 			// If we got this far, something failed, redisplay form

@@ -1,0 +1,133 @@
+﻿
+#uploadDropOver {
+    width: 100%;
+    height: 30vh;
+    border-radius: 15px;
+    background-color: var(--light);
+    display: flex;
+    flex-direction:column;
+    justify-items: center;
+    justify-content: center;
+    align-items: center;
+    align-content: center;
+
+    overflow: hidden;
+
+    transition: all 0.5s;
+    position: relative;
+}
+
+#uploadDropOver .start {
+    z-index: 3;
+    opacity: 1;
+    transition: opacity 300ms;
+}
+
+.is-dragover #uploadDropOver {
+    background-color: var(--dark);
+    color: var(--white);
+}
+
+.is-uploading #uploadDropOver {
+    height: 3vh;
+}
+
+.is-uploading #uploadDropOver .start {
+    opacity: 0;
+}
+
+.is-success #uploadDropOver .start {
+    display: none;
+}
+.is-error #uploadDropOver .start {
+    display: none;
+}
+
+.completed, .error {
+    opacity: 0;
+    z-index: 4;
+    transition: opacity 500ms;
+    margin: 0;
+    color: white;
+}
+
+.is-success .completed {
+    opacity: 1;
+}
+.is-error .error {
+    opacity: 1;
+}
+
+.is-error .completed {
+    display: none;
+}
+
+.is-success .error {
+    display: none;
+}
+
+.is-success .uploadProgress {
+    background-color: var(--success);
+}
+.is-error .uploadProgress {
+    right: 0 !important;
+    background-color: var(--danger);
+}
+
+.uploadFile {
+    width: 0.1px;
+    height: 0.1px;
+    opacity: 0;
+    overflow: hidden;
+    position: absolute;
+    z-index: -1;
+}
+
+.uploadProgress {
+    background-color: var(--primary);
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    right: 100%;
+    z-index: 2;
+    transition: background-color 500ms, right ease-out 100ms;
+}
+
+.shareCard {
+    height: 0;
+    overflow: hidden;
+    transition: height 500ms;
+}
+
+.is-uploading ~ .shareCard {
+    height: 60vh;
+}
+
+.shareUrlContainer {
+    opacity: 0;
+    transition: opacity 500ms;
+}
+
+.shareUrlContainer.show {
+    opacity: 1;
+}
+
+#shareUrl {
+    border-top-right-radius: 0 !important;
+    border-bottom-right-radius: 0 !important;
+    max-width: 300px;
+}
+#shareUrlCopy {
+    border-top-left-radius: 0 !important;
+    border-bottom-left-radius: 0 !important;
+}
+
+#uploadedSpan {
+    opacity: 0;
+    transition: opacity 500ms;
+}
+
+#uploadedSpan.show{
+    opacity: 1;
+}

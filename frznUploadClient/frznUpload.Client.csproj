@@ -13,11 +13,13 @@
 
 	<ItemGroup>
 	  <None Remove="ExplorerResources\frznUpload.Client.ExplorerServer.dll" />
+	  <None Remove="ExplorerResources\ServerRegistrationManager.exe" />
 	  <None Remove="ExplorerResources\SharpShell.dll" />
 	</ItemGroup>
 
 	<ItemGroup>
 	  <EmbeddedResource Include="ExplorerResources\frznUpload.Client.ExplorerServer.dll" />
+	  <EmbeddedResource Include="ExplorerResources\ServerRegistrationManager.exe" />
 	  <EmbeddedResource Include="ExplorerResources\SharpShell.dll" />
 	</ItemGroup>
 

@@ -45,7 +45,11 @@ namespace frznUpload.Web
 			})
 			.ConfigureWebHostDefaults(webBuilder =>
 			{
-				webBuilder.UseStartup<Startup>();
+				webBuilder.ConfigureKestrel((context, options) =>
+				{
+					// Handle requests up to 50 MB
+					options.Limits.MaxRequestBodySize = int.MaxValue;
+				}).UseStartup<Startup>();
 			});
 	}
 }

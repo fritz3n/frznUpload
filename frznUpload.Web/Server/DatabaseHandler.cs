@@ -1,4 +1,5 @@
 ﻿using frznUpload.Web.Data;
+using frznUpload.Web.Files;
 using frznUpload.Web.Models;
 using System;
 using System.Collections.Generic;
@@ -14,9 +15,10 @@ namespace frznUpload.Web.Server
 	public class DatabaseHandler
 	{
 		private readonly Database database;
-		private User user;
+		public User User { get; private set; }
 		private string serial;
 		private Random rnd = new();
+		public FileManager FileManager { get; }
 
 		public string SerialNumber => serial;
 
@@ -28,19 +30,20 @@ namespace frznUpload.Web.Server
 				if (!IsAuthenticated)
 					throw new Exception("not authenticated");
 
-				return user.Name;
+				return User.Name;
 			}
 		}
 
-		public DatabaseHandler(Database database)
+		public DatabaseHandler(Database database, FileManager fileManager)
 		{
+			FileManager = fileManager;
 			this.database = database;
 		}
 
 		public void SetUser(string serial)
 		{
 			Token token = database.Tokens.SingleOrDefault(t => t.Serial == serial);
-			user = token?.User ?? throw new KeyNotFoundException();
+			User = token?.User ?? throw new KeyNotFoundException();
 			token.LastUsed = DateTime.Now;
 			database.SaveChanges();
 			this.serial = serial;
@@ -130,7 +133,7 @@ namespace frznUpload.Web.Server
 		{
 			ThrowIfNotAuthenticated();
 
-			return user.Files.ToList();
+			return User.Files.ToList();
 		}
 
 
@@ -153,7 +156,7 @@ namespace frznUpload.Web.Server
 				Extension = extension,
 				Size = size,
 				Path = path,
-				User = user
+				User = User
 			});
 
 			database.SaveChanges();
@@ -208,7 +211,7 @@ namespace frznUpload.Web.Server
 			ThrowIfNotAuthenticated();
 			File file = database.Files.SingleOrDefault(f => f.Identifier == fileIdentifier);
 
-			if (file is null || file.User != user)
+			if (file is null || file.User != User)
 				return null;
 
 			string shareId = GetAvailableShareIdentifier();
@@ -244,7 +247,7 @@ namespace frznUpload.Web.Server
 			ThrowIfNotAuthenticated();
 			File file = database.Files.FirstOrDefault(f => f.Identifier == fileIdentifier);
 
-			if (file.User == user)
+			if (file.User == User)
 			{
 				database.Files.Remove(file);
 				database.SaveChanges();
@@ -257,7 +260,7 @@ namespace frznUpload.Web.Server
 
 		public string GetTwoFactorSecret(int? id = null)
 		{
-			id = id ?? user.Id;
+			id = id ?? User.Id;
 			return database.Users.FirstOrDefault(u => u.Id == id).TwoFaSecret;
 		}
 
@@ -269,13 +272,13 @@ namespace frznUpload.Web.Server
 		/// </summary>
 		public void SetTwoFactorSecret(string val)
 		{
-			user.TwoFaSecret = val;
+			User.TwoFaSecret = val;
 			database.SaveChanges();
 		}
 
 		public void RemoveTwoFactorSecret()
 		{
-			user.TwoFaSecret = null;
+			User.TwoFaSecret = null;
 			database.SaveChanges();
 		}
 

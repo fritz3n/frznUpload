@@ -1,8 +1,10 @@
+using frznUpload.Web.Files;
 using frznUpload.Web.Server;
 using frznUpload.Web.Server.Certificates;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -32,6 +34,12 @@ namespace frznUpload.Web
 				// This lambda determines whether user consent for non-essential cookies is needed for a given request.
 				options.CheckConsentNeeded = context => true;
 			});
+			services.Configure<FormOptions>(x =>
+			{
+				x.ValueLengthLimit = int.MaxValue;
+				x.MultipartBodyLengthLimit = int.MaxValue;
+				x.MultipartHeadersLengthLimit = int.MaxValue;
+			});
 
 			services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie();
 
@@ -44,6 +52,7 @@ namespace frznUpload.Web
 
 			services.AddTransient<DatabaseHandler>();
 			services.AddTransient<UserManager>();
+			services.AddTransient<FileManager>();
 			services.AddSingleton<CertificateHandler>();
 			services.AddHostedService<ServerService>();
 		}
@@ -64,7 +73,7 @@ namespace frznUpload.Web
 				//app.UseHsts();
 			}
 
-			
+
 			app.UseStaticFiles();
 
 			app.UseRouting();

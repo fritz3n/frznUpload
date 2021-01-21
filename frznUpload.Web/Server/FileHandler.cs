@@ -41,7 +41,7 @@ namespace frznUpload.Web.Server
 
 			string localFilename = Path.Combine(directory, identifier + ".file");
 
-			FileStream file = File.Open(localFilename, FileMode.Create, FileAccess.Write);
+			FileStream file = File.Open(localFilename, FileMode.Create, FileAccess.Write, FileShare.Read);
 
 			bool error = false;
 

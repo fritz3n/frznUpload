@@ -38,7 +38,7 @@ namespace frznUpload.Web.Pages
 
 			string path = Path.Combine(config.GetValue<string>("FileDirectory"), share.File.Identifier + ".file");
 
-			FileStream file = System.IO.File.Open(path, FileMode.Open, FileAccess.Read);
+			FileStream file = System.IO.File.Open(path, FileMode.Open, FileAccess.Read, FileShare.Read);
 
 			string filename = share.File.Filename + "." + share.File.Extension;
 
@@ -55,7 +55,7 @@ namespace frznUpload.Web.Pages
 
 			string path = Path.Combine(config.GetValue<string>("FileDirectory"), file.Identifier + ".file");
 
-			FileStream fileStream = System.IO.File.Open(path, FileMode.Open, FileAccess.Read);
+			FileStream fileStream = System.IO.File.Open(path, FileMode.Open, FileAccess.Read, FileShare.Read);
 
 			string filename = file.Filename + "." + file.Extension;
 

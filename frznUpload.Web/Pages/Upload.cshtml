@@ -1,0 +1,86 @@
+﻿@page
+@model frznUpload.Web.Pages.UploadModel
+@{
+}
+
+<form asp-page-handler="Upload" class="box mb-2" method="post" enctype="multipart/form-data">
+    <div id="uploadDropOver">
+        <p class="display-4 start">Drag a file here</p>
+        <label for="file" class="btn btn-primary start">Or select it manually</label>
+        <input class="uploadFile start" type="file" name="file" id="file" data-multiple-caption="{count} files selected" multiple />
+        <h6 class="error">Error while uploading</h6>
+        <h6 class="completed">Done!</h6>
+        <div class="uploadProgress"></div>
+    </div>
+</form>
+
+<div class="text-center">
+    <span id="uploadedSpan" class="mx-auto">Uploaded <a id="uploadedLink"></a> </span>
+</div>
+<div class="shareCard mt-2">
+    <div class="card">
+        <div class="card-header">
+            Share This file
+        </div>
+        <div class="card-body">
+            <form method="post" id="shareForm">
+                <div asp-validation-summary="All" class="text-danger"></div>
+
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="col-md-6 row flex-column">
+                            <label asp-for="Share.Public">
+                                <input asp-for="Share.Public" checked="checked" />
+                                @Html.DisplayNameFor(m => m.Share.Public)
+                                <i class="far fa-question-circle" asp-tooltip-for="Share.Public"></i>
+                            </label>
+                            <label asp-for="Share.PublicRegistered">
+                                <input asp-for="Share.PublicRegistered"  checked="checked"/>
+                                @Html.DisplayNameFor(m => m.Share.PublicRegistered)
+                                <i class="far fa-question-circle" asp-tooltip-for="Share.PublicRegistered"></i>
+                            </label>
+                            <label asp-for="Share.FirstView">
+                                <input asp-for="Share.FirstView" />
+                                @Html.DisplayNameFor(m => m.Share.FirstView)
+                                <i class="far fa-question-circle" asp-tooltip-for="Share.FirstView"></i>
+                            </label>
+                        </div>
+                        <div class="col-md-6">
+                            <label asp-for="Share.Whitelisted">
+                                <input asp-for="Share.Whitelisted" />
+                                @Html.DisplayNameFor(m => m.Share.Whitelisted)
+                                <i class="far fa-question-circle" asp-tooltip-for="Share.Whitelisted"></i>
+                            </label>
+                            <div class="form-group">
+                                <label asp-for="Share.Whitelist"></label>
+                                <i class="far fa-question-circle" asp-tooltip-for="Share.Whitelist"></i>
+                                <input asp-for="Share.Whitelist" class="form-control" disabled="disabled" />
+                                <span asp-validation-for="Share.Whitelist" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row flex-row">
+                    <button type="submit" class="btn btn-success ml-4 flex-grow-0" id="shareButton" disabled="disabled" data-toggle="popover" data-content="">Share</button>
+                    <div class="shareUrlContainer flex-grow-1 flex-nowrap row flex-row ml-2 mr-5">
+                        <input class="form-control flex-grow-1" id="shareUrl" type="text" readonly>
+                        <button class="btn btn-secondary flex-grow-0" id="shareUrlCopy" data-toggle="popover" data-placement="bottom" data-trigger="focus" data-content="Url copied to Clipboard">
+                            <i class="far fa-clipboard"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <input asp-for="Share.FileId" id="fileId" hidden="hidden" />
+            </form>
+        </div>
+    </div>
+</div>
+
+
+@section Scripts {
+    <script src="~/js/Upload.js"></script>
+}
+
+@section Css {
+    <link href="/css/Upload.css" rel="stylesheet">
+}
