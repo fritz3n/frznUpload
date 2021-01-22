@@ -27,7 +27,10 @@ namespace frznUpload.Web
 
 		public async Task<SignInResult> SignIn(HttpContext httpContext, string name, string password, bool isPersistent, string twoFa = null)
 		{
-			User user = database.Users.Where(u => u.Name == name).First();
+			User user = database.Users.Where(u => u.Name == name).FirstOrDefault();
+
+			if (user is null)
+				return SignInResult.Failed;
 
 			if (HashPassword(user, password) != user.Hash)
 				return SignInResult.Failed;
