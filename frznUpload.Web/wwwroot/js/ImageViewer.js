@@ -6,33 +6,42 @@
 function resize() {
     let image = this;
     var maxWidth = image.parentElement.clientWidth; // Max width for the image
-    var maxHeight = window.innerHeight * 0.8;    // Max height for the image
+    var maxHeight = (window.innerHeight - image.offsetTop) * 0.8;    // Max height for the image
     var ratio = 0;  // Used for aspect ratio
     var width = image.width;    // Current image width
     var height = image.height;  // Current image height
-    https://speed.af.de/results/?id=1dtd7cf
+    let widthRatio = image.naturalWidth / image.naturalHeight;
+    let heightRatio = image.naturalHeight / image.naturalWidth;
 
     // Check if the current width is larger than the max
     if (width > maxWidth) {
-        ratio = maxWidth / width;   // get ratio for scaling image
-        height = height * ratio;    // Reset height to match scaled image
-        width = width * ratio;    // Reset width to match scaled image
-    } else if (height > maxHeight) {
-        ratio = maxHeight / height; // get ratio for scaling image
-        width = width * ratio;    // Reset width to match scaled image
-        height = height * ratio;    // Reset height to match scaled image
-    } else if (height / maxHeight < width / maxWidth) {
-        ratio = maxWidth / width;   // get ratio for scaling image
-        height = height * ratio;    // Reset height to match scaled image
-        width = width * ratio;    // Reset width to match scaled image
-    } else {
-        ratio = maxHeight / height; // get ratio for scaling image
-        width = width * ratio;    // Reset width to match scaled image
-        height = height * ratio;    // Reset height to match scaled image
+        ratio = maxWidth / width;  
+        width = width * ratio;  
+        height = width * heightRatio;  
     }
+    if (height > maxHeight) {
+        ratio = maxHeight / height; 
+        height = height * ratio; 
+        width = height * widthRatio;   
+    }
+
+    if (ratio == 0 && height / maxHeight < width / maxWidth) {
+        ratio = maxWidth / width;   
+        width = width * ratio;    
+        height = width * heightRatio;   
+    } else if(ratio == 0) {
+        ratio = maxHeight / height;
+        height = height * ratio;   
+        width = height * widthRatio;   
+    }
+
 
     image.style.width = width + "px";
     image.style.height = height + "px";
+
+    if (Math.abs(image.width / image.height - image.naturalWidth / image.naturalHeight) > 0.01)
+        debugger;
+
 }
 
 let image = document.getElementById('image');
