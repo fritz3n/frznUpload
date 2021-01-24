@@ -39,9 +39,6 @@ function resize() {
     image.style.width = width + "px";
     image.style.height = height + "px";
 
-    if (Math.abs(image.width / image.height - image.naturalWidth / image.naturalHeight) > 0.01)
-        debugger;
-
 }
 
 let image = document.getElementById('image');

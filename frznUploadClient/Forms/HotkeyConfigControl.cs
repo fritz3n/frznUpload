@@ -9,307 +9,317 @@ using System.Windows.Forms;
 
 namespace frznUpload.Client
 {
-    public partial class HotkeyConfigControl : GroupBox
-    {
-        private Keys Key = 0;
-        private ModifierKeys Modifiers = 0;
+	public partial class HotkeyConfigControl : GroupBox
+	{
+		private Keys Key = 0;
+		private ModifierKeys Modifiers = 0;
 
-        private Keys BackupKey = 0;
-        private ModifierKeys BackupModifiers = 0;
+		private Keys BackupKey = 0;
+		private ModifierKeys BackupModifiers = 0;
 
-        private bool Capturing = false;
+		private bool Capturing = false;
 
-        SettingsForm Form;
+		Dictionary<string, FileProvider> providers = new Dictionary<string, FileProvider>()
+		{
+			{ "Clipboard", FileProvider.Clipboard },
+			{ "ScreenClip", FileProvider.ScreenClip },
+			{ "Screenshot", FileProvider.Screenshot },
+			{ "Cb > Sc > Ss", FileProvider.Clipboard | FileProvider.ScreenClip | FileProvider.Screenshot},
+			{ "Cb > Ss", FileProvider.Clipboard | FileProvider.Screenshot },
+			{ "Sc > Ss",  FileProvider.ScreenClip | FileProvider.Screenshot },
+		};
 
-        public HotkeyConfigControl(SettingsForm form)
-        {
-            Form = form;
-            InitializeComponent();
-            UpdateShareEnables();
-            UpdateButtonText();
-        }
+		SettingsForm Form;
 
-        public void Update(HotkeyConfig config)
-        {
-            FormatText.Text = config.Format;
-            WhitelistText.Text = config.Whitelist;
+		public HotkeyConfigControl(SettingsForm form)
+		{
+			Form = form;
+			InitializeComponent();
+			UpdateShareEnables();
+			UpdateButtonText();
+		}
 
-            ShareBox.Checked = (config.Share & ShareType.Share) != 0;
-            PublicBox.Checked = (config.Share & ShareType.Public) != 0;
-            PublicRegisteredBox.Checked = (config.Share & ShareType.PublicRegistered) != 0;
-            FirstViewBox.Checked = (config.Share & ShareType.FirstView) != 0;
-            WhitelistedBox.Checked = (config.Share & ShareType.Whitelisted) != 0;
-            UpdateShareEnables();
+		public void Update(HotkeyConfig config)
+		{
+			FormatText.Text = config.Format;
+			WhitelistText.Text = config.Whitelist;
 
-            FileProviderBox.SelectedIndex = (int)config.Provider - 1;
+			ShareBox.Checked = (config.Share & ShareType.Share) != 0;
+			PublicBox.Checked = (config.Share & ShareType.Public) != 0;
+			PublicRegisteredBox.Checked = (config.Share & ShareType.PublicRegistered) != 0;
+			FirstViewBox.Checked = (config.Share & ShareType.FirstView) != 0;
+			WhitelistedBox.Checked = (config.Share & ShareType.Whitelisted) != 0;
+			UpdateShareEnables();
 
-            Key = config.Key;
-            Modifiers = config.Modifier;
-            UpdateButtonText();
-        }
+			FileProviderBox.SelectedItem = providers.First(p => p.Value == config.Provider);
 
-        public HotkeyConfig GetConfig()
-        {
-            ShareType share = ShareType.DontShare;
+			Key = config.Key;
+			Modifiers = config.Modifier;
+			UpdateButtonText();
+		}
 
-            if (ShareBox.Checked)
-            {
-                share |= ShareType.Share;
+		public HotkeyConfig GetConfig()
+		{
+			ShareType share = ShareType.DontShare;
 
-                if (FirstViewBox.Checked)
-                    share |= ShareType.FirstView;
+			if (ShareBox.Checked)
+			{
+				share |= ShareType.Share;
 
-                if (PublicBox.Checked)
-                    share |= ShareType.Public;
+				if (FirstViewBox.Checked)
+					share |= ShareType.FirstView;
 
-                if (PublicRegisteredBox.Checked)
-                    share |= ShareType.PublicRegistered;
+				if (PublicBox.Checked)
+					share |= ShareType.Public;
 
-                if (WhitelistedBox.Checked)
-                    share |= ShareType.Whitelisted;
-            }
+				if (PublicRegisteredBox.Checked)
+					share |= ShareType.PublicRegistered;
 
-            var config = new HotkeyConfig
-            {
-                Format = FormatText.Text,
-                Whitelist = WhitelistText.Text,
-                Share = share,
-                Key = Key,
-                Modifier = Modifiers,
-                Provider = GetSelectedFileProvider()
-            };
+				if (WhitelistedBox.Checked)
+					share |= ShareType.Whitelisted;
+			}
 
-            return config;
-        }
+			var config = new HotkeyConfig
+			{
+				Format = FormatText.Text,
+				Whitelist = WhitelistText.Text,
+				Share = share,
+				Key = Key,
+				Modifier = Modifiers,
+				Provider = GetSelectedFileProvider()
+			};
 
-        private void Save()
-        {
-            if (!IsValid().Item1)
-                return;
-            
-            var config = GetConfig();
+			return config;
+		}
 
-            Form.SaveHotkey(config);
-        }
+		private void Save()
+		{
+			if (!IsValid().Item1)
+				return;
 
-        /// <summary>
-        /// Indicates whether the hotkey is valid and can be/was saved and if not, a message to display to the user
-        /// </summary>
-        /// <returns>A tuple of (is valid, optional error message)</returns>
-        public (bool, string) IsValid()
-        {
-            if (Key == 0 | Modifiers == 0)
-                return (false, "no Hotkey set!");
+			HotkeyConfig config = GetConfig();
 
-            if (GetSelectedFileProvider() == FileProvider.None)
-                return (false, "no File Provider selected!");
+			Form.SaveHotkey(config);
+		}
 
-            if (WhitelistedBox.Checked & WhitelistText.Text == "")
-                return (false, "no valid Whitelist was provided!");
+		/// <summary>
+		/// Indicates whether the hotkey is valid and can be/was saved and if not, a message to display to the user
+		/// </summary>
+		/// <returns>A tuple of (is valid, optional error message)</returns>
+		public (bool, string) IsValid()
+		{
+			if (Key == 0 | Modifiers == 0)
+				return (false, "no Hotkey set!");
 
-            return (true, null);
-        }
+			if (GetSelectedFileProvider() == FileProvider.None)
+				return (false, "no File Provider selected!");
 
-        private FileProvider GetSelectedFileProvider()
-        {
-            return (FileProvider)(FileProviderBox.SelectedIndex + 1);
-        }
+			if (WhitelistedBox.Checked & WhitelistText.Text == "")
+				return (false, "no valid Whitelist was provided!");
 
-        #region Hotkey Capturing
-        public void KeyUpEvent(KeyEventArgs e)
-        {
-            if (!Capturing)
-                return;
-            
-            // Set up a variable with all bits set
-            ModifierKeys and = (ModifierKeys)uint.MaxValue;
+			return (true, null);
+		}
 
-            if (e.KeyCode == Keys.Menu)
-            {
-                // If Alt is pressed, set the corresponding bit to 0
-                and ^= Hotkey.ModifierKeys.Alt;
-            }
+		private FileProvider GetSelectedFileProvider()
+		{
+			return providers[(string)FileProviderBox.SelectedItem];
+		}
 
-            if (e.KeyCode == Keys.ControlKey)
-            {
-                // If Control is pressed, set the corresponding bit to 0
-                and ^= Hotkey.ModifierKeys.Control;
-            }
+		#region Hotkey Capturing
+		public void KeyUpEvent(KeyEventArgs e)
+		{
+			if (!Capturing)
+				return;
 
-            if (e.KeyCode == Keys.ShiftKey)
-            {
-                // If Shift is pressed, set the corresponding bit to 0
-                and ^= Hotkey.ModifierKeys.Shift;
-            }
+			// Set up a variable with all bits set
+			var and = (ModifierKeys)uint.MaxValue;
 
-            // And the Modifiers with the previously set up variable; if a modifierkey was released, the corresponding bit will be guaranteed to be 0
-            Modifiers &= and;
+			if (e.KeyCode == Keys.Menu)
+			{
+				// If Alt is pressed, set the corresponding bit to 0
+				and ^= Hotkey.ModifierKeys.Alt;
+			}
 
-            UpdateButtonText();
-            e.Handled = true;
-        }
-        
-        public void KeyDownEvent(KeyEventArgs e)
-        {
-            if (!Capturing)
-                return;
-            bool modifier = false;
+			if (e.KeyCode == Keys.ControlKey)
+			{
+				// If Control is pressed, set the corresponding bit to 0
+				and ^= Hotkey.ModifierKeys.Control;
+			}
 
-            if (e.KeyCode == Keys.Menu)
-            {
-                modifier = true;
-                Modifiers |= Hotkey.ModifierKeys.Alt;
-            }
+			if (e.KeyCode == Keys.ShiftKey)
+			{
+				// If Shift is pressed, set the corresponding bit to 0
+				and ^= Hotkey.ModifierKeys.Shift;
+			}
 
-            if (e.KeyCode == Keys.ControlKey)
-            {
-                modifier = true;
-                Modifiers |= Hotkey.ModifierKeys.Control;
-            }
+			// And the Modifiers with the previously set up variable; if a modifierkey was released, the corresponding bit will be guaranteed to be 0
+			Modifiers &= and;
 
-            if (e.KeyCode == Keys.ShiftKey)
-            {
-                modifier = true;
-                Modifiers |= Hotkey.ModifierKeys.Shift;
-            }
+			UpdateButtonText();
+			e.Handled = true;
+		}
 
-            if (!modifier)
-            {
-                Key = e.KeyCode;
-                StopCapturing();
-            }
+		public void KeyDownEvent(KeyEventArgs e)
+		{
+			if (!Capturing)
+				return;
+			bool modifier = false;
 
-            UpdateButtonText();
-            e.Handled = true;
-        }
+			if (e.KeyCode == Keys.Menu)
+			{
+				modifier = true;
+				Modifiers |= Hotkey.ModifierKeys.Alt;
+			}
 
-        private void StartCapturing()
-        {
-            if (Capturing)
-                return;
-            
-            BackupKey = Key;
-            BackupModifiers = Modifiers;
+			if (e.KeyCode == Keys.ControlKey)
+			{
+				modifier = true;
+				Modifiers |= Hotkey.ModifierKeys.Control;
+			}
 
-            Key = Keys.None;
-            Modifiers = 0;
+			if (e.KeyCode == Keys.ShiftKey)
+			{
+				modifier = true;
+				Modifiers |= Hotkey.ModifierKeys.Shift;
+			}
 
-            Capturing = Form.StartCapturing(this);
-            
-            if(Capturing)
-                HotkeyButton.BackColor = SystemColors.ControlLightLight;
+			if (!modifier)
+			{
+				Key = e.KeyCode;
+				StopCapturing();
+			}
 
-            UpdateButtonText();
-        }
+			UpdateButtonText();
+			e.Handled = true;
+		}
 
-        public void StopCapturing(bool canceled = false)
-        {
-            if (!Capturing)
-                return;
+		private void StartCapturing()
+		{
+			if (Capturing)
+				return;
 
-            Form.StopCapturing();
-            Capturing = false;
-            HotkeyButton.BackColor = SystemColors.ControlLight;
+			BackupKey = Key;
+			BackupModifiers = Modifiers;
 
-            if (Modifiers == 0 & !canceled)
-            {
-                MessageBox.Show("Please press a modifier key!");
-                canceled = true;
-            }
+			Key = Keys.None;
+			Modifiers = 0;
 
-            if (canceled)
-            {
-                Key = BackupKey;
-                Modifiers = BackupModifiers;
-            }
-            else
-            {
-                Save();
-            }
+			Capturing = Form.StartCapturing(this);
 
-            UpdateButtonText();
-        }
+			if (Capturing)
+				HotkeyButton.BackColor = SystemColors.ControlLightLight;
 
-        private void UpdateButtonText()
-        {
-            
+			UpdateButtonText();
+		}
 
-            HotkeyButton.Text = Modifiers.ToString("G").Replace(",", " +").Replace("Control", "Ctrl") + " + " + (Capturing ? "..." : Key.ToString("G"));
-        }
+		public void StopCapturing(bool canceled = false)
+		{
+			if (!Capturing)
+				return;
 
-        #endregion
+			Form.StopCapturing();
+			Capturing = false;
+			HotkeyButton.BackColor = SystemColors.ControlLight;
 
-        private void UpdateShareEnables()
-        {
-            PublicBox.Enabled = ShareBox.Checked;
-            PublicRegisteredBox.Enabled = ShareBox.Checked;
-            FirstViewBox.Enabled = ShareBox.Checked;
-            WhitelistedBox.Enabled = ShareBox.Checked;
-            WhitelistText.Enabled = ShareBox.Checked & WhitelistedBox.Checked;
-            WhitelistLabel.Enabled = ShareBox.Checked & WhitelistedBox.Checked;
-        }
+			if (Modifiers == 0 & !canceled)
+			{
+				MessageBox.Show("Please press a modifier key!");
+				canceled = true;
+			}
 
-        private void HotkeyButton_Click(object sender, EventArgs e)
-        {
-            if (Capturing)
-                StopCapturing(true);
-            else
-                StartCapturing();
-        }
-        
-        private void RemoveButton_Click(object sender, EventArgs e)
-        {
-            Form.RemoveHotkey(this);
-        }
+			if (canceled)
+			{
+				Key = BackupKey;
+				Modifiers = BackupModifiers;
+			}
+			else
+			{
+				Save();
+			}
 
-        private void InitializeComponent()
-        {
-            SuspendLayout();
-            this.Initialize();
-            ResumeLayout(false);
-        }
+			UpdateButtonText();
+		}
 
-        private void PublicBox_CheckedChanged(object sender, EventArgs e)
-        {
-            Save();
-        }
+		private void UpdateButtonText()
+		{
 
-        private void FirstViewBox_CheckedChanged(object sender, EventArgs e)
-        {
-            Save();
 
-        }
+			HotkeyButton.Text = Modifiers.ToString("G").Replace(",", " +").Replace("Control", "Ctrl") + " + " + (Capturing ? "..." : Key.ToString("G"));
+		}
 
-        private void PublicRegisteredBox_CheckedChanged(object sender, EventArgs e)
-        {
-            Save();
-        }
+		#endregion
 
-        private void WhitelistedBox_CheckedChanged(object sender, EventArgs e)
-        {
-            UpdateShareEnables();
-        }
+		private void UpdateShareEnables()
+		{
+			PublicBox.Enabled = ShareBox.Checked;
+			PublicRegisteredBox.Enabled = ShareBox.Checked;
+			FirstViewBox.Enabled = ShareBox.Checked;
+			WhitelistedBox.Enabled = ShareBox.Checked;
+			WhitelistText.Enabled = ShareBox.Checked & WhitelistedBox.Checked;
+			WhitelistLabel.Enabled = ShareBox.Checked & WhitelistedBox.Checked;
+		}
 
-        private void WhitelistText_TextChanged(object sender, EventArgs e)
-        {
-            Save();
+		private void HotkeyButton_Click(object sender, EventArgs e)
+		{
+			if (Capturing)
+				StopCapturing(true);
+			else
+				StartCapturing();
+		}
 
-        }
+		private void RemoveButton_Click(object sender, EventArgs e)
+		{
+			Form.RemoveHotkey(this);
+		}
 
-        private void ShareBox_CheckedChanged(object sender, EventArgs e)
-        {
-            UpdateShareEnables();
-        }
+		private void InitializeComponent()
+		{
+			SuspendLayout();
+			Initialize();
+			ResumeLayout(false);
+		}
 
-        private void FileProviderBox_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            Save();
+		private void PublicBox_CheckedChanged(object sender, EventArgs e)
+		{
+			Save();
+		}
 
-        }
+		private void FirstViewBox_CheckedChanged(object sender, EventArgs e)
+		{
+			Save();
 
-        private void FormatText_TextChanged(object sender, EventArgs e)
-        {
-            Save();
-        }
-    }
+		}
+
+		private void PublicRegisteredBox_CheckedChanged(object sender, EventArgs e)
+		{
+			Save();
+		}
+
+		private void WhitelistedBox_CheckedChanged(object sender, EventArgs e)
+		{
+			UpdateShareEnables();
+		}
+
+		private void WhitelistText_TextChanged(object sender, EventArgs e)
+		{
+			Save();
+
+		}
+
+		private void ShareBox_CheckedChanged(object sender, EventArgs e)
+		{
+			UpdateShareEnables();
+		}
+
+		private void FileProviderBox_SelectedIndexChanged(object sender, EventArgs e)
+		{
+			Save();
+
+		}
+
+		private void FormatText_TextChanged(object sender, EventArgs e)
+		{
+			Save();
+		}
+	}
 }

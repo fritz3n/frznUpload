@@ -21,7 +21,7 @@ namespace frznUpload.Client
 			var configFileMap = new ExeConfigurationFileMap();
 
 #if DEBUG
-			configFileMap.ExeConfigFilename = "App.Release.config";
+			configFileMap.ExeConfigFilename = "App.Debug.config";
 #else
 			configFileMap.ExeConfigFilename = "App.Release.config";
 #endif

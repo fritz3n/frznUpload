@@ -6,15 +6,16 @@ using System.Threading.Tasks;
 
 namespace frznUpload.Client.Files
 {
-    interface IFileProvider
-    {
-        List<UploadFile> GetFile(string format);
-        void FreeFile();
-    }
+	interface IFileProvider
+	{
+		List<UploadFile> GetFile(string format);
+		void FreeFile();
+		bool IsAvailable();
+	}
 
-    public struct UploadFile
-    {
-        public string Path { get; set; }
-        public string Filename { get; set; }
-    }
+	public struct UploadFile
+	{
+		public string Path { get; set; }
+		public string Filename { get; set; }
+	}
 }

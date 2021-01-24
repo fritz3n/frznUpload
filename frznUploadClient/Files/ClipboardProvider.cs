@@ -9,65 +9,78 @@ using System.Windows.Forms;
 
 namespace frznUpload.Client.Files
 {
-    class ClipboardProvider : IFileProvider
-    {
-        private string Path = null;
+	class ClipboardProvider : IFileProvider
+	{
+		private readonly bool useText;
+		private string Path = null;
 
-        public void FreeFile()
-        {
-            
-        }
+		public ClipboardProvider(bool useText = false)
+		{
+			this.useText = useText;
+		}
 
-        public List<UploadFile> GetFile(string format)
-        {
-            if (Clipboard.ContainsFileDropList())
-            {
-                var UploadList = new List<UploadFile>();
+		public void FreeFile()
+		{
+			if (Path is not null)
+				TempFileHandler.FreeFile(Path);
+		}
 
-                var FileList = Clipboard.GetFileDropList();
+		public List<UploadFile> GetFile(string format)
+		{
+			if (Clipboard.ContainsFileDropList())
+			{
+				var UploadList = new List<UploadFile>();
 
-                foreach(string s in FileList)
-                {
-                    var u = new UploadFile
-                    {
-                        Path = s,
-                        Filename = string.Format(format, DateTime.Now, System.IO.Path.GetFileName(s)),
-                    };
-                    UploadList.Add(u);
-                }
+				System.Collections.Specialized.StringCollection FileList = Clipboard.GetFileDropList();
 
-                return UploadList;
-            }
+				foreach (string s in FileList)
+				{
+					var u = new UploadFile
+					{
+						Path = s,
+						Filename = string.Format(format, DateTime.Now, System.IO.Path.GetFileName(s)),
+					};
+					UploadList.Add(u);
+				}
 
-            if (Clipboard.ContainsImage())
-            {
-                Path = TempFileHandler.RegisterFile();
-                var filename = string.Format(format + ".Jpeg", DateTime.Now, "Clipboard Image");
+				return UploadList;
+			}
 
-                Clipboard.GetImage().Save(Path, ImageFormat.Jpeg);
+			if (Clipboard.ContainsImage())
+			{
+				Path = TempFileHandler.RegisterFile();
+				string filename = string.Format(format + ".Jpeg", DateTime.Now, "Clipboard Image");
 
-                return new List<UploadFile>{ new UploadFile
-                {
-                    Path = Path,
-                    Filename = filename,
-                }};
-            }
+				Clipboard.GetImage().Save(Path, ImageFormat.Jpeg);
 
-            if (Clipboard.ContainsText())
-            {
-                Path = TempFileHandler.RegisterFile();
-                var filename = string.Format(format + ".txt", DateTime.Now, "Clipboard Text");
+				return new List<UploadFile>{ new UploadFile
+				{
+					Path = Path,
+					Filename = filename,
+				}};
+			}
 
-                File.WriteAllText(Path, Clipboard.GetText());
+			if (useText && Clipboard.ContainsText())
+			{
+				Path = TempFileHandler.RegisterFile();
+				string filename = string.Format(format + ".txt", DateTime.Now, "Clipboard Text");
 
-                return new List<UploadFile>{ new UploadFile
-                {
-                    Path = Path,
-                    Filename = filename,
-                }};
-            }
+				File.WriteAllText(Path, Clipboard.GetText());
 
-            throw new InvalidOperationException("Please copy something before atmepting to upload from clipboard");
-        }
-    }
+				return new List<UploadFile>{ new UploadFile
+				{
+					Path = Path,
+					Filename = filename,
+				}};
+			}
+
+			throw new InvalidOperationException("Please copy something before attmepting to upload from clipboard");
+		}
+
+		public bool IsAvailable()
+		{
+			return Clipboard.ContainsText() || Clipboard.ContainsImage() || (useText && Clipboard.ContainsFileDropList());
+
+		}
+	}
 }
