@@ -1,4 +1,5 @@
 ﻿using frznUpload.Web.Data;
+using frznUpload.Web.Files;
 using frznUpload.Web.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -14,11 +15,13 @@ namespace frznUpload.Web.Areas.Account.Pages.Shares
 	{
 		private readonly frznUpload.Web.Data.Database _context;
 		private readonly UserManager userManager;
+		private readonly FileManager fileManager;
 
-		public CreateModel(frznUpload.Web.Data.Database context, UserManager userManager)
+		public CreateModel(frznUpload.Web.Data.Database context, UserManager userManager, FileManager fileManager)
 		{
 			_context = context;
 			this.userManager = userManager;
+			this.fileManager = fileManager;
 		}
 
 		public string FileId { get; set; }
@@ -49,6 +52,8 @@ namespace frznUpload.Web.Areas.Account.Pages.Shares
 			if (file is null)
 				return NotFound();
 			Share.File = file;
+			Share.Identifier = fileManager.GetAvailableShareIdentifier();
+			Share.Created = DateTime.Now;
 
 			_context.Shares.Add(Share);
 			await _context.SaveChangesAsync();

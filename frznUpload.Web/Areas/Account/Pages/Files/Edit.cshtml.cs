@@ -50,8 +50,14 @@ namespace frznUpload.Web.Areas.Account.Pages.Files
 				return Page();
 			}
 
-			if (userManager.GetUser(HttpContext, _context) != File.User)
+			File original = _context.Files.Find(File.Id);
+
+			if (original.User != userManager.GetUser(HttpContext, _context))
 				return Forbid();
+
+			File.Identifier = original.Identifier;
+			File.Size = original.Size;
+			File.User = original.User;
 
 			_context.Attach(File).State = EntityState.Modified;
 

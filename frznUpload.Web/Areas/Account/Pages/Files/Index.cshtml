@@ -1,62 +1,99 @@
-﻿@page
+﻿@page "{path?}"
 @model frznUpload.Web.Areas.Account.Pages.Files.IndexModel
 
 @{
     ViewData["Title"] = "Index";
 }
 
-<h1>Index</h1>
+<h1>Files</h1>
 
 <p>
-    <a asp-page="Create">Create New</a>
+    <a asp-area="" asp-page="Upload">Upload New</a>
 </p>
+@if (Model.Path != "*")
+{
+<h6>
+    Path: @Model.Path   <a asp-route-path="*">Show all</a>
+</h6>
+
+}
+else
+{
+    <a asp-route-path="">Show root</a>
+}
+
+
 <table class="table">
     <thead>
         <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Files[0].Identifier)
-            </th>
+            <th></th>
             <th>
                 @Html.DisplayNameFor(model => model.Files[0].Filename)
             </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Files[0].Extension)
-            </th>
-            <th>
+            <th class="d-none d-sm-table-cell">
                 @Html.DisplayNameFor(model => model.Files[0].Size)
             </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Files[0].Path)
+            <th class="d-none d-xl-table-cell">
+                @Html.DisplayNameFor(model => model.Files[0].Identifier)
+            </th>
+            <th class="d-none d-md-table-cell">
+                @Html.DisplayNameFor(model => model.Files[0].Shares)
             </th>
             <th></th>
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model.Files) {
-        <tr>
-            <td>
-                @(item.Identifier.Substring(0, Math.Min(item.Identifier.Length, 10)) + "...")
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Filename)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Extension)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Size)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Path)
-            </td>
-            <td>
-                <a asp-page="./Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-page="./Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-page="./Delete" asp-route-id="@item.Id">Delete</a> |
-                <a asp-page="./View" asp-route-fileId="@item.Identifier">View</a> |
-                <a asp-page="/Shares/Index" asp-route-fileId="@item.Identifier">Shares</a>
-            </td>
-        </tr>
-}
+        @foreach (var directory in Model.Directories)
+        {
+            <tr data-path="@directory.Path">
+                <td>
+                    <i class="far fa-folder"></i>
+                </td>
+                <td>
+                    @directory.Name
+                </td>
+                <td class="d-none d-sm-table-cell">
+                </td>
+                <td class="d-none d-xl-table-cell">
+                </td>
+                <td class="d-none d-md-table-cell">
+                </td>
+                <td>
+                </td>
+            </tr>
+        }
+        @foreach (var item in Model.Files)
+        {
+            <tr data-identifier="@item.Identifier">
+                <td>
+                    <i class="far fa-file"></i>
+                </td>
+                <td>
+                    @(item.Filename + "." + item.Extension)
+                </td>
+                <td class="d-none d-sm-table-cell">
+                    @Model.BytesToString(item.Size)
+                </td>
+                <td class="d-none d-xl-table-cell">
+                    @(item.Identifier.Substring(0, Math.Min(item.Identifier.Length, 5)) + "...")
+                </td>
+                <td class="d-none d-md-table-cell">
+                    <a asp-page="/Shares/Index" asp-route-fileId="@item.Identifier">@item.Shares.Count @(@item.Shares.Count == 1 ? "Share" : "Shares")</a>
+                </td>
+                <td>
+                    <a asp-page="./Edit" asp-route-id="@item.Id"><i class="far fa-edit"></i></a>
+                    <a asp-page="./Details" asp-route-id="@item.Id"><i class="fas fa-info-circle"></i></a>
+                    <a asp-page="./Delete" asp-route-id="@item.Id"><i class="far fa-trash-alt"></i></a>
+                </td>
+            </tr>
+        }
     </tbody>
 </table>
+
+@section Scripts {
+    <script src="/js/Files.js"></script>
+}
+
+@section Css {
+    <link rel="stylesheet" href="/css/Files.css" />
+}

@@ -14,11 +14,6 @@
         <form method="post">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="Share.Id" />
-            <div class="form-group">
-                <label asp-for="Share.Identifier" class="control-label"></label>
-                <input asp-for="Share.Identifier" class="form-control" />
-                <span asp-validation-for="Share.Identifier" class="text-danger"></span>
-            </div>
             <div class="form-group form-check">
                 <label class="form-check-label">
                     <input class="form-check-input" asp-for="Share.FirstView" /> @Html.DisplayNameFor(model => model.Share.FirstView)
@@ -48,16 +43,6 @@
                 <label asp-for="Share.WhitelistText" class="control-label"></label>
                 <input asp-for="Share.WhitelistText" class="form-control" />
                 <span asp-validation-for="Share.WhitelistText" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Share.Created" class="control-label"></label>
-                <input asp-for="Share.Created" class="form-control" />
-                <span asp-validation-for="Share.Created" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Share.LastAccessed" class="control-label"></label>
-                <input asp-for="Share.LastAccessed" class="form-control" />
-                <span asp-validation-for="Share.LastAccessed" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <input type="submit" value="Save" class="btn btn-primary" />

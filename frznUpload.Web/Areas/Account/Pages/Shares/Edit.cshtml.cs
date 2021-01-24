@@ -50,8 +50,15 @@ namespace frznUpload.Web.Areas.Account.Pages.Shares
 				return Page();
 			}
 
-			if (userManager.GetUser(HttpContext, _context) != Share.File.User)
+			Share original = _context.Shares.Find(Share.Id);
+
+			if (userManager.GetUser(HttpContext, _context) != original.File.User)
 				return Forbid();
+
+			Share.File = original.File;
+			Share.Identifier = original.Identifier;
+			Share.LastAccessed = original.LastAccessed;
+			Share.Created = original.Created;
 
 			_context.Attach(Share).State = EntityState.Modified;
 
