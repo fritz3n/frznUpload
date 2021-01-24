@@ -131,6 +131,10 @@ namespace frznUpload.Client
 					IsAuthenticated = true;
 					Name = message[0];
 				}
+				else
+				{
+					CertificateHandler.Clear();
+				}
 			}
 			else
 			{

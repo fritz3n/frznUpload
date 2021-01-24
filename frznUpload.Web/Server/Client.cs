@@ -51,9 +51,16 @@ namespace frznUpload.Web.Server
 
 			if (verificationResult == VerificationResult.Valid || verificationResult == VerificationResult.ValidArchival)
 			{
-				db.SetUser(verificationSerial);
-				IsAuthenticated = true;
-				mes.SendMessage(new Message(Message.MessageType.AuthSuccess, false, db.Name));
+				try
+				{
+					db.SetUser(verificationSerial);
+					IsAuthenticated = true;
+					mes.SendMessage(new Message(Message.MessageType.AuthSuccess, false, db.Name));
+				}
+				catch (KeyNotFoundException)
+				{
+					mes.SendMessage(new Message(Message.MessageType.AuthSuccess, true));
+				}
 			}
 
 
@@ -237,7 +244,7 @@ namespace frznUpload.Web.Server
 
 								for (int i = 0; i < fileList.Count; i++)
 								{
-									Fields[i + 1] = new Message(Message.MessageType.FileInfo, false, fileList[i].Filename, fileList[i].Extension, fileList[i].Identifier, fileList[i].Size, fileList[i].Path);
+									Fields[i + 1] = new Message(Message.MessageType.FileInfo, false, fileList[i].Filename ?? "", fileList[i].Extension ?? "", fileList[i].Identifier, fileList[i].Size, fileList[i].Path ?? "");
 								}
 
 								mes.SendMessage(new Message(Message.MessageType.FileList, false, Fields));

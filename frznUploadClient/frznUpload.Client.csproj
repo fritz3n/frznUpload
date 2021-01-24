@@ -11,6 +11,10 @@
 		<ApplicationIcon>upload_Wr5_icon.ico</ApplicationIcon>
 	</PropertyGroup>
 
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+	  <DefineConstants>TRACE;LOGMESSAGES</DefineConstants>
+	</PropertyGroup>
+
 	<ItemGroup>
 	  <None Remove="ExplorerResources\frznUpload.Client.ExplorerServer.dll" />
 	  <None Remove="ExplorerResources\ServerRegistrationManager.exe" />

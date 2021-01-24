@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Configuration;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -22,6 +23,7 @@ namespace frznUpload.Client
 
 #if DEBUG
 			configFileMap.ExeConfigFilename = "App.Debug.config";
+			AllocConsole();
 #else
 			configFileMap.ExeConfigFilename = "App.Release.config";
 #endif
@@ -48,5 +50,9 @@ namespace frznUpload.Client
 				PipeHandler.SendMessage(args);
 			}
 		}
+
+		[DllImport("kernel32.dll", SetLastError = true)]
+		[return: MarshalAs(UnmanagedType.Bool)]
+		static extern bool AllocConsole();
 	}
 }

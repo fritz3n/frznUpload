@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -30,15 +31,12 @@ namespace frznUpload.Shared
 		private readonly bool Verbose = false;
 		IMessageLogger VerboseLogger;
 
-		//TODO: Make Cues Concurrent !!!!!
 
-		Queue<Message> IncomingQueue = new Queue<Message>();//TODO: Make Cues Concurrent !!!!! //TODO: Make Cues Concurrent !!!!!
-		Queue<Message> OutgoingQueue = new Queue<Message>();//TODO: Make Cues Concurrent !!!!! //TODO: Make Cues Concurrent !!!!!
+		ConcurrentQueue<Message> IncomingQueue = new ConcurrentQueue<Message>();
+		ConcurrentQueue<Message> OutgoingQueue = new ConcurrentQueue<Message>();
 		SslStream stream;
 		TcpClient tcp;
-#pragma warning disable IDE0044 // Add readonly modifier
-		byte[] headerBuffer = new byte[4];
-#pragma warning restore IDE0044 // Add readonly modifier
+		readonly byte[] headerBuffer = new byte[4];
 		CancellationTokenSource tokenSource;
 		ManualResetEvent readEvent = new ManualResetEvent(false);
 		ManualResetEvent writeEvent = new ManualResetEvent(false);
@@ -120,11 +118,9 @@ namespace frznUpload.Shared
 					WaitHandle.WaitAny(new WaitHandle[] { writeEvent, token.WaitHandle });
 					token.ThrowIfCancellationRequested();
 
-					while (OutgoingQueue.Count > 0)
+					while (OutgoingQueue.TryDequeue(out Message m))
 					{
 						token.ThrowIfCancellationRequested();
-
-						Message m = OutgoingQueue.Dequeue();
 
 						if (Verbose & m.Type != Message.MessageType.Ping & m.Type != Message.MessageType.Pong)
 							VerboseLogger.LogMessage(true, m);
@@ -147,11 +143,9 @@ namespace frznUpload.Shared
 							return;
 						}
 					}
-					if (OutgoingQueue.Count == 0)
-					{
-						writeEvent.Reset();
-						flushEvent.Set();
-					}
+					writeEvent.Reset();
+					flushEvent.Set();
+
 				}
 			}
 			catch (Exception e)
@@ -268,43 +262,43 @@ namespace frznUpload.Shared
 		{
 			lock (readEvent)
 			{
-				if (IncomingQueue.Count != 0)
-					return IncomingQueue.Dequeue();
-				readEvent.Reset();
-
-				WaitHandle.WaitAny(new WaitHandle[] { ErrorEvent, readEvent });
-
-				if (!Running)
+				while (true)
 				{
-					if (graceful)
-						throw new GracefulShutdownException(ShutdownException);
-					else
-						throw ShutdownException;
-				}
+					if (IncomingQueue.TryDequeue(out Message m))
+						return m;
+					readEvent.Reset();
 
-				return IncomingQueue.Dequeue();
+					int i = WaitHandle.WaitAny(new WaitHandle[] { ErrorEvent, readEvent });
+
+					if (i == 0 || !Running)
+					{
+						if (graceful)
+							throw new GracefulShutdownException(ShutdownException);
+						else
+							throw ShutdownException;
+					}
+				}
 			}
 		}
 
 		public async Task<Message> WaitForMessageAsync()
 		{
-
-			if (IncomingQueue.Count != 0)
-				return IncomingQueue.Dequeue();
-			readEvent.Reset();
-
-			int i = await Task.Run(() => WaitHandle.WaitAny(new WaitHandle[] { ErrorEvent, readEvent }));
-
-			if (i == 0 || !Running)
+			while (true)
 			{
-				if (graceful)
-					throw new GracefulShutdownException(ShutdownException);
-				else
-					throw ShutdownException ?? new Exception();
+				if (IncomingQueue.TryDequeue(out Message m))
+					return m;
+				readEvent.Reset();
+
+				int i = await Task.Run(() => WaitHandle.WaitAny(new WaitHandle[] { ErrorEvent, readEvent }));
+
+				if (i == 0 || !Running)
+				{
+					if (graceful)
+						throw new GracefulShutdownException(ShutdownException);
+					else
+						throw ShutdownException ?? new Exception();
+				}
 			}
-
-			return IncomingQueue.Dequeue();
-
 		}
 
 

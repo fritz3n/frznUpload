@@ -60,7 +60,6 @@ namespace frznUpload.Web.Server
 			IsAuthenticated = false;
 		}
 
-		//TODO: improve 
 		public string HashPassword(User user, string password)
 		{
 			user = user ?? throw new KeyNotFoundException();

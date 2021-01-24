@@ -71,6 +71,9 @@ namespace frznUpload.Client
 			}
 			else
 			{
+				if (!UploadTimer.Enabled)
+					return;
+
 				if (Created)
 					ProgressBar.Invoke(new Action(() => StatusLabel.Text = "Finished"));
 				Uploading = false;
