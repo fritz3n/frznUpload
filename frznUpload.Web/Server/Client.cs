@@ -104,6 +104,17 @@ namespace frznUpload.Web.Server
 			tokenSource?.Cancel();
 			tokenSource = new CancellationTokenSource();
 
+			mes.SendMessage(new Message(Message.MessageType.Version, false, MessageHandler.Version));
+			Message m = mes.WaitForMessage(true, Message.MessageType.Version);
+
+			log.LogDebug("Client Version: " + m[0] as string);
+
+			if (m[0] != MessageHandler.Version)
+			{
+				log.LogWarning("Client Version does not match Server version: " + m[0] as string);
+				throw new InvalidOperationException("Server version does not match Client version");
+			}
+
 #pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
 			new Thread(() => ClientLoop(tokenSource.Token)).Start();
 #pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
@@ -119,16 +130,6 @@ namespace frznUpload.Web.Server
 		{
 			try
 			{
-				mes.SendMessage(new Message(Message.MessageType.Version, false, MessageHandler.Version));
-				Message m = mes.WaitForMessage(true, Message.MessageType.Version);
-
-				log.LogDebug("Client Version: " + m[0] as string);
-
-				if (m[0] != MessageHandler.Version)
-				{
-					log.LogWarning("Client Version does not match Server version: " + m[0] as string);
-					throw new InvalidOperationException("Server version does not match Client version");
-				}
 
 				while (true)
 				{

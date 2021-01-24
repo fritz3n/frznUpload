@@ -11,7 +11,7 @@ namespace frznUpload.Client
 {
 	public class FileUploader : IDisposable
 	{
-		int ChunkSize = 16384;
+		int ChunkSize = 5476; // Fits perfectly into 4 TCP segments
 
 		public int TotalSize { get; private set; }
 		public int WrittenSize { get; private set; }
@@ -76,8 +76,6 @@ namespace frznUpload.Client
 
 				string filename = Path.GetFileNameWithoutExtension(Filename);
 				string extension = Path.GetExtension(Filename).Replace(".", "");
-
-				ChunkSize = (int)Math.Ceiling((double)size / 100);
 
 				TotalSize = size;
 
@@ -175,6 +173,8 @@ namespace frznUpload.Client
 		public FileUploader Uploader { get; set; }
 		public string Path { get; set; }
 		public string Filename { get; set; }
+
+		public bool IsSharing { get; set; }
 
 		public bool Share { get; set; }
 		public bool FirstView { get; set; }

@@ -100,19 +100,18 @@ namespace frznUpload.Client
 		public async Task ConnectAsync(string url, int port, bool verbose = false)
 		{
 			ThrowIfDisposed();
-			var stp = new Stopwatch();
-			stp.Start();
 			Tcp = new TcpClient
 			{
 				SendTimeout = 15000
 			};
 
+			var stp = new Stopwatch();
+
+			stp.Start();
 			await Tcp.ConnectAsync(url, port);
+			stp.Stop();
 
 			stream = new SslStream(Tcp.GetStream(), false, new RemoteCertificateValidationCallback(ValidateServerCertificate), new LocalCertificateSelectionCallback(Selection));
-
-
-			stp.Stop();
 
 
 
@@ -124,7 +123,9 @@ namespace frznUpload.Client
 				mes.Start();
 				mes.OnDisconnect += OnDisconnect;
 
+
 				Message message = await mes.WaitForMessageAsync(Message.MessageType.AuthSuccess);
+
 
 				if (!message.IsError)
 				{
@@ -145,16 +146,19 @@ namespace frznUpload.Client
 				mes.Start();
 				mes.OnDisconnect += OnDisconnect;
 			}
-			Console.WriteLine("encryption established: " + stp.ElapsedMilliseconds);
 
 			mes.SendMessage(new Message(Message.MessageType.Version, false, MessageHandler.Version));
 			Message m = await mes.WaitForMessageAsync(true, Message.MessageType.Version);
+
 
 			if (m[0] != MessageHandler.Version)
 			{
 				Dispose();
 				throw new InvalidOperationException("Server version does not match Client version");
 			}
+#if DEBUG
+			Console.WriteLine("Connection established: " + stp.ElapsedMilliseconds);
+#endif
 		}
 
 		private X509Certificate Selection(object sender, string targetHost, X509CertificateCollection localCertificates, X509Certificate remoteCertificate, string[] acceptableIssuers)

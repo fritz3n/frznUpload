@@ -28,6 +28,7 @@ namespace frznUpload.Client
 
 		public MainForm(ClientManager client)
 		{
+
 			Client = client;
 			InitializeComponent();
 			Shown += MainForm_Shown;
@@ -72,17 +73,18 @@ namespace frznUpload.Client
 			else
 			{
 				if (!UploadTimer.Enabled)
-					return;
+					UploadTimer.Stop();
 
 				if (Created)
 					ProgressBar.Invoke(new Action(() => StatusLabel.Text = "Finished"));
 				Uploading = false;
 				if (Created)
 					ProgressBar.Invoke(new Action(() => ProgressBar.Value = 0));
-				UploadTimer.Stop();
 
-				if (FileUpload.Share && FileUpload.Uploader.Finished && !FileUpload.Uploader.Error)
+
+				if (!FileUpload.IsSharing & FileUpload.Share && FileUpload.Uploader.Finished && !FileUpload.Uploader.Error)
 				{
+					FileUpload.IsSharing = true;
 
 					string s = await Client.ShareFile(
 						FileUpload.Uploader.Identifier,
@@ -95,13 +97,12 @@ namespace frznUpload.Client
 
 
 
+					string link = Config.AppSettings["ShareGenUrl"].Value + s;
 					if (Created)
 					{
-						string link = Config.AppSettings["ShareGenUrl"].Value + s;
 						LinkText.Invoke(new Action(() => LinkText.Text = link));
-
-						SetClipboardText(link);
 					}
+					SetClipboardText(link);
 					SystemSounds.Beep.Play();
 				}
 

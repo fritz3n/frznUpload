@@ -89,6 +89,7 @@
 			this.ProgressBar.Name = "ProgressBar";
 			this.ProgressBar.Size = new System.Drawing.Size(544, 27);
 			this.ProgressBar.TabIndex = 1;
+			this.ProgressBar.Style = System.Windows.Forms.ProgressBarStyle.Blocks;
 			// 
 			// AccountButton
 			// 

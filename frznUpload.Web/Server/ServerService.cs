@@ -68,6 +68,8 @@ namespace frznUpload.Web.Server
 				{
 					try
 					{
+						var stp = new System.Diagnostics.Stopwatch();
+						stp.Start();
 						IServiceScope scope = provider.CreateScope();
 
 						DatabaseHandler db = scope.ServiceProvider.GetRequiredService<DatabaseHandler>();
@@ -83,6 +85,7 @@ namespace frznUpload.Web.Server
 						Client.OnDispose += Client_OnDispose;
 
 						Client.Start();
+						stp.Stop();
 					}
 					catch (Exception e)
 					{
