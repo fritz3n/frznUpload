@@ -29,6 +29,7 @@
         private void InitializeComponent()
         {
 			this.components = new System.ComponentModel.Container();
+			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
 			this.StatusLabel = new System.Windows.Forms.Label();
 			this.ProgressBar = new System.Windows.Forms.ProgressBar();
 			this.AccountButton = new System.Windows.Forms.Button();
@@ -89,7 +90,6 @@
 			this.ProgressBar.Name = "ProgressBar";
 			this.ProgressBar.Size = new System.Drawing.Size(544, 27);
 			this.ProgressBar.TabIndex = 1;
-			this.ProgressBar.Style = System.Windows.Forms.ProgressBarStyle.Blocks;
 			// 
 			// AccountButton
 			// 
@@ -458,6 +458,7 @@
 			this.Controls.Add(this.AccountButton);
 			this.Controls.Add(this.ProgressBar);
 			this.Controls.Add(this.StatusLabel);
+			this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
 			this.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
 			this.Name = "MainForm";
 			this.Text = "frznUpload";
@@ -511,6 +512,7 @@
         private System.Windows.Forms.ContextMenuStrip contextMenu;
         private System.Windows.Forms.ToolStripMenuItem deleteToolStripMenuItem;
         private System.Windows.Forms.Button SettingsButton;
-    }
+
+	}
 }
 

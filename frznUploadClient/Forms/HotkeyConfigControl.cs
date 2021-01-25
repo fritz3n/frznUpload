@@ -51,7 +51,7 @@ namespace frznUpload.Client
 			WhitelistedBox.Checked = (config.Share & ShareType.Whitelisted) != 0;
 			UpdateShareEnables();
 
-			FileProviderBox.SelectedItem = providers.First(p => p.Value == config.Provider);
+			FileProviderBox.SelectedItem = providers.First(p => p.Value == config.Provider).Key;
 
 			Key = config.Key;
 			Modifiers = config.Modifier;

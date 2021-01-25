@@ -93,6 +93,9 @@ namespace frznUpload.Client
 		void Show(object sender, EventArgs e)
 		{
 			mainForm.Show();
+			mainForm.WindowState = FormWindowState.Normal;
+			mainForm.BringToFront();
+			mainForm.Activate();
 		}
 
 

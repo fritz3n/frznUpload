@@ -79,7 +79,7 @@ namespace frznUpload.Client.Files
 
 		public bool IsAvailable()
 		{
-			return Clipboard.ContainsText() || Clipboard.ContainsImage() || (useText && Clipboard.ContainsFileDropList());
+			return (useText && Clipboard.ContainsText()) || Clipboard.ContainsImage() || Clipboard.ContainsFileDropList();
 
 		}
 	}
