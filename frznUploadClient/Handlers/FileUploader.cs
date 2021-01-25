@@ -76,6 +76,12 @@ namespace frznUpload.Client
 
 				string filename = Path.GetFileNameWithoutExtension(Filename);
 				string extension = Path.GetExtension(Filename).Replace(".", "");
+				string path = Path.GetDirectoryName(Filename).Replace('\\', '/');
+
+				if (!path.StartsWith('/'))
+					path = '/' + path;
+				if (!path.EndsWith('/'))
+					path += '/';
 
 				TotalSize = size;
 
