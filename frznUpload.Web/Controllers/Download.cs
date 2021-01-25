@@ -49,7 +49,12 @@ namespace frznUpload.Web.Pages
 
 		public IActionResult DownloadFile(string fileId)
 		{
-			Models.File file = userManager.GetUser(HttpContext).Files.FirstOrDefault(f => f.Identifier == fileId);
+			Models.File file;
+			if (HttpContext.User.IsInRole("Admin"))
+				file = database.Files.FirstOrDefault(f => f.Identifier == fileId);
+			else
+				file = userManager.GetUser(HttpContext).Files.FirstOrDefault(f => f.Identifier == fileId);
+
 			if (file is null)
 				return NotFound();
 

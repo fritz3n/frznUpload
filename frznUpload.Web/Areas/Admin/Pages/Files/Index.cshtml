@@ -1,0 +1,65 @@
+﻿@page
+@model frznUpload.Web.Areas.Admin.Pages.Files.IndexModel
+
+@{
+    ViewData["Title"] = "Index";
+}
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+
+<h1>Index</h1>
+@if (Model.UserName != null)
+{
+<h5>Files of User <a asp-page="/Users/Details" asp-route-id="@Model.UserId">@Model.UserName</a></h5>
+}
+
+<table class="table">
+    <thead>
+        <tr>
+            @if (Model.UserName == null)
+            {
+            <th>
+                User
+            </th>
+            }
+            <th>
+                @Html.DisplayNameFor(model => model.Files[0].Filename)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Files[0].Size)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Files[0].Path)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.Files)
+        {
+        <tr>
+            @if (Model.UserName == null)
+            {
+
+                <td>
+                    <a asp-page="/Users/Details" asp-route-id="@item.User.Id">@Html.DisplayFor(modelItem => item.User.Name)</a>
+                </td>
+            }
+            <td>
+                @(item.Filename + "." + item.Extension)
+            </td>
+            <td>
+                @Model.BytesToString(item.Size)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Path)
+            </td>
+            <td>
+                <a asp-page="./View" asp-route-fileId="@item.Identifier"><i class="far fa-eye"></i></a>
+                <a asp-page="./Edit" asp-route-id="@item.Id"><i class="far fa-edit"></i></a>
+                <a asp-page="./Details" asp-route-id="@item.Id"><i class="fas fa-info-circle"></i></a>
+                <a asp-page="./Delete" asp-route-id="@item.Id"><i class="far fa-trash-alt text-danger"></i></a>
+            </td>
+        </tr>
+        }
+    </tbody>
+</table>

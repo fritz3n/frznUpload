@@ -7,55 +7,60 @@ using System.Threading.Tasks;
 
 namespace frznUpload.Client
 {
-    public static class AutostartHandler
-    {
-        private static RegistryKey rkApp = Registry.CurrentUser.OpenSubKey("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", true);
-        private const string AppName = "frznUpload";
+	public static class AutostartHandler
+	{
+		private static RegistryKey rkApp = Registry.CurrentUser.OpenSubKey("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", true);
+		private const string AppName = "frznUpload";
 
-        static AutostartHandler()
-        {
-            //if val is not null and paths dont match -> set to current path
-            if (!IsNull() && !PathIsSame())
-            {
-                SetToCurrentPath();
-            }
-        }
+		static AutostartHandler()
+		{
+			//if val is not null and paths dont match -> set to current path
+			if (!IsNull() && !PathIsSame())
+			{
+				SetToCurrentPath();
+			}
+		}
 
-        public static bool IsNull()
-        {
-            return rkApp.GetValue(AppName) == null;
-        }
+		public static bool IsNull()
+		{
+			return rkApp.GetValue(AppName) == null;
+		}
 
 
-        public static bool PathIsSame()
-        {
+		public static bool IsEnabled()
+		{
+			return rkApp.GetValue(AppName) is not null;
+		}
 
-            if ((string)rkApp.GetValue(AppName) == GetExecutingPath())
-            {
-                return true;
-            }
-            return false;
-        }
+		public static bool PathIsSame()
+		{
 
-        public static string GetExecutingPath()
-        {
-            return System.Windows.Forms.Application.ExecutablePath;
-        }
+			if ((string)rkApp.GetValue(AppName) == GetExecutingPath())
+			{
+				return true;
+			}
+			return false;
+		}
 
-        public static void SetValue(string val)
-        {
-            rkApp.SetValue(AppName,val);
-        }
+		public static string GetExecutingPath()
+		{
+			return System.Windows.Forms.Application.ExecutablePath;
+		}
 
-        public static void SetToCurrentPath()
-        {
-            SetValue(GetExecutingPath());
-        }
+		public static void SetValue(string val)
+		{
+			rkApp.SetValue(AppName, val);
+		}
 
-        public static void DeleteKey()
-        {
-            rkApp.DeleteValue(AppName);
-        }
+		public static void SetToCurrentPath()
+		{
+			SetValue(GetExecutingPath());
+		}
 
-    }
+		public static void DeleteKey()
+		{
+			rkApp.DeleteValue(AppName);
+		}
+
+	}
 }

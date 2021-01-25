@@ -13,6 +13,8 @@ namespace frznUpload.Web.Models
 		public string Salt { get; set; }
 		public string TwoFaSecret { get; set; }
 
+		public UserRole Role { get; set; }
+
 		public virtual ICollection<Token> Tokens { get; set; }
 		public virtual ICollection<File> Files { get; set; }
 

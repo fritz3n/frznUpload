@@ -1,0 +1,71 @@
+﻿@page
+@model frznUpload.Web.Areas.Admin.Pages.Shares.CreateModel
+
+@{
+    ViewData["Title"] = "Create";
+}
+
+<h1>Create</h1>
+
+<h4>Share</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="Share.Identifier" class="control-label"></label>
+                <input asp-for="Share.Identifier" class="form-control" />
+                <span asp-validation-for="Share.Identifier" class="text-danger"></span>
+            </div>
+            <div class="form-group form-check">
+                <label class="form-check-label">
+                    <input class="form-check-input" asp-for="Share.FirstView" /> @Html.DisplayNameFor(model => model.Share.FirstView)
+                </label>
+            </div>
+            <div class="form-group">
+                <label asp-for="Share.FirstViewCookie" class="control-label"></label>
+                <input asp-for="Share.FirstViewCookie" class="form-control" />
+                <span asp-validation-for="Share.FirstViewCookie" class="text-danger"></span>
+            </div>
+            <div class="form-group form-check">
+                <label class="form-check-label">
+                    <input class="form-check-input" asp-for="Share.Public" /> @Html.DisplayNameFor(model => model.Share.Public)
+                </label>
+            </div>
+            <div class="form-group form-check">
+                <label class="form-check-label">
+                    <input class="form-check-input" asp-for="Share.PublicRegistered" /> @Html.DisplayNameFor(model => model.Share.PublicRegistered)
+                </label>
+            </div>
+            <div class="form-group form-check">
+                <label class="form-check-label">
+                    <input class="form-check-input" asp-for="Share.Whitelisted" /> @Html.DisplayNameFor(model => model.Share.Whitelisted)
+                </label>
+            </div>
+            <div class="form-group">
+                <label asp-for="Share.WhitelistText" class="control-label"></label>
+                <input asp-for="Share.WhitelistText" class="form-control" />
+                <span asp-validation-for="Share.WhitelistText" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Share.Created" class="control-label"></label>
+                <input asp-for="Share.Created" class="form-control" />
+                <span asp-validation-for="Share.Created" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Share.LastAccessed" class="control-label"></label>
+                <input asp-for="Share.LastAccessed" class="form-control" />
+                <span asp-validation-for="Share.LastAccessed" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-page="Index">Back to List</a>
+</div>
+

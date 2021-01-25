@@ -1,0 +1,66 @@
+﻿@page
+@model frznUpload.Web.Areas.Admin.Pages.Tokens.IndexModel
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Index</h1>
+
+<p>
+    <a asp-page="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                User
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Token[0].Serial)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Token[0].Name)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Token[0].Created)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Token[0].LastUsed)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Token[0].ValidUntil)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model.Token) {
+        <tr>
+            <td>
+                <a asp-page="/Users/Details" asp-route-id="@item.User.Id">@Html.DisplayFor(modelItem => item.User.Name)</a>
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Serial)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Created)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.LastUsed)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ValidUntil)
+            </td>
+            <td>
+                <a asp-page="./Edit" asp-route-id="@item.Id"><i class="far fa-edit"></i></a>
+                <a asp-page="./Details" asp-route-id="@item.Id"><i class="fas fa-info-circle"></i></a>
+                <a asp-page="./Delete" asp-route-id="@item.Id"><i class="far fa-trash-alt text-danger"></i></a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

@@ -1,0 +1,52 @@
+﻿@page
+@model frznUpload.Web.Areas.Admin.Pages.Tokens.EditModel
+
+@{
+    ViewData["Title"] = "Edit";
+}
+
+<h1>Edit</h1>
+
+<h4>Token</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="Token.Id" />
+            <div class="form-group">
+                <label asp-for="Token.Serial" class="control-label"></label>
+                <input asp-for="Token.Serial" class="form-control" />
+                <span asp-validation-for="Token.Serial" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Token.Name" class="control-label"></label>
+                <input asp-for="Token.Name" class="form-control" />
+                <span asp-validation-for="Token.Name" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Token.Created" class="control-label"></label>
+                <input asp-for="Token.Created" class="form-control" />
+                <span asp-validation-for="Token.Created" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Token.LastUsed" class="control-label"></label>
+                <input asp-for="Token.LastUsed" class="form-control" />
+                <span asp-validation-for="Token.LastUsed" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Token.ValidUntil" class="control-label"></label>
+                <input asp-for="Token.ValidUntil" class="form-control" />
+                <span asp-validation-for="Token.ValidUntil" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-page="./Index">Back to List</a>
+</div>
+

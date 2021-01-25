@@ -1,0 +1,54 @@
+﻿@page
+@model frznUpload.Web.Areas.Admin.Pages.Users.IndexModel
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Index</h1>
+
+<p>
+    <a asp-page="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Users[0].Name)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Users[0].Role)
+            </th>
+            <th>
+                Files
+            </th>
+            <th>
+                Total size
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model.Users) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Role)
+            </td>
+            <td>
+                <a asp-page="/Files/Index" asp-route-userId="@item.Id"> @Html.DisplayFor(modelItem => item.FileCount) @(item.FileCount == 1 ? "File" : "Files")</a>
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.TotalSize)
+            </td>
+            <td>
+                <a asp-page="./Edit" asp-route-id="@item.Id"><i class="far fa-edit"></i></a>
+                <a asp-page="./Details" asp-route-id="@item.Id"><i class="fas fa-info-circle"></i></a>
+                <a asp-page="./Delete" asp-route-id="@item.Id"><i class="far fa-trash-alt text-danger"></i></a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

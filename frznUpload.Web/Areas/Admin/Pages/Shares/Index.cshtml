@@ -1,0 +1,96 @@
+﻿@page
+@model frznUpload.Web.Areas.Admin.Pages.Shares.IndexModel
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Index</h1>
+
+<p>
+    <a asp-page="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                User
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Share[0].File)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Share[0].Identifier)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Share[0].FirstView)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Share[0].FirstViewCookie)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Share[0].Public)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Share[0].PublicRegistered)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Share[0].Whitelisted)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Share[0].WhitelistText)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Share[0].Created)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Share[0].LastAccessed)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model.Share) {
+        <tr>
+            <td>
+                <a asp-page="/Users/Details" asp-route-id="@item.File.User.Id">@Html.DisplayFor(modelItem => item.File.User.Name)</a>
+            </td>
+            <td>
+                <a asp-page="/Files/Details" asp-route-id="@item.File.Id">@(item.File.Filename + "." + item.File.Extension)</a>
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Identifier)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.FirstView)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.FirstViewCookie)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Public)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.PublicRegistered)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Whitelisted)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.WhitelistText)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Created)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.LastAccessed)
+            </td>
+            <td>
+                <a asp-page="./Edit" asp-route-id="@item.Id"><i class="far fa-edit"></i></a>
+                <a asp-page="./Details" asp-route-id="@item.Id"><i class="fas fa-info-circle"></i></a>
+                <a asp-page="./Delete" asp-route-id="@item.Id"><i class="far fa-trash-alt text-danger"></i></a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

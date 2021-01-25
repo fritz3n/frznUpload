@@ -44,6 +44,7 @@ namespace frznUpload.Web
 					return SignInResult.Failed;
 			}
 
+
 			var identity = new ClaimsIdentity(GetUserClaims(user), CookieAuthenticationDefaults.AuthenticationScheme);
 			var principal = new ClaimsPrincipal(identity);
 
@@ -55,6 +56,16 @@ namespace frznUpload.Web
 
 			await httpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal);
 			return SignInResult.Success;
+		}
+
+		public bool HasRole(ClaimsPrincipal principal, UserRole role)
+		{
+			return HasRole(principal, role.ToString());
+		}
+
+		public bool HasRole(ClaimsPrincipal principal, string role)
+		{
+			return principal.HasClaim(c => c.Type == ClaimTypes.Role && c.Value == role);
 		}
 
 		public async void SignOut(HttpContext httpContext)
@@ -124,7 +135,7 @@ namespace frznUpload.Web
 
 		}
 
-		private string GetSalt()
+		public string GetSalt()
 		{
 			using (RandomNumberGenerator rng = new RNGCryptoServiceProvider())
 			{
@@ -141,6 +152,14 @@ namespace frznUpload.Web
 
 			claims.Add(new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()));
 			claims.Add(new Claim(ClaimTypes.Name, user.Name));
+
+			foreach (UserRole r in Enum.GetValues(typeof(UserRole)))
+			{
+				if ((user.Role & r) == r)
+				{
+					claims.Add(new Claim(ClaimTypes.Role, r.ToString()));
+				}
+			}
 			return claims;
 		}
 	}

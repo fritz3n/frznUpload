@@ -13,245 +13,246 @@ using System.Windows.Forms;
 
 namespace frznUpload.Client
 {
-    public partial class SettingsForm : Form
-    {
-        private bool showing = false;
-        private ClientManager clientManager;
-        private HotkeyContainer Hotkeys;
-        private List<HotkeyConfigControl> HotkeyControls = new List<HotkeyConfigControl>();
-        private HotkeyConfigControl Capturer;
-        private bool Capturing = false;
+	public partial class SettingsForm : Form
+	{
+		private bool showing = false;
+		private ClientManager clientManager;
+		private HotkeyContainer Hotkeys;
+		private List<HotkeyConfigControl> HotkeyControls = new List<HotkeyConfigControl>();
+		private HotkeyConfigControl Capturer;
+		private bool Capturing = false;
 
-        private bool hasLoadedAccountData = false;
+		private bool hasLoadedAccountData = false;
 
-        public SettingsForm(ClientManager manager,HotkeyContainer hotkeys)
-        {
-            InitializeComponent();
-            clientManager = manager;
-            Hotkeys = hotkeys;
-        }
+		public SettingsForm(ClientManager manager, HotkeyContainer hotkeys)
+		{
+			InitializeComponent();
+			clientManager = manager;
+			Hotkeys = hotkeys;
+		}
 
-        private void InitHotkeys()
-        {
-            HotkeyLayout.SuspendLayout();
-            HotkeyLayout.Controls.Clear();
-            HotkeyControls.Clear();
+		private void InitHotkeys()
+		{
+			HotkeyLayout.SuspendLayout();
+			HotkeyLayout.Controls.Clear();
+			HotkeyControls.Clear();
 
-            foreach (HotkeyConfig Hotkey in Hotkeys)
-            {
-                var hk = new HotkeyConfigControl(this);
-                hk.Update(Hotkey);
+			foreach (HotkeyConfig Hotkey in Hotkeys)
+			{
+				var hk = new HotkeyConfigControl(this);
+				hk.Update(Hotkey);
 
-                HotkeyControls.Add(hk);
-                HotkeyLayout.Controls.Add(hk);
-            }
+				HotkeyControls.Add(hk);
+				HotkeyLayout.Controls.Add(hk);
+			}
 
-            HotkeyLayout.Controls.Add(AddButton);
+			HotkeyLayout.Controls.Add(AddButton);
 
-            HotkeyLayout.ResumeLayout(true);
-        }
+			HotkeyLayout.ResumeLayout(true);
+		}
 
-        public bool StartCapturing(HotkeyConfigControl capturer)
-        {
-            if (Capturing)
-            {
-                Capturer.StopCapturing(true);
-                return false;
-            }
+		public bool StartCapturing(HotkeyConfigControl capturer)
+		{
+			if (Capturing)
+			{
+				Capturer.StopCapturing(true);
+				return false;
+			}
 
-            Capturer = capturer;
-            Capturing = true;
-            return true;
-        }
+			Capturer = capturer;
+			Capturing = true;
+			return true;
+		}
 
-        public void StopCapturing()
-        {
-            Capturing = false;
-            Capturer = null;
-        }
+		public void StopCapturing()
+		{
+			Capturing = false;
+			Capturer = null;
+		}
 
-        private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
-        {
-            bool discard = false;
-            string message = "";
+		private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
+		{
+			bool discard = false;
+			string message = "";
 
-            int id = 0;
+			int id = 0;
 
-            foreach(HotkeyConfigControl control in HotkeyControls)
-            {
-                id++;
+			foreach (HotkeyConfigControl control in HotkeyControls)
+			{
+				id++;
 
-                (bool, string) valid = control.IsValid();
+				(bool, string) valid = control.IsValid();
 
-                if (!valid.Item1)
-                {
-                    discard = true;
-                    message += $"Hotkey #{id}´s changes have not been saved and will be discarded:\n\t{valid.Item2}\n\n";
-                }
-            }
+				if (!valid.Item1)
+				{
+					discard = true;
+					message += $"Hotkey #{id}´s changes have not been saved and will be discarded:\n\t{valid.Item2}\n\n";
+				}
+			}
 
-            if (discard)
-            {
-                var result = MessageBox.Show(message, "Discard changes?", MessageBoxButtons.OKCancel);
+			if (discard)
+			{
+				DialogResult result = MessageBox.Show(message, "Discard changes?", MessageBoxButtons.OKCancel);
 
-                if(result == DialogResult.OK)
-                {
-                    Hide();
-                    showing = false;
-                }
-            }
-            else
-            {
-                Hide();
-                showing = false;
-            }
-            
-            e.Cancel = true;
-        }
+				if (result == DialogResult.OK)
+				{
+					Hide();
+					showing = false;
+				}
+			}
+			else
+			{
+				Hide();
+				showing = false;
+			}
 
-        private void MainForm_Shown(object sender, EventArgs e)
-        {
-            showing = true;
-        }
+			e.Cancel = true;
+		}
 
-        public new void Show()
-        {
-            InitHotkeys();
+		private void MainForm_Shown(object sender, EventArgs e)
+		{
+			showing = true;
+		}
 
-            if (!showing)
-            {
-                base.Show();
-            }
-            else
-            {
-                BringToFront();
-                Activate();
-            }
-        }
+		public new void Show()
+		{
+			InitHotkeys();
 
-        private void AddButton_Click(object sender, EventArgs e)
-        {
-            HotkeyLayout.SuspendLayout();
-            var hk = new HotkeyConfigControl(this);
-            
-            HotkeyControls.Add(hk);
+			if (!showing)
+			{
+				base.Show();
+			}
+			else
+			{
+				BringToFront();
+				Activate();
+			}
+		}
 
-            HotkeyLayout.Controls.Remove(AddButton); ;
-            HotkeyLayout.Controls.Add(hk);
-            HotkeyLayout.Controls.Add(AddButton);
+		private void AddButton_Click(object sender, EventArgs e)
+		{
+			HotkeyLayout.SuspendLayout();
+			var hk = new HotkeyConfigControl(this);
 
-            HotkeyLayout.ResumeLayout(true);
-        }
+			HotkeyControls.Add(hk);
 
-        public void RemoveHotkey(HotkeyConfigControl control)
-        {
-            HotkeyLayout.Controls.Remove(control);
-            Hotkeys.Remove(control.GetConfig());
-            HotkeyControls.Remove(control);
-        }
+			HotkeyLayout.Controls.Remove(AddButton); ;
+			HotkeyLayout.Controls.Add(hk);
+			HotkeyLayout.Controls.Add(AddButton);
 
-        public void SaveHotkey(HotkeyConfig config)
-        {
-            Hotkeys.Add(config);
-        }
+			HotkeyLayout.ResumeLayout(true);
+		}
 
-        private void SettingsForm_KeyDown(object sender, KeyEventArgs e)
-        {
-            if (Capturing)
-            {
-                Capturer.KeyDownEvent(e);
-            }
-        }
+		public void RemoveHotkey(HotkeyConfigControl control)
+		{
+			HotkeyLayout.Controls.Remove(control);
+			Hotkeys.Remove(control.GetConfig());
+			HotkeyControls.Remove(control);
+		}
 
-        private void SettingsForm_KeyUp(object sender, KeyEventArgs e)
-        {
-            if (Capturing)
-            {
-                Capturer.KeyUpEvent(e);
-            }
-        }
+		public void SaveHotkey(HotkeyConfig config)
+		{
+			Hotkeys.Add(config);
+		}
 
-        private void SettingsForm_Deactivate(object sender, EventArgs e)
-        {
-            if (Capturing)
-                Capturer.StopCapturing(true);
-        }
+		private void SettingsForm_KeyDown(object sender, KeyEventArgs e)
+		{
+			if (Capturing)
+			{
+				Capturer.KeyDownEvent(e);
+			}
+		}
 
-        private void CheckBox1_CheckedChanged(object sender, EventArgs e)
-        {
-            if (autostartCheckbox.Checked)
-            {
-                AutostartHandler.SetToCurrentPath();
-            }
-            else
-            {
-                AutostartHandler.DeleteKey();
-            }
-        }
+		private void SettingsForm_KeyUp(object sender, KeyEventArgs e)
+		{
+			if (Capturing)
+			{
+				Capturer.KeyUpEvent(e);
+			}
+		}
+
+		private void SettingsForm_Deactivate(object sender, EventArgs e)
+		{
+			if (Capturing)
+				Capturer.StopCapturing(true);
+		}
+
+		private void CheckBox1_CheckedChanged(object sender, EventArgs e)
+		{
+			if (autostartCheckbox.Checked)
+			{
+				AutostartHandler.SetToCurrentPath();
+			}
+			else
+			{
+				AutostartHandler.DeleteKey();
+			}
+		}
 
 
-        /*
+		/*
         * Two factor 
         *    
         */
-        private async void TwoFaCheckbox_CheckedChangedAsync(object sender, EventArgs e)
-        {
-            if (TwoFaCheckbox.Checked)
-            {
-                //enable Two fa
-                string qr = await clientManager.GetTwoFaSecret();
-                // Display the qrcode
-                var base64Data = Regex.Match(qr, @"data:image/(?<type>.+?),(?<data>.+)").Groups["data"].Value;
-                var binData = Convert.FromBase64String(base64Data);
+		private async void TwoFaCheckbox_CheckedChangedAsync(object sender, EventArgs e)
+		{
+			if (TwoFaCheckbox.Checked)
+			{
+				//enable Two fa
+				string qr = await clientManager.GetTwoFaSecret();
+				// Display the qrcode
+				string base64Data = Regex.Match(qr, @"data:image/(?<type>.+?),(?<data>.+)").Groups["data"].Value;
+				byte[] binData = Convert.FromBase64String(base64Data);
 
-                using (var stream = new MemoryStream(binData))
-                {
-                    picture_qr.Image = new Bitmap(stream);
-                }
-                scanLable.Visible = true;
-                picture_qr.Visible = true;
-            }
-            else
-            {
-                //remove Two fa
-                await clientManager.RemoveTwoFa();
-            }
-        }
+				using (var stream = new MemoryStream(binData))
+				{
+					picture_qr.Image = new Bitmap(stream);
+				}
+				scanLable.Visible = true;
+				picture_qr.Visible = true;
+			}
+			else
+			{
+				//remove Two fa
+				await clientManager.RemoveTwoFa();
+			}
+		}
 
 
-        private async void SettingsTabCtrl_TabIndexChangedAsync(object sender, EventArgs e)
-        {
-            if(SettingsTabCtrl.SelectedIndex == 3)
-            {
-                TwoFaCheckbox.CheckedChanged -= TwoFaCheckbox_CheckedChangedAsync;
+		private async void SettingsTabCtrl_TabIndexChangedAsync(object sender, EventArgs e)
+		{
+			if (SettingsTabCtrl.SelectedIndex == 3)
+			{
+				TwoFaCheckbox.CheckedChanged -= TwoFaCheckbox_CheckedChangedAsync;
 
-                //account tab -> load settings
-                TwoFaCheckbox.Checked = await clientManager.GetHasTwoFaEnabled();
-                //settings loaded enable buttons
-                TwoFaCheckbox.Enabled = true;
+				//account tab -> load settings
+				TwoFaCheckbox.Checked = await clientManager.GetHasTwoFaEnabled();
+				//settings loaded enable buttons
+				TwoFaCheckbox.Enabled = true;
 
-                TwoFaCheckbox.CheckedChanged += TwoFaCheckbox_CheckedChangedAsync;
-                
-            }
-            else
-            {
-                //hide the qrcode and lable
-                picture_qr.Visible = false;
-                scanLable.Visible = false;
-            }
+				TwoFaCheckbox.CheckedChanged += TwoFaCheckbox_CheckedChangedAsync;
 
-            if(SettingsTabCtrl.SelectedIndex == 2)
-            {
-                ExplorerIntegrationBox.Checked = ExplorerIntegrationHandler.IsEnabled();
-            }
-        }
+			}
+			else
+			{
+				//hide the qrcode and lable
+				picture_qr.Visible = false;
+				scanLable.Visible = false;
+			}
 
-        private void ExplorerIntegrationBox_CheckedChanged(object sender, EventArgs e)
-        {
-            if (ExplorerIntegrationBox.Checked)
-                ExplorerIntegrationBox.Checked = ExplorerIntegrationHandler.Enable();
-            else
-                ExplorerIntegrationHandler.Disable();
-        }
-    }
+			if (SettingsTabCtrl.SelectedIndex == 2)
+			{
+				ExplorerIntegrationBox.Checked = ExplorerIntegrationHandler.IsEnabled();
+				autostartCheckbox.Checked = AutostartHandler.IsEnabled();
+			}
+		}
+
+		private void ExplorerIntegrationBox_CheckedChanged(object sender, EventArgs e)
+		{
+			if (ExplorerIntegrationBox.Checked)
+				ExplorerIntegrationBox.Checked = ExplorerIntegrationHandler.Enable();
+			else
+				ExplorerIntegrationHandler.Disable();
+		}
+	}
 }

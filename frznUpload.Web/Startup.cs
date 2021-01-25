@@ -1,4 +1,5 @@
 using frznUpload.Web.Files;
+using frznUpload.Web.Models;
 using frznUpload.Web.Server;
 using frznUpload.Web.Server.Certificates;
 using Microsoft.AspNetCore.Authentication.Cookies;
@@ -13,6 +14,7 @@ using Microsoft.Extensions.Hosting;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace frznUpload.Web
@@ -42,11 +44,18 @@ namespace frznUpload.Web
 			});
 
 			services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie();
+			services.AddAuthorization(options =>
+			{
+				options.AddPolicy("Admin", policy =>
+					policy.RequireClaim(ClaimTypes.Role, UserRole.Admin.ToString()));
+			});
 
 			services.AddRazorPages().AddRazorPagesOptions(options =>
 			{
+				options.Conventions.AuthorizeAreaFolder("Admin", "/", "Admin");
 				options.Conventions.AuthorizeAreaFolder("Account", "/");
 			});
+
 			services.AddControllers().AddRazorRuntimeCompilation();
 			services.AddDbContext<Data.Database>(options => options.UseLazyLoadingProxies().UseSqlServer(Configuration.GetConnectionString("Database")));
 
@@ -91,6 +100,10 @@ namespace frznUpload.Web
 				endpoints.MapControllerRoute(
 					name: "downloadFile",
 					pattern: "/Account/Files/d/{fileId}",
+					defaults: new { controller = "Download", action = "DownloadFile" });
+				endpoints.MapControllerRoute(
+					name: "downloadFileAdmin",
+					pattern: "/Admin/Files/d/{fileId}",
 					defaults: new { controller = "Download", action = "DownloadFile" });
 				endpoints.MapControllers();
 				endpoints.MapRazorPages();
