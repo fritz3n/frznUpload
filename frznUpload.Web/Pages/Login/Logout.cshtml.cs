@@ -16,9 +16,10 @@ namespace frznUpload.Web.Pages.Login
 			this.userManager = userManager;
 		}
 
-		public void OnGet()
+		public IActionResult OnGet()
 		{
 			userManager.SignOut(HttpContext);
+			return Redirect("/Login/Login");
 		}
 	}
 }

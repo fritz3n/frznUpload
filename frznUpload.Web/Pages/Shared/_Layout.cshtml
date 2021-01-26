@@ -21,7 +21,6 @@
     {
         <link rel="stylesheet" href="~/lib/bootstrap/css/bootstrap.min.css" id="css" />
     }
-    <script src="~/js/Theme.js" id="theme"></script>
     <link rel="stylesheet" href="~/css/site.css" />
     <link href="/lib/font-awesome/css/all.min.css" rel="stylesheet">
     @RenderSection("Css", required: false)
@@ -31,7 +30,7 @@
     <header>
         <nav class="navbar navbar-expand-sm navbar-toggleable-sm border-bottom box-shadow mb-3" id="nav">
             <div class="container">
-                <a class="navbar-brand" asp-area="" asp-page="/Index"><img alt="FRZN" id="brand"/></a>
+                <a class="navbar-brand" asp-area="" asp-page="/Index"><img alt="FRZN" id="brand" /></a>
                 <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".navbar-collapse" aria-controls="navbarSupportedContent"
                         aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
@@ -74,17 +73,19 @@
 
                         @if (dark)
                         {
-                    <li class="d-block d-sm-none">
-                        <button type="button" class="btn btn-sm darkModeButton" onclick="toggleDarkMode()"> Mode
-                        </button>
-                    </li>
+                            <li class="d-block d-sm-none">
+                                <button type="button" class="btn btn-sm darkModeButton" onclick="toggleDarkMode()">
+                                    Mode
+                                </button>
+                            </li>
                         }
                         else
                         {
-                    <li class="d-block d-sm-none">
-                        <button type="button" class="btn btn-sm darkModeButton" onclick="toggleDarkMode()"> Mode
-                        </button>
-                    </li>
+                            <li class="d-block d-sm-none">
+                                <button type="button" class="btn btn-sm darkModeButton" onclick="toggleDarkMode()">
+                                    Mode
+                                </button>
+                            </li>
                         }
                     </ul>
                 </div>
@@ -111,6 +112,7 @@
     </footer>
 
     <script src="~/lib/jquery/jquery.min.js"></script>
+    <script src="~/js/Theme.js" id="theme"></script>
     <script src="~/lib/bootstrap/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
 
