@@ -8,9 +8,7 @@ a.navbar-brand {
 }
 
 /* Provide sufficient contrast against white background */
-a {
-  color: #0366d6;
-}
+
 
 .btn-primary {
   color: #fff;
@@ -68,4 +66,95 @@ body {
   width: 100%;
   white-space: nowrap;
   line-height: 60px; /* Vertically center the text there */
+}
+
+[data-theme="dark"] .color-inv {
+    color: white !important;
+}
+
+[data-theme="light"] .color-inv {
+    color: black !important;
+}
+
+[data-theme="dark"] .color-theme {
+    color: var(--dark) !important;
+}
+
+[data-theme="light"] .color-theme {
+    color: var(--light) !important;
+}
+
+[data-theme="dark"] a {
+    color: #a7c6f5;
+}
+
+
+[data-theme="dark"] .navbar {
+    background-color: #3b3b3b !important;
+}
+[data-theme="dark"] .navbar-toggler {
+    color: rgba(255,255,255,.5);
+    border-color: rgba(255,255,255,.1);
+}
+[data-theme="dark"] .navbar-toggler-icon {
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='30' height='30' viewBox='0 0 30 30'%3e%3cpath stroke='rgba%28255, 255, 255, 0.5%29' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
+}
+
+[data-theme="light"] .navbar {
+    background-color: #f8f9fa !important;
+}
+[data-theme="light"] .navbar-toggler {
+    color: rgba(0,0,0,.5);
+    border-color: rgba(0,0,0,.1);
+}
+[data-theme="light"] .navbar-toggler-icon {
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='30' height='30' viewBox='0 0 30 30'%3e%3cpath stroke='rgba%280, 0, 0, 0.5%29' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
+}
+
+
+#brand {
+    width: 80px;
+    max-width: 80px;
+}
+
+[data-theme="dark"] #brand {
+    content: url("/assets/images/FRZN-dark.png");
+}
+
+[data-theme="light"] #brand {
+    content: url("/assets/images/FRZN-light.png");
+}
+
+
+[data-theme="dark"] .darkModeButton {
+    color: #fafafa;
+    background-color: #7e7e7e;
+    border-color: #7e7e7e;
+}
+
+[data-theme="dark"] .darkModeButton:hover {
+    color: #fafafa;
+    background-color: #6b6b6b;
+    border-color: #656565;
+}
+
+[data-theme="dark"] .darkModeButton:before {
+    content: "Light";
+}
+
+
+[data-theme="light"] .darkModeButton {
+    color: #fff;
+    background-color: #1d2124;
+    border-color: #171a1d;
+}
+
+[data-theme="light"] .darkModeButton:hover {
+    color: #fff;
+    background-color: #23272b;
+    border-color: #1d2124;
+}
+
+[data-theme="light"] .darkModeButton:before {
+    content: "Dark";
 }

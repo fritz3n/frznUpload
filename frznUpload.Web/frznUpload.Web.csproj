@@ -21,7 +21,6 @@
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.10.9" />
     <PackageReference Include="Microsoft.VisualStudio.Web.BrowserLink" Version="2.2.0" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="5.0.1" />
-    <PackageReference Include="MySql.Data.Entity" Version="6.10.9" />
     <PackageReference Include="Portable.BouncyCastle" Version="1.8.9" />
     <PackageReference Include="TwoFactorAuth.Net" Version="1.4.0" />
   </ItemGroup>

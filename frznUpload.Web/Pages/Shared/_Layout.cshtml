@@ -1,10 +1,27 @@
-﻿<!DOCTYPE html>
-<html lang="en">
+﻿@{ 
+    bool dark = Context.Request.Cookies.ContainsKey("theme") && Context.Request.Cookies["theme"] == "dark";
+    string theme = dark ? "dark" : "light";
+}
+
+<!DOCTYPE html>
+<html lang="en" data-theme="@theme">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - frznUpload.Web</title>
-    <link rel="stylesheet" href="~/lib/bootstrap/css/bootstrap.min.css" />
+    @if (!Context.Request.Cookies.ContainsKey("theme"))
+    {
+        <link rel="stylesheet" href="~/css/bootstrap-auto.css" id="css" />
+    }
+    else if (dark)
+    {
+        <link rel="stylesheet" href="~/lib/bootstrap-dark/dist/bootstrap-night.min.css" id="css" />
+    }
+    else
+    {
+        <link rel="stylesheet" href="~/lib/bootstrap/css/bootstrap.min.css" id="css" />
+    }
+    <script src="~/js/Theme.js" id="theme"></script>
     <link rel="stylesheet" href="~/css/site.css" />
     <link href="/lib/font-awesome/css/all.min.css" rel="stylesheet">
     @RenderSection("Css", required: false)
@@ -12,9 +29,9 @@
 </head>
 <body>
     <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
+        <nav class="navbar navbar-expand-sm navbar-toggleable-sm border-bottom box-shadow mb-3" id="nav">
             <div class="container">
-                <a class="navbar-brand" asp-area="" asp-page="/Index"><img src="~/assets/images/FRZN.png" width="80" alt="FRZN"/></a>
+                <a class="navbar-brand" asp-area="" asp-page="/Index"><img alt="FRZN" id="brand"/></a>
                 <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".navbar-collapse" aria-controls="navbarSupportedContent"
                         aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
@@ -22,10 +39,10 @@
                 <div class="navbar-collapse collapse d-sm-inline-flex flex-sm-row">
                     <ul class="navbar-nav flex-grow-1">
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-page="/Index">Home</a>
+                            <a class="nav-link color-inv" asp-area="" asp-page="/Index">Home</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-page="/Upload">Upload</a>
+                            <a class="nav-link color-inv" asp-area="" asp-page="/Upload">Upload</a>
                         </li>
                     </ul>
                     <ul class="navbar-nav flex-grow-0">
@@ -34,29 +51,54 @@
                             @if (Context.User.IsInRole("Admin"))
                             {
                                 <li class="nav-item">
-                                    <a class="nav-link text-dark" asp-area="Admin" asp-page="/Index">Admin</a>
+                                    <a class="nav-link color-inv" asp-area="Admin" asp-page="/Index">Admin</a>
                                 </li>
                             }
 
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="Account" asp-page="/Index">Account</a>
+                                <a class="nav-link color-inv" asp-area="Account" asp-page="/Index">Account</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-page="/Login/Logout">Logout</a>
+                                <a class="nav-link color-inv" asp-area="" asp-page="/Login/Logout">Logout</a>
                             </li>
                         }
                         else
                         {
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-page="/Login/Login">Login</a>
+                                <a class="nav-link color-inv" asp-area="" asp-page="/Login/Login">Login</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-page="/Login/Register">Register</a>
+                                <a class="nav-link color-inv" asp-area="" asp-page="/Login/Register">Register</a>
                             </li>
+                        }
+
+                        @if (dark)
+                        {
+                    <li class="d-block d-sm-none">
+                        <button type="button" class="btn btn-sm darkModeButton" onclick="toggleDarkMode()"> Mode
+                        </button>
+                    </li>
+                        }
+                        else
+                        {
+                    <li class="d-block d-sm-none">
+                        <button type="button" class="btn btn-sm darkModeButton" onclick="toggleDarkMode()"> Mode
+                        </button>
+                    </li>
                         }
                     </ul>
                 </div>
             </div>
+            @if (dark)
+            {
+                <button type="button" class="d-none d-sm-block btn float-right darkModeButton" onclick="toggleDarkMode()">
+                </button>
+            }
+            else
+            {
+                <button type="button" class="d-none d-sm-block btn float-right darkModeButton" onclick="toggleDarkMode()">
+                </button>
+            }
         </nav>
     </header>
 

@@ -42,7 +42,10 @@
     {
       "library": "jquery@3.5.1",
       "destination": "wwwroot/lib/jquery/",
-      "files": [ "jquery.min.js", "jquery.min.map" ]
+      "files": [
+        "jquery.min.js",
+        "jquery.min.map"
+      ]
     },
     {
       "library": "jquery-validate@1.19.2",
@@ -56,6 +59,41 @@
       "destination": "wwwroot/lib/jquery-validation-unobtrusive/",
       "files": [
         "jquery.validate.unobtrusive.min.js"
+      ]
+    },
+    {
+      "library": "bootswatch@4.6.0",
+      "destination": "wwwroot/lib/bootswatch/",
+      "files": [
+        "cerulean/bootstrap.min.css",
+        "cosmo/bootstrap.min.css",
+        "cyborg/bootstrap.min.css",
+        "darkly/bootstrap.min.css",
+        "flatly/bootstrap.min.css",
+        "journal/bootstrap.min.css",
+        "litera/bootstrap.min.css",
+        "lumen/bootstrap.min.css",
+        "lux/bootstrap.min.css",
+        "materia/bootstrap.min.css",
+        "minty/bootstrap.min.css",
+        "pulse/bootstrap.min.css",
+        "sandstone/bootstrap.min.css",
+        "simplex/bootstrap.min.css",
+        "sketchy/bootstrap.min.css",
+        "slate/bootstrap.min.css",
+        "solar/bootstrap.min.css",
+        "spacelab/bootstrap.min.css",
+        "superhero/bootstrap.min.css",
+        "united/bootstrap.min.css",
+        "yeti/bootstrap.min.css"
+      ]
+    },
+    {
+      "provider": "jsdelivr",
+      "library": "vinorodrigues/bootstrap-dark@0.0.9",
+      "destination": "wwwroot/lib/bootstrap-dark/",
+      "files": [
+        "dist/bootstrap-night.min.css"
       ]
     }
   ]
