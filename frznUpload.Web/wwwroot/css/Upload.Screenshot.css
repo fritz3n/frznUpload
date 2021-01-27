@@ -1,0 +1,108 @@
+﻿#screenshotModal video {
+    max-height: 100%;
+    max-width: 100%;
+    transition: opacity 200ms;
+}
+
+#screenshotModal.shooting video {
+    opacity: 1;
+}
+#screenshotModal:not(.shooting) video {
+    opacity: 0;
+}
+
+
+#screenshotModal canvas {
+    max-height: 100%;
+    max-width: 100%;
+    transition: opacity 200ms;
+}
+
+#screenshotModal.shooting canvas {
+    opacity: 0;
+}
+#screenshotModal:not(.shooting) canvas {
+    opacity: 1;
+}
+
+.modal-body {
+    position: relative;
+}
+
+.modal-body:after {
+    position: absolute;
+    right: 35px;
+    top: 35px;
+    width: 20px;
+    height: 20px;
+    border-radius: 100%;
+    background-color: red;
+    animation: blink 2s infinite;
+    content: "";
+    display: none;
+}
+
+.shooting .modal-body:after {
+    display: block;
+}
+
+@keyframes blink {
+    0% {
+        opacity: 0;
+    }
+    50% {
+        opacity: 1;
+    }
+    100% {
+        opacity: 0;
+    }
+}
+
+
+.screenshotContainer {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+}
+
+.screenshotContainer:after {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    display: block;
+    background-color: white;
+    opacity: 0;
+    content: "";
+}
+
+.blink .screenshotContainer:after {
+    animation: whiteout 400ms;
+    animation-fill-mode: forwards;
+}
+
+
+@keyframes whiteout {
+    0% {
+        opacity: 1;
+    }
+    99% {
+        z-index: 10;
+    }
+    100% {
+        opacity: 0;
+        z-index: -1;
+    }
+}
+
+
+.screenshotContainer, .modal-body {
+    display: flex;
+    justify-content: center;
+    justify-items: center;
+    align-content: center;
+    align-items: center;
+}

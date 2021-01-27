@@ -11,6 +11,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Net.Http.Headers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -73,17 +74,34 @@ namespace frznUpload.Web
 			{
 				app.UseDeveloperExceptionPage();
 				app.UseBrowserLink();
-				app.UseHttpsRedirection();
+
+				app.UseStaticFiles();
 			}
 			else
 			{
 				app.UseExceptionHandler("/Error");
-				// The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-				//app.UseHsts();
+
+				app.UseStaticFiles(new StaticFileOptions
+				{
+					OnPrepareResponse = ctx =>
+					{
+						const int durationInSeconds = 60 * 60 * 24 * 30;
+						ctx.Context.Response.Headers[HeaderNames.CacheControl] =
+							"public,max-age=" + durationInSeconds;
+					}
+				});
 			}
 
 
-			app.UseStaticFiles();
+			app.UseStaticFiles(new StaticFileOptions
+			{
+				OnPrepareResponse = ctx =>
+				{
+					const int durationInSeconds = 60 * 60 * 24;
+					ctx.Context.Response.Headers[HeaderNames.CacheControl] =
+						"public,max-age=" + durationInSeconds;
+				}
+			});
 
 			app.UseRouting();
 

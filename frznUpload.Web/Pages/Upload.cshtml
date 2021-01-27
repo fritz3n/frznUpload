@@ -1,23 +1,28 @@
 ﻿@page
 @model frznUpload.Web.Pages.UploadModel
+@inject IAntiforgery antiforgery
 @{
-    ViewData["Title"] = "Upload";
+    ViewData["Title"] = "Upload"; 
+    var token = antiforgery.GetAndStoreTokens(HttpContext).RequestToken;
+
 }
+<a asp-page-handler="Rename" data-csrf="@token" class="d-none" id="renameLink"></a>
 
 <form asp-page-handler="Upload" class="box mb-2" method="post" enctype="multipart/form-data">
     <div id="uploadDropOver">
         <p class="display-4 start">Drag a file here</p>
         <label for="file" class="btn btn-primary start">Or select it manually</label>
-        <input class="uploadFile start" type="file" name="file" id="file" data-multiple-caption="{count} files selected" multiple />
+        <input class="uploadFile start" type="file" name="file" id="file" />
+        <button type="button" class="btn btn-primary start" onclick="prepareScreenshot(true)">Or take a screenshot</button>
         <h6 class="error">Error while uploading</h6>
         <h6 class="completed">Done!</h6>
         <div class="uploadProgress"></div>
     </div>
 </form>
-
 <div class="text-center">
-    <span id="uploadedSpan" class="mx-auto">Uploaded <a id="uploadedLink"></a> </span>
+    <span id="uploadedSpan" class="mx-auto">Uploaded <a target="_blank" id="uploadedLink"></a> <button id="filenameButton" type="button" class="btn btn-secondary btn-sm"><i class="far fa-edit"></i></button></span>
 </div>
+
 <div class="shareCard mt-2">
     <div class="card">
         <div class="card-header">
@@ -36,7 +41,7 @@
                                 <i class="far fa-question-circle" asp-tooltip-for="Share.Public"></i>
                             </label>
                             <label asp-for="Share.PublicRegistered">
-                                <input asp-for="Share.PublicRegistered"  checked="checked"/>
+                                <input asp-for="Share.PublicRegistered" checked="checked" />
                                 @Html.DisplayNameFor(m => m.Share.PublicRegistered)
                                 <i class="far fa-question-circle" asp-tooltip-for="Share.PublicRegistered"></i>
                             </label>
@@ -78,10 +83,39 @@
 </div>
 
 
+<!-- ScrrenshotModal -->
+<div class="modal fade" id="screenshotModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLongTitle">Screenshot</h5>
+                <button type="button" class="close" onclick="clearScreenshot(true)">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <video id="screenshotVideo"></video>
+
+                <div class="screenshotContainer">
+                    <canvas id="screenshotCanvas" data-toggle="tooltip" data-placement="top" title="Drag to crop the image"></canvas>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="clearScreenshot(true)">Cancel</button>
+                <button type="button" class="btn btn-secondary" onclick="prepareScreenshot(false)">Change source</button>
+                <button type="button" class="btn btn-secondary" onclick="takeScreenshot()">Retake screenshot</button>
+                <button type="button" class="btn btn-primary" id="screenshotUploadButton" onclick="uploadScreenshot()">Upload</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 @section Scripts {
+    <script src="~/js/Upload.Screenshot.js"></script>
     <script src="~/js/Upload.js"></script>
 }
 
 @section Css {
     <link href="/css/Upload.css" rel="stylesheet">
+    <link href="/css/Upload.Screenshot.css" rel="stylesheet">
 }

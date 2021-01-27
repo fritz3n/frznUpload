@@ -9,7 +9,7 @@ namespace frznUpload.Client
 {
 	public static class AutostartHandler
 	{
-		private static RegistryKey rkApp = Registry.CurrentUser.OpenSubKey("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", true);
+		private static RegistryKey rkApp = Registry.CurrentUser.OpenSubKey("HKEY_CURRENT_USER\\Software\\Microsoft\\Windows\\CurrentVersion\\Run", true);
 		private const string AppName = "frznUpload";
 
 		static AutostartHandler()

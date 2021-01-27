@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using System.Web;
 
@@ -97,6 +98,37 @@ namespace frznUpload.Web.Pages
 			string response = identifier + ";" + Path.GetFileName(file.FileName).Replace(";", "");
 
 			return Content(response);
+		}
+
+		public async Task<IActionResult> OnPostRenameAsync(string identifier = null, string newName = null)
+		{
+			if (identifier is null || newName is null)
+				return StatusCode(400);
+
+			User user = userManager.GetUser(HttpContext, database);
+			if (user is null)
+				return Unauthorized();
+
+			Models.File file = user.Files.FirstOrDefault(f => f.Identifier == identifier);
+			if (file is null)
+				return NotFound();
+
+
+			if (newName.Contains('.'))
+			{
+				int index = newName.LastIndexOf('.');
+				file.Filename = newName.Substring(0, index);
+				file.Extension = newName.Substring(index + 1, newName.Length - index - 1);
+			}
+			else
+			{
+				file.Filename = newName;
+				newName += "." + file.Extension;
+			}
+
+			await database.SaveChangesAsync();
+
+			return Content(newName);
 		}
 	}
 }

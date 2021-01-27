@@ -23,6 +23,21 @@ form.on('drag dragstart dragend dragover dragenter dragleave drop', function (e)
     form.trigger('submit');
 });
 
+document.onpaste = function (event) {
+    var items = (event.clipboardData || event.originalEvent.clipboardData).items;
+    console.log(JSON.stringify(items)); // will give you the mime types
+    for (index in items) {
+        var item = items[index];
+        if (item.kind === 'file') {
+            var blob = item.getAsFile();
+            let extension = item.type.split("/")[1];
+            let name = "file " + getDate() + "." + extension;
+            droppedFiles = [{ blob: blob, name: name }];
+            form.trigger('submit');
+        }
+    }
+}
+
 /**
  * 
  * @param {ProgressEvent} e
@@ -41,7 +56,10 @@ form.on('submit', function (e) {
 
     if (droppedFiles) {
         $.each(droppedFiles, function (i, file) {
-            ajaxData.append("file", file);
+            if ('blob' in file)
+                ajaxData.append("file", file.blob, file.name);
+            else
+                ajaxData.append("file", file);
         });
     }
 
@@ -50,6 +68,7 @@ form.on('submit', function (e) {
     xhr.onload = function (e) {
         var res = xhr.response.split(";");
         form.addClass('is-success');
+        identifier = res[0];
         $("#fileId").prop("value", res[0]);
         $("#uploadedSpan").addClass("show");
         $("#uploadedLink").prop("href", "/Account/Files/View/" + encodeURIComponent(res[0]));
@@ -92,7 +111,7 @@ $("#shareUrlCopy").on("click", function (e) {
         $('#shareUrlCopy').popover('hide');
     }, 1000);
 })
-
+let identifier;
 $("#shareForm").on("submit", function (e) {
     e.preventDefault();
     let formData = new FormData($("#shareForm").get(0));
@@ -126,4 +145,51 @@ $("#shareForm").on("submit", function (e) {
             $("#shareButton").popover("hide");
         }, 5000);
     });
+});
+
+let editingName = false;
+$("#filenameButton").on("click", function () {
+    if (!editingName) {
+        var input = document.createElement("input");
+        input.value = $("#uploadedLink").text();
+        input.id = "filenameInput";
+        $(input).insertBefore("#uploadedLink");
+        $("#uploadedLink").remove();
+        $("#filenameButton").html('<i class="fas fa-check"></i>');
+        editingName = true;
+    } else {
+        let newName = $("#filenameInput").val();
+
+        let data = new FormData();
+        data.append("newName", newName);
+        data.append("identifier", identifier);
+
+        fetch($("#renameLink").attr("href"), {
+            body: data,
+            credentials: "same-origin",
+            method: "POST",
+            cache: 'no-cache',
+            headers: {
+                "RequestVerificationToken": $("#renameLink").data("csrf")
+            }
+        }).then(response => {
+            if (response.ok)
+                return response.text();
+            throw "Response was " + response.status + " " + response.statusText;
+        }).then(text => {
+            let link = document.createElement("a");
+            link.href = "/Account/Files/View/" + encodeURIComponent(identifier);
+            link.innerText = text;
+            link.id = "uploadedLink";
+            link.target = "_blank";
+            $(link).insertBefore("#filenameInput");
+            $("#filenameInput").remove();
+            $("#filenameButton").html('<i class="far fa-edit"></i>');
+
+            editingName = false;
+        }).catch(error => {
+            window.alert("Could not change the name\n" + error);
+        });
+
+    }
 });
