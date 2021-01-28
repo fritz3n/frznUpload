@@ -1,4 +1,5 @@
-﻿const screenshotCanvas = document.getElementById("screenshotCanvas");
+﻿
+const screenshotCanvas = document.getElementById("screenshotCanvas");
 const screenshotVideo = document.getElementById("screenshotVideo");
 
 const modal = $("#screenshotModal");
@@ -6,11 +7,14 @@ const modal = $("#screenshotModal");
 var screenshotPrepared = false;
 var shotTaken = false;
 var screenshotImage;
+var uploadFunction = null;
+var screenshotMedia;
 
 function prepareScreenshot(shouldTakeScreenshot = false) {
     if (screenshotPrepared)
         clearScreenshot();
     shotTaken = false;
+    uploadFunction = null;
     mouseUp(null, true);
     let displayMediaOptions = {
         video: {
@@ -19,8 +23,8 @@ function prepareScreenshot(shouldTakeScreenshot = false) {
         audio: false
     };
 
-    navigator.mediaDevices.getDisplayMedia(displayMediaOptions).then(media => {
-        
+    return navigator.mediaDevices.getDisplayMedia(displayMediaOptions).then(media => {
+        screenshotMedia = media;
         modal.modal("show");
         screenshotPrepared = true;
         modal.addClass("shooting");
@@ -31,24 +35,88 @@ function prepareScreenshot(shouldTakeScreenshot = false) {
         else
             screenshotVideo.onplaying = null;
         screenshotVideo.srcObject = media;
+        screenshotVideo.controls = false;
         screenshotVideo.play();
-
-
     });
 }
 
+(() => { // recording context
+    var recording = false;
+    var recorder;
+    var chunks;
+    var disable = false;
+
+    window.stopRecoring = function (disableIt = true) {
+        if (!recording)
+            return;
+
+        disable = disableIt;
+        recording = false;
+        recorder.stop();
+        $("#recordButton").text("Record Video");
+    }
+
+    $("#recordButton").on("click", async function () {
+        if (!recording) {
+            if (!screenshotPrepared)
+                await prepareScreenshot(false);
+            uploadFunction = null;
+            screenshotVideo.controls = false;
+            screenshotVideo.onplaying = null;
+            if (!screenshotVideo.srcObject) {
+                screenshotVideo.srcObject = screenshotMedia;
+                screenshotVideo.src = null;
+            }
+
+            disable = false;
+            recording = true;
+            recorder = new MediaRecorder(screenshotMedia);
+            chunks = [];
+            recorder.ondataavailable = e => chunks.push(e.data);
+            recorder.start();
+            recorder.onstop = e => {
+                if (disable)
+                    return;
+
+                const completeBlob = new Blob(chunks, { type: chunks[0].type });
+
+                screenshotVideo.srcObject = null;
+                screenshotVideo.src = URL.createObjectURL(completeBlob);
+
+                screenshotVideo.controls = true;
+                screenshotVideo.play();
+                modal.addClass("playing");
+                uploadFunction = function (submit) {
+                    let name = "Video " + getDate() + ".mp4";
+                    submit({ blob: completeBlob, name: name });
+                }
+                $("#screenshotUploadButton").attr("disabled", false);
+            };
+
+            $("#recordButton").text("Stop recording");
+            modal.addClass("shooting");
+            modal.removeClass("playing");
+            $("#screenshotUploadButton").attr("disabled", true);
+        } else {
+            stopRecoring(false);
+        }
+    })
+})();
+
 function clearScreenshot(closeModal = false) {
-    let tracks = screenshotVideo.srcObject.getTracks();
+    let tracks = screenshotMedia.getTracks();
 
     tracks.forEach(track => track.stop());
     screenshotVideo.srcObject = null;
     screenshotPrepared = false;
+    stopRecoring();
 
     if (closeModal)
         modal.modal("hide");
 }
 
 function takeScreenshot() {
+    stopRecoring();
     screenshotCanvas.width = screenshotVideo.videoWidth;
     screenshotCanvas.height = screenshotVideo.videoHeight;
 
@@ -66,17 +134,27 @@ function takeScreenshot() {
     let dataUrl = screenshotCanvas.toDataURL("image/png", 0.9);
     screenshotImage = new Image;
     screenshotImage.src = dataUrl;
+
+    uploadFunction = function (submit) {
+        screenshotCanvas.toBlob(function (blob) {
+            let name = "Screenshot " + getDate() + ".png";
+            submit({ blob: blob, name: name });
+        }, "image/png", 0.9);
+    }
+
 }
 
 function uploadScreenshot() {
-    if (!shotTaken)
+    if (!uploadFunction)
         return;
-    screenshotCanvas.toBlob(function (blob) {
-        let name = "Screenshot " + getDate() + ".png";
-        droppedFiles = [{ blob: blob, name: name }];
+
+    var submitFunction = function (file) {
+        droppedFiles = [file];
         form.trigger('submit');
         clearScreenshot(true);
-    }, "image/png", 0.9);
+    }
+
+    uploadFunction(submitFunction);
 }
 
 function getDate() {

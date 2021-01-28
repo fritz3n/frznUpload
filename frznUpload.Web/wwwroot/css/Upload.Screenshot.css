@@ -42,7 +42,7 @@
     display: none;
 }
 
-.shooting .modal-body:after {
+.shooting:not(.playing) .modal-body:after {
     display: block;
 }
 
@@ -82,6 +82,10 @@
 .blink .screenshotContainer:after {
     animation: whiteout 400ms;
     animation-fill-mode: forwards;
+}
+
+.shooting .screenshotContainer {
+    display: none;
 }
 
 

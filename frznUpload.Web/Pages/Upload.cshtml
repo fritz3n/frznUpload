@@ -94,7 +94,7 @@
                 </button>
             </div>
             <div class="modal-body">
-                <video id="screenshotVideo"></video>
+                <video id="screenshotVideo" loop></video>
 
                 <div class="screenshotContainer">
                     <canvas id="screenshotCanvas" data-toggle="tooltip" data-placement="top" title="Drag to crop the image"></canvas>
@@ -102,8 +102,9 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" onclick="clearScreenshot(true)">Cancel</button>
-                <button type="button" class="btn btn-secondary" onclick="prepareScreenshot(false)">Change source</button>
+                <button type="button" class="btn btn-secondary" onclick="prepareScreenshot(true)">Change source</button>
                 <button type="button" class="btn btn-secondary" onclick="takeScreenshot()">Retake screenshot</button>
+                <button type="button" class="btn btn-secondary" id="recordButton">Record Video</button>
                 <button type="button" class="btn btn-primary" id="screenshotUploadButton" onclick="uploadScreenshot()">Upload</button>
             </div>
         </div>
