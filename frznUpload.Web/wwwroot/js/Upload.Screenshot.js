@@ -10,6 +10,9 @@ var screenshotImage;
 var uploadFunction = null;
 var screenshotMedia;
 
+if (!navigator.mediaDevices.getDisplayMedia)
+    $("#screenshotButton").remove();
+
 function prepareScreenshot(shouldTakeScreenshot = false) {
     if (screenshotPrepared)
         clearScreenshot();

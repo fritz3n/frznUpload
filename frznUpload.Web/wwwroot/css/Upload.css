@@ -76,6 +76,7 @@
 
 .is-success .uploadProgress {
     background-color: var(--success);
+    right: 0 !important;
 }
 .is-error .uploadProgress {
     right: 0 !important;

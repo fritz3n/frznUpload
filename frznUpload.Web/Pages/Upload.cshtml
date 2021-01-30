@@ -2,7 +2,7 @@
 @model frznUpload.Web.Pages.UploadModel
 @inject IAntiforgery antiforgery
 @{
-    ViewData["Title"] = "Upload"; 
+    ViewData["Title"] = "Upload";
     var token = antiforgery.GetAndStoreTokens(HttpContext).RequestToken;
 
 }
@@ -13,7 +13,7 @@
         <p class="display-4 start">Drag a file here</p>
         <label for="file" class="btn btn-primary start">Or select it manually</label>
         <input class="uploadFile start" type="file" name="file" id="file" />
-        <button type="button" class="btn btn-primary start" onclick="prepareScreenshot(true)">Or take a screenshot</button>
+        <button type="button" class="btn btn-primary start" id="screenshotButton" onclick="prepareScreenshot(true)">Or take a screenshot</button>
         <h6 class="error">Error while uploading</h6>
         <h6 class="completed">Done!</h6>
         <div class="uploadProgress"></div>
@@ -112,8 +112,9 @@
 </div>
 
 @section Scripts {
-    <script src="~/js/Upload.Screenshot.js"></script>
-    <script src="~/js/Upload.js"></script>
+    <script src="~/js/Upload.Screenshot.js" asp-append-version="true"></script>
+    <script src="~/js/Upload.js" asp-append-version="true"></script>
+    <script src="~/js/Upload.PWA.js" asp-append-version="true"></script>
 }
 
 @section Css {
