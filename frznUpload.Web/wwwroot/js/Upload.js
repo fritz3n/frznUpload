@@ -66,6 +66,10 @@ form.on('submit', function (e) {
     var xhr = new XMLHttpRequest();
     xhr.upload.onprogress = onprogress;
     xhr.onload = function (e) {
+        if (xhr.status != 200) {
+            form.addClass('is-error');
+            return;
+        }
         var res = xhr.response.split(";");
         form.addClass('is-success');
         identifier = res[0];
