@@ -150,18 +150,10 @@ $("#shareForm").on("submit", function (e) {
         }, 5000);
     });
 });
+(() => { 
+    let editingName = false;
 
-let editingName = false;
-$("#filenameButton").on("click", function () {
-    if (!editingName) {
-        var input = document.createElement("input");
-        input.value = $("#uploadedLink").text();
-        input.id = "filenameInput";
-        $(input).insertBefore("#uploadedLink");
-        $("#uploadedLink").remove();
-        $("#filenameButton").html('<i class="fas fa-check"></i>');
-        editingName = true;
-    } else {
+    function setName() {
         let newName = $("#filenameInput").val();
 
         let data = new FormData();
@@ -194,6 +186,27 @@ $("#filenameButton").on("click", function () {
         }).catch(error => {
             window.alert("Could not change the name\n" + error);
         });
-
     }
-});
+
+    $("#filenameButton").on("click", function () {
+        if (!editingName) {
+            var input = document.createElement("input");
+            input.value = $("#uploadedLink").text();
+            input.id = "filenameInput";
+            $(input).insertBefore("#uploadedLink");
+            input.select();
+            $("#uploadedLink").remove();
+            $("#filenameButton").html('<i class="fas fa-check"></i>');
+            editingName = true;
+
+            $("#filenameInput").keypress(function (e) {
+                var keycode = (event.keyCode ? event.keyCode : event.which);
+                if (editingName && keycode == '13') {
+                    setName();
+                }
+            });
+        } else {
+            setName();
+        }
+    });
+})();
