@@ -2,10 +2,12 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -39,7 +41,18 @@ namespace frznUpload.Client
 			}
 			catch (AggregateException ex)
 			{
-				MessageBox.Show("Couldn´t connect:\n" + ex.InnerException.Message);
+				MessageBox.Show("Agg Couldn´t connect:\n" + ex.InnerException.Message);
+
+
+
+				string text = $"AggregateException with {ex.InnerExceptions.Count} InnerExceptions:\n" + ex.ToString() + "\nInnerExceptions:";
+
+				foreach (Exception exception in ex.InnerExceptions)
+					text += "\n" + exception.ToString();
+
+				File.WriteAllText("crashLog " + DateTime.Now.ToString("dd-MM-yy HH_mm") + ".txt", text);
+
+				Thread.Sleep(1000);
 
 				Exit();
 				return;
@@ -47,6 +60,7 @@ namespace frznUpload.Client
 			catch (Exception e)
 			{
 				MessageBox.Show("Couldn´t connect:\n" + e.Message);
+				File.WriteAllText("crashLog " + DateTime.Now.ToString("dd-MM-yy HH_mm") + ".txt", e.ToString());
 
 				Exit();
 				return;

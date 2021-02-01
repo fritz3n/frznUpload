@@ -1,4 +1,5 @@
-﻿using System;
+﻿using log4net;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Pipes;
@@ -12,6 +13,7 @@ namespace frznUpload.Client
 {
 	static class PipeHandler
 	{
+		private static ILog log = LogManager.GetLogger(nameof(PipeHandler));
 		public static bool IsServer { get; } = false;
 
 		private static Mutex mutex = new Mutex(false, "frznUploadRunning");
@@ -20,7 +22,7 @@ namespace frznUpload.Client
 
 		static PipeHandler()
 		{
-			Console.WriteLine("Checking if this is the first instance:");
+			log.Info("Checking if this is the first instance:");
 
 			try
 			{
@@ -29,10 +31,10 @@ namespace frznUpload.Client
 			catch (AbandonedMutexException)
 			{
 				IsServer = false;
-				Console.WriteLine("Mutex abandoned");
+				log.Info("Mutex abandoned");
 			}
 
-			Console.WriteLine("\t" + IsServer);
+			log.Info("\t" + IsServer);
 		}
 
 		/// <summary>
@@ -60,7 +62,7 @@ namespace frznUpload.Client
 					new NamedPipeClientStream(".", "frznUploadPipe",
 						PipeDirection.Out, PipeOptions.Asynchronous);
 
-			Console.WriteLine("Connecting...");
+			log.Info("Connecting...");
 
 			pipeClient.Connect();
 
@@ -75,7 +77,7 @@ namespace frznUpload.Client
 				writer.Write(stringWriter.ToString());
 			}
 
-			Console.WriteLine("Sent!");
+			log.Info("Sent!");
 
 			writer.Dispose();
 			pipeClient.Dispose();
@@ -108,7 +110,7 @@ namespace frznUpload.Client
 					var reader = new StreamReader(pipeServer, Encoding.UTF8, false, 100, true);
 
 					string s = reader.ReadToEnd();
-					Console.WriteLine("incoming Message:\n" + s);
+					log.Info("incoming Message:\n" + s);
 
 
 					using (var stringReader = new StringReader(s))
@@ -121,7 +123,7 @@ namespace frznUpload.Client
 				}
 				catch (IOException e)
 				{
-					Console.WriteLine(e);
+					log.Info(e);
 					pipeServer.Dispose();
 					pipeServer = new NamedPipeServerStream("frznUploadPipe", PipeDirection.In, 1);
 				}

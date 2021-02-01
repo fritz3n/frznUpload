@@ -1,4 +1,5 @@
 ﻿using frznUpload.Shared;
+using log4net;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -11,6 +12,8 @@ namespace frznUpload.Client
 {
 	public class FileUploader : IDisposable
 	{
+		private ILog log = LogManager.GetLogger(nameof(FileUploader));
+
 		int ChunkSize = 5476; // Fits perfectly into 4 TCP segments
 
 		public int TotalSize { get; private set; }
@@ -118,7 +121,7 @@ namespace frznUpload.Client
 				}
 				catch { }
 				Close();
-				Console.WriteLine(e);
+				log.Info(e);
 				throw new AggregateException(e);
 			}
 			catch (Exception e)
@@ -129,7 +132,7 @@ namespace frznUpload.Client
 				}
 				catch { }
 				Close();
-				Console.WriteLine(e);
+				log.Info(e);
 				Exception = e;
 				Error = true;
 			}

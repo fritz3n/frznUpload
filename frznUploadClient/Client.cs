@@ -1,5 +1,6 @@
 ﻿using frznUpload.Client.Handlers;
 using frznUpload.Shared;
+using log4net;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -15,6 +16,9 @@ namespace frznUpload.Client
 {
 	public class Client : IDisposable
 	{
+		private ILog log = LogManager.GetLogger(nameof(Client));
+		private IMessageLogger messageLogger = new MessageLogger(LogManager.GetLogger(nameof(MessageHandler)));
+
 		private TcpClient Tcp;
 		private SslStream stream;
 		private MessageHandler mes;
@@ -37,7 +41,7 @@ namespace frznUpload.Client
 
 		private void OnDisconnect(object sender, MessageHandler.DisconnectReason disconnectReason)
 		{
-			Console.WriteLine("Disconnected: " + disconnectReason);
+			log.Info("Disconnected: " + disconnectReason);
 			Disconnect();
 		}
 
@@ -59,7 +63,7 @@ namespace frznUpload.Client
 			{
 				stream.AuthenticateAsClient(url, new X509Certificate2Collection() { CertificateHandler.Certificate }, true);
 
-				mes = new MessageHandler(Tcp, stream, verbose);
+				mes = new MessageHandler(Tcp, stream, verbose, messageLogger);
 				mes.Start();
 				mes.OnDisconnect += OnDisconnect;
 
@@ -77,14 +81,14 @@ namespace frznUpload.Client
 				stream.AuthenticateAsClient(url);
 
 				IsAuthenticated = false;
-				mes = new MessageHandler(Tcp, stream, verbose);
+				mes = new MessageHandler(Tcp, stream, verbose, messageLogger);
 				mes.Start();
 				mes.OnDisconnect += OnDisconnect;
 			}
 
 			stp.Stop();
 
-			Console.WriteLine("encryption established: " + stp.ElapsedMilliseconds);
+			log.Info("encryption established: " + stp.ElapsedMilliseconds);
 
 
 			mes.SendMessage(new Message(Message.MessageType.Version, false, MessageHandler.Version));
@@ -119,7 +123,7 @@ namespace frznUpload.Client
 			{
 				await stream.AuthenticateAsClientAsync(url, new X509Certificate2Collection(new X509Certificate2[] { CertificateHandler.Certificate }), true);
 
-				mes = new MessageHandler(Tcp, stream, verbose);
+				mes = new MessageHandler(Tcp, stream, verbose, messageLogger);
 				mes.Start();
 				mes.OnDisconnect += OnDisconnect;
 
@@ -142,7 +146,7 @@ namespace frznUpload.Client
 				await stream.AuthenticateAsClientAsync(url);
 
 				IsAuthenticated = false;
-				mes = new MessageHandler(Tcp, stream, verbose);
+				mes = new MessageHandler(Tcp, stream, verbose, messageLogger);
 				mes.Start();
 				mes.OnDisconnect += OnDisconnect;
 			}
@@ -157,7 +161,7 @@ namespace frznUpload.Client
 				throw new InvalidOperationException("Server version does not match Client version");
 			}
 #if DEBUG
-			Console.WriteLine("Connection established: " + stp.ElapsedMilliseconds);
+			log.Info("Connection established: " + stp.ElapsedMilliseconds);
 #endif
 		}
 
@@ -222,12 +226,12 @@ namespace frznUpload.Client
 			catch (SequenceBreakException e)
 			{
 				mes.SendMessage(new Message(Message.MessageType.Sequence, true));
-				Console.WriteLine(e);
+				log.Info(e);
 				return false;
 			}
 			catch (Exception e)
 			{
-				Console.WriteLine(e);
+				log.Info(e);
 				return false;
 			}
 		}
@@ -244,11 +248,11 @@ namespace frznUpload.Client
 			catch (SequenceBreakException e)
 			{
 				mes.SendMessage(new Message(Message.MessageType.Sequence, true));
-				Console.WriteLine(e);
+				log.Info(e);
 			}
 			catch (Exception e)
 			{
-				Console.WriteLine(e);
+				log.Info(e);
 			}
 		}
 
@@ -264,12 +268,12 @@ namespace frznUpload.Client
 			catch (SequenceBreakException e)
 			{
 				mes.SendMessage(new Message(Message.MessageType.Sequence, true));
-				Console.WriteLine(e);
+				log.Info(e);
 				throw new AggregateException(e);
 			}
 			catch (Exception e)
 			{
-				Console.WriteLine(e);
+				log.Info(e);
 				throw new AggregateException(e);
 			}
 		}
@@ -407,7 +411,7 @@ namespace frznUpload.Client
 		}
 
 
-		private static bool ValidateServerCertificate(
+		private bool ValidateServerCertificate(
 			  object sender,
 			  X509Certificate certificate,
 			  X509Chain chain,
@@ -418,10 +422,10 @@ namespace frznUpload.Client
 			if (sslPolicyErrors == SslPolicyErrors.None)
 				return true;
 
-			Console.WriteLine("Certificate error: {0}", sslPolicyErrors);
+			log.InfoFormat("Certificate error: {0}", sslPolicyErrors);
 
 #if DEBUG
-			Console.WriteLine("Ignoring due to debug mode");
+			log.Info("Ignoring due to debug mode");
 			return true;
 #endif
 

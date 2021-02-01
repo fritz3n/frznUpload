@@ -1,4 +1,5 @@
-﻿using Microsoft.Win32;
+﻿using log4net;
+using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -13,6 +14,8 @@ namespace frznUpload.Client
 {
 	static class ExplorerIntegrationHandler
 	{
+		private static ILog log = LogManager.GetLogger(nameof(ExplorerIntegrationHandler));
+
 		private static RegistryKey rkApp = Registry.CurrentUser.CreateSubKey("SOFTWARE\\" + AppName);
 		private const string AppName = "frznUpload";
 		private const string PathKey = "path";
@@ -48,7 +51,7 @@ namespace frznUpload.Client
 
 				p.WaitForExit();
 
-				Console.WriteLine(p.ExitCode);
+				log.Info(p.ExitCode);
 
 				File.Delete(srm);
 				SetEnabledValue(true);
@@ -100,7 +103,7 @@ namespace frznUpload.Client
 
 			p.WaitForExit();
 
-			Console.WriteLine(p.ExitCode);
+			log.Info(p.ExitCode);
 			SetEnabledValue(false);
 		}
 

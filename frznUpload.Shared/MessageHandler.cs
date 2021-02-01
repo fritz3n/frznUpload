@@ -45,7 +45,7 @@ namespace frznUpload.Shared
 		bool disposed = false;
 
 		public bool Running { get; private set; } = false;
-		ManualResetEvent ErrorEvent = new ManualResetEvent(true);
+		ManualResetEvent ErrorEvent = new ManualResetEvent(false);
 		public Exception ShutdownException { get; private set; }
 
 		private bool graceful = false;
