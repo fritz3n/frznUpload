@@ -34,7 +34,7 @@ namespace frznUpload.Shared
 			{Message.MessageType.CertRequest, new List<int>{Types.String, Types.String, Types.Raw, Types.Raw, Types.String} }, // username, password, pubKey
             {Message.MessageType.CertSuccess, new List<int>{ Types.Raw } }, // certified certificate
 
-			{Message.MessageType.CertRenewRequest, new List<int>{ Types.Raw, Types.String } }, // pubKey
+			{Message.MessageType.CertRenewRequest, new List<int>{ Types.Raw, Types.Raw, Types.String } }, // pubKey
             {Message.MessageType.CertRenewSuccess, new List<int>{ Types.Raw } }, // certified certificate
 
 			{Message.MessageType.TwoFactorNeeded, new List<int>{ Types.String} },

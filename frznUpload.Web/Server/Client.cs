@@ -215,8 +215,8 @@ namespace frznUpload.Web.Server
 
 
 							case Message.MessageType.CertRenewRequest:
-								CertificationResult result = certificateHandler.Certify(new[] { message[2] as byte[], message[3] as byte[] });
-								db.SetSerial(message[0], result.SerialNumber, result.ValidUntil, message[4]);
+								CertificationResult result = certificateHandler.Certify(new[] { message[0] as byte[], message[1] as byte[] });
+								db.SetSerial(db.Name, result.SerialNumber, result.ValidUntil, message[2]);
 								db.RemoveSerial(db.SerialNumber);
 
 								mes.SendMessage(new Message(Message.MessageType.CertRenewSuccess, false, result.Rawdata));
