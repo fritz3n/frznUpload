@@ -1,4 +1,5 @@
-﻿using frznUpload.Shared;
+﻿using frznUpload.Client.Handlers;
+using frznUpload.Shared;
 using log4net;
 using log4net.Appender;
 using log4net.Config;
@@ -17,7 +18,7 @@ namespace frznUpload.Client
 {
 	static class Program
 	{
-		private static ILog log;
+		private static ILog log = LogManager.GetLogger(nameof(Program));
 
 		static Program()
 		{
@@ -37,16 +38,6 @@ namespace frznUpload.Client
 
 			Directory.SetCurrentDirectory(f.Directory.FullName);
 
-			var configFileMap = new ExeConfigurationFileMap();
-
-#if DEBUG
-			configFileMap.ExeConfigFilename = "App.Release.config";
-#else
-			configFileMap.ExeConfigFilename = "App.Release.config";
-#endif
-			Config.Configuration = ConfigurationManager.OpenMappedExeConfiguration(configFileMap, ConfigurationUserLevel.None);
-
-
 			var rollingFileAppender = new RollingFileAppender()
 			{
 				Layout = new PatternLayout("%date{HH:mm:ss} [%thread] %-3level %logger - %message%newline"),
@@ -62,7 +53,18 @@ namespace frznUpload.Client
 				rollingFileAppender
 			);
 
-			log = LogManager.GetLogger(nameof(Program));
+			if (HandleSquirrel(args))
+				return;
+
+			var configFileMap = new ExeConfigurationFileMap();
+
+#if DEBUG
+			configFileMap.ExeConfigFilename = "App.Release.config";
+#else
+			configFileMap.ExeConfigFilename = "App.Release.config";
+#endif
+			Config.Configuration = ConfigurationManager.OpenMappedExeConfiguration(configFileMap, ConfigurationUserLevel.None);
+
 
 
 			log.Info("Starting...");
@@ -70,6 +72,8 @@ namespace frznUpload.Client
 			log.Info("Working Directory: " + Directory.GetCurrentDirectory());
 
 			Application.ThreadException += Application_ThreadException;
+
+			Task.Run(Update);
 
 
 			ExplorerIntegrationHandler.Init();
@@ -85,6 +89,53 @@ namespace frznUpload.Client
 			{
 				PipeHandler.SendMessage(args);
 			}
+		}
+
+		private static async Task Update()
+		{
+#if DEBUG
+			//return;
+#endif
+
+			try
+			{
+				await UpdateHandler.UpdateIfPossible();
+			}
+			catch (Exception)
+			{
+			}
+		}
+
+		private static bool HandleSquirrel(string[] args)
+		{
+			if (args.Any(a => a.StartsWith("--squirrel")))
+			{
+				log.Info("Squirrel handling started...");
+				log.Info("Received events: " + string.Join(',', args.Where(a => a.StartsWith("--squirrel"))));
+
+				if (args.Any(a => a == "--squirrel-firstrun"))
+				{
+					log.Info("First run, doing nothing");
+					return false;
+				}
+
+				if (args.Any(a => a == "--squirrel-uninstall") && ExplorerIntegrationHandler.IsEnabled())
+				{
+					log.Info("Trying to disable ExplorerIntegration");
+					try
+					{
+						ExplorerIntegrationHandler.Disable();
+					}
+					catch (Exception e)
+					{
+						log.Error("Error while disabling ExplorerIntegration", e);
+					}
+				}
+
+				log.Info("Exiting after handling Squirrel");
+				return true;
+			}
+			return false;
 		}
 
 		private static void Application_ThreadException(object sender, System.Threading.ThreadExceptionEventArgs e)
