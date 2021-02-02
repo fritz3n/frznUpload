@@ -16,22 +16,42 @@ jobs:
       uses: actions/setup-dotnet@v1
       with:
         dotnet-version: 5.0.x
-    - name: Publish
-      run: dotnet publish -c Release -f net5.0-windows -o D:\publish\ frznUploadClient/frznUpload.Client.csproj
-    - name: Zip release
-      run: powershell Compress-Archive -Path D:\publish\* -DestinationPath D:\release.zip
     - name: Get release
       id: release
       uses: bruceadams/get-release@v1.2.2
       env:
         GITHUB_TOKEN: ${{ github.token }}
-    - name: Upload File
-      id: upload-release-asset 
+    - id: get-id
+      uses: actions/github-script@0.9.0
+      with:
+        result-encoding: string
+        script: return "${{ steps.release.outputs.tag_name }}".substring(1);
+    - name: Publish
+      run: dotnet publish -c Release -f net5.0-windows -o D:\publish\ -p:Version=${{ steps.get-id.outputs.result }} -p:SquirrelOut=D:\output\ frznUploadClient/frznUpload.Client.csproj
+    - name: Upload nupkg
       uses: actions/upload-release-asset@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ steps.release.outputs.upload_url }} 
-        asset_path: D:\release.zip
-        asset_name: release.zip
-        asset_content_type: application/zip
+        asset_path: D:\output\frznUpload-Client-${{ steps.get-id.outputs.result }}-full.nupkg
+        asset_name: frznUpload-Client-${{ steps.get-id.outputs.result }}-full.nupkg
+        asset_content_type: application/octet-stream
+    - name: Upload RELEASE
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.release.outputs.upload_url }} 
+        asset_path: D:\output\RELEASES
+        asset_name: RELEASES
+        asset_content_type: application/octet-stream
+    - name: Upload Setup
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.release.outputs.upload_url }} 
+        asset_path: D:\output\Setup.exe
+        asset_name: Setup.exe
+        asset_content_type: application/octet-stream
