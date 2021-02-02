@@ -29,7 +29,7 @@ namespace frznUpload.Client.ExplorerServer
 
 		public ExplorerHandler()
 		{
-			Stream stream = GetType().Assembly.GetManifestResourceStream("frznUpload.Client.ExplorerServer.upload_Wr5_icon.ico");
+			Stream stream = GetType().Assembly.GetManifestResourceStream("frznUpload.Client.ExplorerServer.icon.ico");
 			icon = new Bitmap(new Icon(stream).ToBitmap(), new Size(16, 16));
 			stream.Dispose();
 		}
@@ -48,17 +48,13 @@ namespace frznUpload.Client.ExplorerServer
 			};
 
 			//  Create a 'count lines' item.
-			var itemUpload = new ToolStripMenuItem
-			(
-				"Upload file to fritzen.xyz"
-			)
+			var itemUpload = new ToolStripMenuItem("Upload file to fritzen.xyz")
 			{
 				AutoSize = true,
 				ImageScaling = ToolStripItemImageScaling.SizeToFit,
 				Image = icon
 			};
 
-			//  When we click, we'll count the lines.
 			itemUpload.Click += ItemUpload_Click;
 
 			//  Add the item to the context menu.
