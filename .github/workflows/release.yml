@@ -26,12 +26,6 @@ jobs:
       with:
         result-encoding: string
         script: return "${{ steps.release.outputs.tag_name }}".substring(1);
-    - name: Install NuGet
-      run: dotnet add package NuGet.CommandLine
-      working-directory: frznUploadClient
-    - name: Install Squirrel
-      run: dotnet add package Squirrel.Windows
-      working-directory: frznUploadClient
     - name: Publish
       run: dotnet publish -c Release -f net5.0-windows -o D:\publish\ -p:Version=${{ steps.get-id.outputs.result }} -p:SquirrelOut=D:\output\ frznUploadClient/frznUpload.Client.csproj
     - name: Upload nupkg
