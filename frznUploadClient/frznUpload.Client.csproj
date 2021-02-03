@@ -79,8 +79,9 @@
 	</ItemGroup>
 
 	<Target Name="Squirrel" AfterTargets="Publish">
+		<Exec Command="nuget install squirrel.windows -x -OutputDirectory packages"/>
 		<Exec Command="nuget pack frznUpload.nuspec -Version $(Version) -Properties Configuration=Release -OutputDirectory $(OutDir) -BasePath $(OutDir)" />
-		<Exec Command="squirrel --releasify $(OutDir)frznUpload-Client.$(Version).nupkg --no-msi --no-delta --framework-version=net5.0 -i icon.ico -r=$(SquirrelOut)" />
+		<Exec Command="packages\squirrel.windows\tools\squirrel --releasify $(OutDir)frznUpload-Client.$(Version).nupkg --no-msi --no-delta --framework-version=net5.0 -i icon.ico -r=$(SquirrelOut)" />
 	</Target>
  
 	<ItemGroup>
