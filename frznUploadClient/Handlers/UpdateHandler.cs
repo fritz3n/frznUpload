@@ -22,9 +22,15 @@ namespace frznUpload.Client.Handlers
 		public static async Task UpdateIfPossible()
 		{
 			if (!Exists()) // Ignore updating if Update.exe does not exist
+			{
+				log.Warn("No Updater found");
 				return;
+			}
 
 			string url = await GetUpdateUrl();
+
+			log.Info("Trying to update from " + url);
+
 			BufferedCommandResult result = await Cli.Wrap(relativePath)
 				.WithArguments(b => b.Add($"--update={url}", true))
 				.WithValidation(CommandResultValidation.None)

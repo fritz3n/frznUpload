@@ -101,8 +101,9 @@ namespace frznUpload.Client
 			{
 				await UpdateHandler.UpdateIfPossible();
 			}
-			catch (Exception)
+			catch (Exception e)
 			{
+				log.Error("Error while updating", e);
 			}
 		}
 
