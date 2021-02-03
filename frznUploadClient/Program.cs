@@ -76,10 +76,10 @@ namespace frznUpload.Client
 			Task.Run(Update);
 
 
-			ExplorerIntegrationHandler.Init();
-
 			if (PipeHandler.IsServer)
 			{
+				ExplorerIntegrationHandler.Init();
+				AutostartHandler.Init();
 
 				Application.EnableVisualStyles();
 				Application.SetCompatibleTextRenderingDefault(false);

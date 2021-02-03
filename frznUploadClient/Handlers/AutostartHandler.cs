@@ -1,4 +1,5 @@
-﻿using Microsoft.Win32;
+﻿using log4net;
+using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,11 +10,28 @@ namespace frznUpload.Client
 {
 	public static class AutostartHandler
 	{
-		private static RegistryKey rkApp = Registry.CurrentUser.OpenSubKey("HKEY_CURRENT_USER\\Software\\Microsoft\\Windows\\CurrentVersion\\Run", true);
+		private static ILog log = LogManager.GetLogger(nameof(AutostartHandler));
+		private static RegistryKey rkApp = null;
 		private const string AppName = "frznUpload";
 
-		static AutostartHandler()
+		public static void Init()
 		{
+			try
+			{
+				rkApp = Registry.CurrentUser.OpenSubKey("Software\\Microsoft\\Windows\\CurrentVersion\\Run", true);
+			}
+			catch (Exception e)
+			{
+				log.Error("Error while accsessing registry", e);
+				return;
+			}
+
+			if (rkApp == null)
+			{
+				log.Error("Registrykey was not retrieved");
+				return;
+			}
+
 			//if val is not null and paths dont match -> set to current path
 			if (!IsNull() && !PathIsSame())
 			{
