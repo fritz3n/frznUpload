@@ -51,10 +51,11 @@ namespace frznUpload.Client.Handlers
 #if DEBUG
 			return @"C:\Users\fritzen\Source\Repos\frznUpload\frznUploadClient\Releases";
 #endif
+			bool pre = Config.AppSettings.AllKeys.Contains("Prerelease") && Config.AppSettings["Prerelease"].Value == "true";
 
 			List<Release> releases = await GetReleases();
 			Release latestRelease = releases
-					.Where(x => !x.Prerelease)
+					.Where(x => pre || !x.Prerelease)
 					.OrderByDescending(x => x.PublishedAt)
 					.First();
 

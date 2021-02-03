@@ -85,7 +85,7 @@
 	</Target>
  
 	<ItemGroup>
-	  <None Update="App.Debug.config">
+	  <None Update="App.Debug.config" Condition="'$(Configuration)'=='Debug'">
 	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 	  </None> 
 	  <None Update="App.Release.config">
