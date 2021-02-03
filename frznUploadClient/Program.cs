@@ -97,14 +97,7 @@ namespace frznUpload.Client
 			//return;
 #endif
 
-			try
-			{
-				await UpdateHandler.UpdateIfPossible();
-			}
-			catch (Exception e)
-			{
-				log.Error("Error while updating", e);
-			}
+			await UpdateHandler.UpdateAndStop();
 		}
 
 		private static bool HandleSquirrel(string[] args)
