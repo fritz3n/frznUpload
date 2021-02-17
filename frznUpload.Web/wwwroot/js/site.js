@@ -4,6 +4,6 @@ window.onload = () => {
 
     if ('serviceWorker' in navigator) {
         navigator.serviceWorker
-            .register('./serviceWorker.js');
+            .register('/serviceWorker.js');
     }
 }
