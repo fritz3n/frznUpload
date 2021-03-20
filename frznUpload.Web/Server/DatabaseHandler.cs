@@ -189,20 +189,10 @@ namespace frznUpload.Web.Server
 
 			do
 			{
-				identifier = GenerateShareIdentifier();
+				identifier = FileManager.GenerateShareIdentifier();
 			} while (database.Shares.Any(s => s.Identifier == identifier));
 
 			return identifier;
-		}
-
-		private string GenerateShareIdentifier()
-		{
-			byte[] rndBytes = new byte[5];
-			rnd.NextBytes(rndBytes);
-
-			string s = Convert.ToBase64String(rndBytes).Replace('/', '-');
-
-			return s.Substring(0, 6);
 		}
 
 		public string SetFileShare(string fileIdentifier, bool firstView = false, bool isPublic = true, bool publicRegistered = true, bool whitelisted = false, IEnumerable<string> whitelist = null)

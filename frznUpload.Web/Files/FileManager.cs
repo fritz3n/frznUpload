@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace frznUpload.Web.Files
@@ -14,7 +15,7 @@ namespace frznUpload.Web.Files
 	{
 		private readonly Database database;
 		private readonly IConfiguration config;
-		Random rnd = new Random();
+		static Random rnd = new Random();
 
 		public FileManager(Database database, IConfiguration config)
 		{
@@ -119,14 +120,17 @@ namespace frznUpload.Web.Files
 			return identifier;
 		}
 
-		private string GenerateShareIdentifier()
+		const string shareIdCharacters = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz-+.*";
+		const int shareIdLength = 6;
+
+		public static string GenerateShareIdentifier()
 		{
-			byte[] rndBytes = new byte[5];
-			rnd.NextBytes(rndBytes);
+			var sb = new StringBuilder(shareIdLength);
 
-			string s = Convert.ToBase64String(rndBytes).Replace('/', '-');
+			for (int i = 0; i < shareIdLength; i++)
+				sb.Append(shareIdCharacters[rnd.Next(shareIdCharacters.Length)]);
 
-			return s.Substring(0, 6);
+			return sb.ToString();
 		}
 
 	}

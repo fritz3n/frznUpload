@@ -44,6 +44,10 @@ namespace frznUpload.Web.Pages
 
 			new FileExtensionContentTypeProvider().TryGetContentType(filename, out string contentType);
 
+			// Returns null on unkown file ending
+			if (contentType == null)
+				contentType = "application/octet-stream";
+
 			return File(file, contentType, filename, true);
 		}
 
