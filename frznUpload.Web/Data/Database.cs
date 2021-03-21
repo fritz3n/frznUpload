@@ -18,6 +18,7 @@ namespace frznUpload.Web.Data
 		public DbSet<Token> Tokens { get; set; }
 		public DbSet<File> Files { get; set; }
 		public DbSet<Share> Shares { get; set; }
+		public DbSet<Visit> Visits { get; set; }
 
 
 		protected override void OnModelCreating(ModelBuilder builder)
@@ -36,9 +37,15 @@ namespace frznUpload.Web.Data
 
 			builder.Entity<Share>().ToTable("Shares").Property(e => e.Id);
 			builder.Entity<Share>().HasKey(s => s.Id);
+			builder.Entity<Share>().HasMany(s => s.Visits).WithOne(v => v.Share).OnDelete(DeleteBehavior.Cascade);
 
 			builder.Entity<Token>().ToTable("Tokens").Property(e => e.Id);
 			builder.Entity<Token>().HasKey(t => t.Id);
+
+
+			builder.Entity<Visit>().ToTable("Visits").Property(e => e.Id);
+			builder.Entity<Visit>().HasKey(t => t.Id);
+			builder.Entity<Visit>().HasOne(v => v.User).WithMany().OnDelete(DeleteBehavior.Cascade);
 
 		}
 	}

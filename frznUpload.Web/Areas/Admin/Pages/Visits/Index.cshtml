@@ -1,0 +1,108 @@
+﻿@page
+@model frznUpload.Web.Areas.Admin.Pages.Visits.IndexModel
+
+@{
+    ViewData["Title"] = "Index";
+}
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+
+<h1>Index</h1>
+@if (Model.UserName != null)
+{
+<h5>Visits of 
+    User <a asp-page="/Users/Details" asp-route-id="@Model.UserId">@Model.UserName</a>
+     - File <a asp-page="/Files/Details" asp-route-id="@Model.FileId">@Model.FileName</a>
+     - Share <a asp-page="/Shares/Details" asp-route-id="@Model.UserId">@Model.ShareIdentifier</a>
+    
+    </h5>
+}
+
+<table class="table">
+    <thead>
+        <tr>
+            @if (Model.UserName == null)
+            {
+            <th>
+                Owner Name
+            </th>
+            }
+            @if (Model.FileName == null)
+            {
+            <th>
+                File
+            </th>
+            }
+            @if (Model.ShareIdentifier == null)
+            {
+            <th>
+                Share
+            </th>
+            }
+            <th>
+                User Name
+            </th>
+            <th>
+                Success
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Visits[0].Date)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Visits[0].IP)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Visits[0].OS)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.Visits)
+        {
+        <tr>
+            @if (Model.UserName == null)
+            {
+
+                <td>
+                    <a asp-page="/Users/Details" asp-route-id="@item.Share.File.User.Id">@Html.DisplayFor(modelItem => item.Share.File.User.Name)</a>
+                </td>
+            }
+            
+            @if (Model.FileName == null)
+            {
+
+                <td>
+                    <a asp-page="/Files/Details" asp-route-id="@item.Share.File.Id">@(item.Share.File.Filename + "." + item.Share.File.Extension)</a>
+                </td>
+            }
+            
+            @if (Model.ShareIdentifier == null)
+            {
+
+                <td>
+                    <a asp-page="/Shares/Details" asp-route-id="@item.Share.Id">@Html.DisplayFor(modelItem => item.Share.Identifier)</a>
+                </td>
+            }
+        <td>
+            @(item.User?.Name ?? "null")
+        </td>
+        <td>
+            @item.Access
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Date)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.IP)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.OS)
+        </td>
+            <td>
+                <a asp-page="./Details" asp-route-id="@item.Id"><i class="fas fa-info-circle"></i></a>
+                <a asp-page="./Delete" asp-route-id="@item.Id"><i class="far fa-trash-alt text-danger"></i></a>
+            </td>
+        </tr>
+        }
+    </tbody>
+</table>

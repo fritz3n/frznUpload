@@ -63,7 +63,8 @@ namespace frznUpload.Web.Files
 				Public = isPublic,
 				PublicRegistered = publicRegistered,
 				Whitelisted = whitelisted,
-				Whitelist = whitelist
+				Whitelist = whitelist,
+				DontTrack = file.User.Role.HasFlag(UserRole.DontTrack)
 			});
 			await database.SaveChangesAsync();
 

@@ -25,12 +25,12 @@ namespace frznUpload.Web.Pages
 			this.config = config;
 		}
 
-		public IActionResult DownloadShare(string shareId)
+		public async Task<IActionResult> DownloadShare(string shareId)
 		{
 			if (string.IsNullOrWhiteSpace(shareId))
 				return NotFound();
 
-			ShareHelper.AccessStatus allowed = ShareHelper.CanAccess(HttpContext, database, shareId, out Share share);
+			(ShareHelper.AccessStatus allowed, Share share) = await ShareHelper.CanAccess(HttpContext, database, shareId);
 			if (allowed == ShareHelper.AccessStatus.Denied)
 				return NotFound();
 

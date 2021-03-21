@@ -36,11 +36,9 @@ namespace frznUpload.Web.Server
 {
 	class ServerService : IHostedService
 	{
-		static X509Certificate2 Cert;
 		static List<(IServiceScope, Client)> clients = new();
 		CancellationTokenSource tokenSource = new CancellationTokenSource();
 		TaskCompletionSource completionSource = new TaskCompletionSource();
-		static bool Verbose = false;
 		private readonly ILogger<ServerService> logger;
 		private readonly IServiceProvider provider;
 		private readonly IConfiguration config;

@@ -92,7 +92,7 @@ namespace frznUpload.Web.Server
 			return true;
 		}
 
-		private X509Certificate Selection(object sender, string targetHost, X509CertificateCollection localCertificates, X509Certificate? remoteCertificate, string[] acceptableIssuers)
+		private X509Certificate Selection(object sender, string targetHost, X509CertificateCollection localCertificates, X509Certificate remoteCertificate, string[] acceptableIssuers)
 		{
 			return localCertificates.Cast<X509Certificate>().First();
 		}

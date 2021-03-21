@@ -23,7 +23,7 @@ namespace frznUpload.Web.Areas.Account.Pages.Files
 		}
 
 		[BindProperty]
-		public File File { get; set; }
+		public new File File { get; set; }
 
 		public async Task<IActionResult> OnGetAsync(int? id)
 		{

@@ -24,6 +24,9 @@ namespace frznUpload.Web.Models
 
 		public DateTime Created { get; set; }
 		public DateTime LastAccessed { get; set; }
+		public bool DontTrack { get; set; }
+
+		public virtual ICollection<Visit> Visits { get; set; }
 
 		[NotMapped]
 		public IEnumerable<string> Whitelist

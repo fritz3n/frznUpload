@@ -22,7 +22,6 @@ namespace frznUpload.Client
 		private HotkeyConfigControl Capturer;
 		private bool Capturing = false;
 
-		private bool hasLoadedAccountData = false;
 
 		public SettingsForm(ClientManager manager, HotkeyContainer hotkeys)
 		{

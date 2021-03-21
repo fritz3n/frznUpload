@@ -60,6 +60,8 @@ namespace frznUpload.Web
 			services.AddControllers().AddRazorRuntimeCompilation();
 			services.AddDbContext<Data.Database>(options => options.UseLazyLoadingProxies().UseSqlServer(Configuration.GetConnectionString("Database")));
 
+			services.AddHttpClient();
+
 			services.AddTransient<DatabaseHandler>();
 			services.AddTransient<UserManager>();
 			services.AddTransient<FileManager>();

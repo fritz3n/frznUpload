@@ -1,6 +1,7 @@
 ﻿using frznUpload.Web.Data;
 using frznUpload.Web.Models;
 using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ValueGeneration;
 using System;
 using System.Collections.Generic;
@@ -12,46 +13,46 @@ namespace frznUpload.Web.Pages.Shared
 {
 	public static class ShareHelper
 	{
-		public static AccessStatus CanAccess(HttpContext context, Database database, string shareId, out Share share)
+		public static async Task<(AccessStatus status, Share share)> CanAccess(HttpContext context, Database database, string shareId)
 		{
-			share = database.Shares.FirstOrDefault(s => s.Identifier == shareId);
+			Share share = await database.Shares.FirstOrDefaultAsync(s => s.Identifier == shareId);
 			if (share is null)
-				return AccessStatus.Denied;
+				return (AccessStatus.Denied, share);
 
 			bool isAuthenticated = context.User.Identity.IsAuthenticated;
 			User user = null;
 			if (isAuthenticated)
-				user = database.Users.FirstOrDefault(u => u.Name == context.User.Identity.Name);
+				user = await database.Users.FirstOrDefaultAsync(u => u.Name == context.User.Identity.Name);
 
 			if (share.File.User == user)
-				return AccessStatus.Owner;
+				return (AccessStatus.Owner, share);
 
 			if (share.Public && !isAuthenticated)
-				return AccessStatus.Allowed;
+				return (AccessStatus.Allowed, share);
 			if (share.PublicRegistered && isAuthenticated)
-				return AccessStatus.Allowed;
+				return (AccessStatus.Allowed, share);
 			if (isAuthenticated && share.Whitelisted)
-				return share.Whitelist.Contains(user.Name) ? AccessStatus.Allowed : AccessStatus.Denied;
+				return (share.Whitelist.Contains(user.Name) ? AccessStatus.Allowed : AccessStatus.Denied, share);
 
 			if (share.FirstView)
 			{
 				if (share.FirstViewCookie != null)
 				{
 					if (!context.Request.Cookies.ContainsKey(shareId))
-						return AccessStatus.Denied;
+						return (AccessStatus.Denied, share);
 					string value = context.Request.Cookies[shareId];
 					if (share.FirstViewCookie == value)
-						return AccessStatus.Allowed;
+						return (AccessStatus.Allowed, share);
 				}
 				else
 				{
 					share.FirstViewCookie = GetFirstViewCookie();
 					context.Response.Cookies.Append(shareId, share.FirstViewCookie);
 					database.SaveChanges();
-					return AccessStatus.Allowed;
+					return (AccessStatus.Allowed, share);
 				}
 			}
-			return AccessStatus.Denied;
+			return (AccessStatus.Denied, share);
 		}
 
 		private static string GetFirstViewCookie()

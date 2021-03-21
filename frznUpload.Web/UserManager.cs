@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -93,6 +94,15 @@ namespace frznUpload.Web
 				return null;
 			int id = int.Parse(context.User.FindFirst(ClaimTypes.NameIdentifier).Value);
 			return db.Users.FirstOrDefault(u => u.Id == id);
+		}
+
+		public Task<User> GetUserAsync(HttpContext context, Database db = null)
+		{
+			db ??= database;
+			if (!context.User.Identity.IsAuthenticated)
+				return null;
+			int id = int.Parse(context.User.FindFirst(ClaimTypes.NameIdentifier).Value);
+			return db.Users.FirstOrDefaultAsync(u => u.Id == id);
 		}
 
 		public async Task<bool> DeleteUser(HttpContext context)

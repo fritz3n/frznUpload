@@ -9,6 +9,7 @@ namespace frznUpload.Web.Models
 	public enum UserRole
 	{
 		User,
-		Admin
+		Admin,
+		DontTrack
 	}
 }

@@ -26,9 +26,6 @@
                 @Html.DisplayNameFor(model => model.Share[0].FirstView)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Share[0].FirstViewCookie)
-            </th>
-            <th>
                 @Html.DisplayNameFor(model => model.Share[0].Public)
             </th>
             <th>
@@ -38,13 +35,10 @@
                 @Html.DisplayNameFor(model => model.Share[0].Whitelisted)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Share[0].WhitelistText)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Share[0].Created)
-            </th>
-            <th>
                 @Html.DisplayNameFor(model => model.Share[0].LastAccessed)
+            </th>
+            <th>
+                Visits
             </th>
             <th></th>
         </tr>
@@ -65,9 +59,6 @@
                 @Html.DisplayFor(modelItem => item.FirstView)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.FirstViewCookie)
-            </td>
-            <td>
                 @Html.DisplayFor(modelItem => item.Public)
             </td>
             <td>
@@ -77,13 +68,10 @@
                 @Html.DisplayFor(modelItem => item.Whitelisted)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.WhitelistText)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Created)
-            </td>
-            <td>
                 @Html.DisplayFor(modelItem => item.LastAccessed)
+            </td>
+            <td class="col-sm-10">
+                <a asp-page="/Visits/Index" asp-route-shareId="@item.Id"> @Html.DisplayFor(modelItem => item.Visits.Count) @(item.Visits.Count == 1 ? "Visit" : "Visits")</a>
             </td>
             <td>
                 <a asp-page="./Edit" asp-route-id="@item.Id"><i class="far fa-edit"></i></a>

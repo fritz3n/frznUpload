@@ -13,10 +13,12 @@ namespace frznUpload.Web.Pages
 	public class ViewModel : PageModel
 	{
 		private readonly Database database;
+		private readonly UserManager userManager;
 
-		public ViewModel(Database database)
+		public ViewModel(Database database, UserManager userManager)
 		{
 			this.database = database;
+			this.userManager = userManager;
 		}
 
 		public FileViewInfo FileViewInfo { get; private set; }
@@ -28,16 +30,38 @@ namespace frznUpload.Web.Pages
 			get; private set;
 		}
 
-		public IActionResult OnGet(string shareId)
+		public async Task<IActionResult> OnGetAsync(string shareId)
 		{
 			if (string.IsNullOrWhiteSpace(shareId))
 				return NotFound();
 
 			ShareName = shareId;
 
-			ShareHelper.AccessStatus allowed = ShareHelper.CanAccess(HttpContext, database, shareId, out Share share);
+			(ShareHelper.AccessStatus allowed, Share share) = await ShareHelper.CanAccess(HttpContext, database, shareId);
+
+			if (share != null && !share.DontTrack)
+			{
+				database.Visits.Add(new()
+				{
+					Access = allowed,
+					Date = DateTime.Now,
+					IP = Request.Headers["X-Forwarded-For"],
+					UserAgent = Request.Headers["User-Agent"],
+					Share = share,
+					User = userManager.GetUser(HttpContext)
+				});
+				await database.SaveChangesAsync();
+			}
+
 			if (allowed == ShareHelper.AccessStatus.Denied)
+			{
+				await database.SaveChangesAsync();
 				return NotFound();
+			}
+
+			share.LastAccessed = DateTime.Now;
+
+			await database.SaveChangesAsync();
 
 			IsOwner = allowed == ShareHelper.AccessStatus.Owner;
 

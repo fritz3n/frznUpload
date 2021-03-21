@@ -22,7 +22,7 @@ namespace frznUpload.Web.Areas.Account.Pages.Files
 		}
 
 		[BindProperty]
-		public File File { get; set; }
+		public new File File { get; set; }
 
 		public IActionResult OnGet(int? id)
 		{

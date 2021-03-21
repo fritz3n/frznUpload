@@ -1,0 +1,142 @@
+﻿@page
+@model frznUpload.Web.Areas.Admin.Pages.Visits.DetailsModel
+
+@{
+    ViewData["Title"] = "Details";
+}
+
+<h1>Details</h1>
+
+<div>
+    <h4>Visit</h4>
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-2">
+            Owner Name
+        </dt>
+        <dd class="col-sm-10">
+            <a asp-page="/Users/Details" asp-route-id="@Model.Visit.Share.File.User.Id">@Html.DisplayFor(model => model.Visit.Share.File.User.Name)</a>
+        </dd>
+
+        <dt class="col-sm-2">
+            File Name
+        </dt>
+        <dd class="col-sm-10">
+            <a asp-page="/Files/Details" asp-route-id="@Model.Visit.Share.File.Id">@(Model.Visit.Share.File.Filename + "." + Model.Visit.Share.File.Extension)</a>
+        </dd>
+
+        <dt class="col-sm-2">
+            Share Identifier
+        </dt>
+        <dd class="col-sm-10">
+            <a asp-page="/Shares/Details" asp-route-id="@Model.Visit.Share.Id">@Html.DisplayFor(model => model.Visit.Share.Identifier)</a>
+        </dd>
+
+        <dt class="col-sm-2">
+            User Name
+        </dt>
+        <dd class="col-sm-10">
+            @(Model.Visit.User?.Name ?? "null")
+        </dd>
+
+        <dt class="col-sm-2">
+            Success
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Visit.Access)
+        </dd>
+
+        <dt class="col-sm-2">
+            Date
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Visit.Date)
+        </dd>
+    </dl>
+
+        <div class="card mb-3">
+            <div class="card-header">
+                IP Info
+            </div>
+            <div class="card-body">
+                <dl class="row m-0">
+                    <dt class="col-sm-2">
+                        IP
+                    </dt>
+                    <dd class="col-sm-10">
+                        @Html.DisplayFor(model => model.Visit.IP)
+                    </dd>
+
+                    <dt class="col-sm-2">
+                        Country
+                    </dt>
+                    <dd class="col-sm-10">
+                        @Html.DisplayFor(model => model.Visit.IpInfo.Country)
+                    </dd>
+
+                    <dt class="col-sm-2">
+                        Region
+                    </dt>
+                    <dd class="col-sm-10">
+                        @Html.DisplayFor(model => model.Visit.IpInfo.Region)
+                    </dd>
+
+                    <dt class="col-sm-2">
+                        City
+                    </dt>
+                    <dd class="col-sm-10">
+                        @Html.DisplayFor(model => model.Visit.IpInfo.City)
+                    </dd>
+
+                    <dt class="col-sm-2">
+                        Coordinates
+                    </dt>
+                    <dd class="col-sm-10">
+                        <a target="_blank" href="http://www.google.com/maps/place/@Model.Visit.IpInfo.Loc">@Html.DisplayFor(model => model.Visit.IpInfo.Loc)</a>
+                    </dd>
+                </dl>
+            </div>
+        </div>
+
+        <div class="card mb-3">
+            <div class="card-header">
+                Useragent Info
+            </div>
+            <div class="card-body">
+                <dl class="row m-0">
+                    <dt class="col-sm-2">
+                        String
+                    </dt>
+                    <dd class="col-sm-10">
+                        @Html.DisplayFor(model => model.Visit.UserAgent)
+                    </dd>
+
+                    <dt class="col-sm-2">
+                        Device
+                    </dt>
+                    <dd class="col-sm-10">
+                        @Model.Visit.ClientInfo.Device.ToString()
+                    </dd>
+
+                    <dt class="col-sm-2">
+                        OS
+                    </dt>
+                    <dd class="col-sm-10">
+                        @Model.Visit.ClientInfo.OS.ToString()
+                    </dd>
+
+                    <dt class="col-sm-2">
+                        Agent
+                    </dt>
+                    <dd class="col-sm-10">
+                        @Model.Visit.ClientInfo.UA.ToString()
+                    </dd>
+                </dl>
+            </div>
+        </div>
+
+</div>
+<div>
+    <a asp-page="./Delete" asp-route-id="@Model.Visit.Id">Delete</a> |
+    <a asp-page="./Index">Back to List</a>
+</div>

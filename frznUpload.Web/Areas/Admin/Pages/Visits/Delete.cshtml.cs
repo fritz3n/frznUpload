@@ -8,7 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace frznUpload.Web.Areas.Admin.Pages.Files
+namespace frznUpload.Web.Areas.Admin.Pages.Visits
 {
 	public class DeleteModel : PageModel
 	{
@@ -20,7 +20,7 @@ namespace frznUpload.Web.Areas.Admin.Pages.Files
 		}
 
 		[BindProperty]
-		public new File File { get; set; }
+		public Share Share { get; set; }
 
 		public async Task<IActionResult> OnGetAsync(int? id)
 		{
@@ -29,9 +29,9 @@ namespace frznUpload.Web.Areas.Admin.Pages.Files
 				return NotFound();
 			}
 
-			File = await _context.Files.FirstOrDefaultAsync(m => m.Id == id);
+			Share = await _context.Shares.FirstOrDefaultAsync(m => m.Id == id);
 
-			if (File == null)
+			if (Share == null)
 			{
 				return NotFound();
 			}
@@ -45,11 +45,11 @@ namespace frznUpload.Web.Areas.Admin.Pages.Files
 				return NotFound();
 			}
 
-			File = await _context.Files.FindAsync(id);
+			Share = await _context.Shares.FindAsync(id);
 
-			if (File != null)
+			if (Share != null)
 			{
-				_context.Files.Remove(File);
+				_context.Shares.Remove(Share);
 				await _context.SaveChangesAsync();
 			}
 

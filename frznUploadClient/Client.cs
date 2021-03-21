@@ -430,7 +430,9 @@ namespace frznUpload.Client
 #endif
 
 			// Do not allow this client to communicate with unauthenticated servers.
+#pragma warning disable CS0162 // Unreachable code detected
 			return false;
+#pragma warning restore CS0162 // Unreachable code detected
 		}
 
 		private void ThrowIfDisposed()
