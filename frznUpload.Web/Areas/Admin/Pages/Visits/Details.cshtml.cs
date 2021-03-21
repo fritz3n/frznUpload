@@ -49,9 +49,14 @@ namespace frznUpload.Web.Areas.Admin.Pages.Visits
 
 			var uaParser = Parser.GetDefault();
 			ClientInfo client = uaParser.Parse(visit.UserAgent);
+			FullResponse response = null;
 
-			var api = new IpInfoApi(configuration.GetValue<string>("IpinfoToken"), clientFactory.CreateClient());
-			FullResponse response = await api.GetInformationByIpAsync(visit.IP);
+			try
+			{
+				var api = new IpInfoApi(configuration.GetValue<string>("IpinfoToken"), clientFactory.CreateClient());
+				response = await api.GetInformationByIpAsync(visit.IP);
+			}
+			catch (Exception) { }
 
 			Visit = new()
 			{

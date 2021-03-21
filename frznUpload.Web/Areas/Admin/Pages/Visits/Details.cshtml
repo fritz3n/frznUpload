@@ -64,35 +64,35 @@
                         IP
                     </dt>
                     <dd class="col-sm-10">
-                        @Html.DisplayFor(model => model.Visit.IP)
+                        @Model.Visit?.IP
                     </dd>
 
                     <dt class="col-sm-2">
                         Country
                     </dt>
                     <dd class="col-sm-10">
-                        @Html.DisplayFor(model => model.Visit.IpInfo.Country)
+                        @(Model.Visit.IpInfo?.Country ?? "<unknown>")
                     </dd>
 
                     <dt class="col-sm-2">
                         Region
                     </dt>
                     <dd class="col-sm-10">
-                        @Html.DisplayFor(model => model.Visit.IpInfo.Region)
+                        @(Model.Visit.IpInfo?.Region ?? "<unknown>")
                     </dd>
 
                     <dt class="col-sm-2">
                         City
                     </dt>
                     <dd class="col-sm-10">
-                        @Html.DisplayFor(model => model.Visit.IpInfo.City)
+                        @(Model.Visit.IpInfo?.City ?? "<unknown>")
                     </dd>
 
                     <dt class="col-sm-2">
                         Coordinates
                     </dt>
                     <dd class="col-sm-10">
-                        <a target="_blank" href="http://www.google.com/maps/place/@Model.Visit.IpInfo.Loc">@Html.DisplayFor(model => model.Visit.IpInfo.Loc)</a>
+                        <a target="_blank" href="http://www.google.com/maps/place/@Model.Visit.IpInfo?.Loc">@(Model.Visit.IpInfo?.Loc ?? "<unknown>")</a>
                     </dd>
                 </dl>
             </div>
