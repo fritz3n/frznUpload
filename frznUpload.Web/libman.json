@@ -95,6 +95,48 @@
       "files": [
         "dist/bootstrap-night.min.css"
       ]
+    },
+    {
+      "library": "bootstrap-table@1.18.2",
+      "destination": "wwwroot/lib/bootstrap-table/",
+      "files": [
+        "bootstrap-table.min.js",
+        "bootstrap-table.min.css",
+        "themes/semantic/bootstrap-table-semantic.min.js",
+        "themes/semantic/bootstrap-table-semantic.min.css",
+        "themes/semantic/bootstrap-table-semantic.js",
+        "themes/semantic/bootstrap-table-semantic.css",
+        "themes/materialize/bootstrap-table-materialize.min.js",
+        "themes/materialize/bootstrap-table-materialize.min.css",
+        "themes/materialize/bootstrap-table-materialize.js",
+        "themes/materialize/bootstrap-table-materialize.css",
+        "themes/foundation/bootstrap-table-foundation.min.js",
+        "themes/foundation/bootstrap-table-foundation.min.css",
+        "themes/foundation/bootstrap-table-foundation.js",
+        "themes/foundation/bootstrap-table-foundation.css",
+        "themes/bulma/bootstrap-table-bulma.min.js",
+        "themes/bulma/bootstrap-table-bulma.min.css",
+        "themes/bulma/bootstrap-table-bulma.js",
+        "themes/bulma/bootstrap-table-bulma.css",
+        "themes/bootstrap-table/bootstrap-table.min.js",
+        "themes/bootstrap-table/bootstrap-table.min.css",
+        "themes/bootstrap-table/bootstrap-table.js",
+        "themes/bootstrap-table/bootstrap-table.css",
+        "themes/bootstrap-table/fonts/bootstrap-table.woff",
+        "themes/bootstrap-table/fonts/bootstrap-table.ttf",
+        "themes/bootstrap-table/fonts/bootstrap-table.svg",
+        "themes/bootstrap-table/fonts/bootstrap-table.eot",
+        "extensions/sticky-header/bootstrap-table-sticky-header.min.js",
+        "extensions/sticky-header/bootstrap-table-sticky-header.min.css",
+        "extensions/sticky-header/bootstrap-table-sticky-header.js",
+        "extensions/sticky-header/bootstrap-table-sticky-header.css",
+        "extensions/toolbar/bootstrap-table-toolbar.min.js",
+        "extensions/toolbar/bootstrap-table-toolbar.js",
+        "extensions/mobile/bootstrap-table-mobile.min.js",
+        "extensions/mobile/bootstrap-table-mobile.js",
+        "extensions/addrbar/bootstrap-table-addrbar.min.js",
+        "extensions/addrbar/bootstrap-table-addrbar.js"
+      ]
     }
   ]
 }

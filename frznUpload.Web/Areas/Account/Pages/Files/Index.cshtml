@@ -13,7 +13,7 @@
 @if (Model.Path != "*")
 {
 <h6>
-    Path: <a asp-route-path="*">root</a>@Model.Path   <a asp-route-path="*">Show all</a>
+    Path: <a asp-route-path="">root</a>@Model.Path   <a class="d-inline-block ml-3" asp-route-path="*">Show all</a>
 </h6>
 
 }
@@ -23,20 +23,19 @@ else
 }
 
 
-<table class="table">
+<table class="table mb-6">
     <thead>
         <tr>
-            <th></th>
-            <th>
+            <th data-sortable="true">
                 @Html.DisplayNameFor(model => model.Files[0].Filename)
             </th>
-            <th class="d-none d-sm-table-cell">
+            <th class="d-none d-sm-table-cell" data-sortable="true">
                 @Html.DisplayNameFor(model => model.Files[0].Size)
             </th>
             <th class="d-none d-xl-table-cell">
                 @Html.DisplayNameFor(model => model.Files[0].Identifier)
             </th>
-            <th class="d-none d-md-table-cell">
+            <th class="d-none d-md-table-cell" data-sortable="true">
                 @Html.DisplayNameFor(model => model.Files[0].Shares)
             </th>
             <th></th>
@@ -47,9 +46,7 @@ else
         {
             <tr data-path="@directory.Path">
                 <td>
-                    <i class="far fa-folder"></i>
-                </td>
-                <td>
+                    <i class="far fa-folder mr-1"></i>
                     @directory.Name
                 </td>
                 <td class="d-none d-sm-table-cell">
@@ -66,18 +63,16 @@ else
         {
             <tr data-identifier="@item.Identifier">
                 <td>
-                    <i class="far fa-file"></i>
-                </td>
-                <td>
+                    <i class="far fa-file mr-1"></i>
                     @(item.Filename + "." + item.Extension)
                 </td>
-                <td class="d-none d-sm-table-cell">
+                <td class="d-none d-sm-table-cell" data-bytes="@item.Size">
                     @Model.BytesToString(item.Size)
                 </td>
                 <td class="d-none d-xl-table-cell">
                     @(item.Identifier.Substring(0, Math.Min(item.Identifier.Length, 5)) + "...")
                 </td>
-                <td class="d-none d-md-table-cell">
+                <td class="d-none d-md-table-cell" data-count="@item.Shares.Count">
                     <a asp-page="/Shares/Index" asp-route-fileId="@item.Identifier">@item.Shares.Count @(@item.Shares.Count == 1 ? "Share" : "Shares")</a>
                 </td>
                 <td>
