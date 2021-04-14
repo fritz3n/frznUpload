@@ -39,7 +39,8 @@ namespace frznUpload.Web.Files
 				Extension = Path.GetExtension(name).Replace(".", ""),
 				Path = path,
 				Size = size,
-				User = owner
+				User = owner,
+				Uploaded = DateTime.Now
 			});
 			return database.SaveChangesAsync().ContinueWith((a) => file);
 		}

@@ -120,7 +120,7 @@ namespace frznUpload.Client
 			}
 			else
 			{
-				Thread t = new Thread(() => SetClipboardText(text));
+				var t = new Thread(() => SetClipboardText(text));
 				t.SetApartmentState(ApartmentState.STA);
 				t.Start();
 			}
@@ -206,7 +206,7 @@ namespace frznUpload.Client
 			if (File.Exists(PathText.Text) && !Uploading)
 			{
 				FileUploader u = await Client.UploadFile(PathText.Text, FilenameText.Text);
-				UploadContract c = new UploadContract
+				var c = new UploadContract
 				{
 					Uploader = u,
 					Path = PathText.Text,
@@ -252,7 +252,7 @@ namespace frznUpload.Client
 
 			foreach (RemoteFile file in l)
 			{
-				ListViewItem Item = new ListViewItem(new string[] { file.Filename + "." + file.File_extension, file.SizeString })
+				var Item = new ListViewItem(new string[] { file.Filename + "." + file.File_extension, file.SizeString })
 				{
 					Tag = file
 				};

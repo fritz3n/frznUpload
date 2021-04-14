@@ -155,7 +155,8 @@ namespace frznUpload.Web.Server
 				Extension = extension,
 				Size = size,
 				Path = path,
-				User = User
+				User = User,
+				Uploaded = DateTime.Now
 			});
 
 			database.SaveChanges();

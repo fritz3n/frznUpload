@@ -8,4 +8,15 @@
     <h1 class="display-4">Welcome</h1>
     <p>Go to <a href="https://github.com/fritz3n/frznUpload/releases">frznUpload</a> to download the client and start uploading files!</p>
     <p>Or <a asp-page="/Login/Register">register</a> and start <a asp-page="/Upload">sharing</a> right away!</p>
+
+    <div class="row justify-content-center flex-row">
+        <a asp-page="/Upload" class="d-flex flex-column col-12 col-md-6">
+            <h1 class="display-1 text-white"><i class="fas fa-cloud-upload-alt"></i></h1>
+            <span class="d-block">Upload files</span>
+        </a>
+        <a href="https://github.com/fritz3n/frznUpload/releases" class="d-flex flex-column col-12 col-md-6">
+            <h1 class="display-1 text-white"><i class="fas fa-download"></i></h1>
+            <span class="d-block">Download client</span>
+        </a>
+    </div>
 </div>

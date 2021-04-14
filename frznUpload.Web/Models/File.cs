@@ -9,6 +9,7 @@ namespace frznUpload.Web.Models
 	{
 		public int Id { get; set; }
 		public virtual User User { get; set; }
+		public DateTime Uploaded { get; set; }
 		public string Identifier { get; set; }
 		public string Filename { get; set; }
 		public string Extension { get; set; }
