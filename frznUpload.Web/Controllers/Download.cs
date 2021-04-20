@@ -48,6 +48,9 @@ namespace frznUpload.Web.Pages
 			if (contentType == null)
 				contentType = "application/octet-stream";
 
+			HttpContext.Response.Headers["Cache-Control"] = "no-cache, no-store";
+			HttpContext.Response.Headers["Expires"] = "-1";
+
 			return File(file, contentType, filename, true);
 		}
 
@@ -73,6 +76,9 @@ namespace frznUpload.Web.Pages
 			// Returns null on unkown file ending
 			if (contentType == null)
 				contentType = "application/octet-stream";
+
+			HttpContext.Response.Headers["Cache-Control"] = "no-cache, no-store";
+			HttpContext.Response.Headers["Expires"] = "-1";
 
 			return File(fileStream, contentType, filename, true);
 		}
