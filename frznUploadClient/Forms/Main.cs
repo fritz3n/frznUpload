@@ -62,7 +62,7 @@ namespace frznUpload.Client
 					{
 						ProgressBar.Invoke(new Action(() =>
 						{
-							ProgressBar.Value = (int)(FileUpload.Uploader.Progress * 100 + 1); // If we set the progressbar to a higher value first, there is no animation
+							ProgressBar.Value = (int)(Math.Min(100, FileUpload.Uploader.Progress * 100 + 1)); // If we set the progressbar to a higher value first, there is no animation
 							ProgressBar.Value = (int)(FileUpload.Uploader.Progress * 100);
 						}
 						));

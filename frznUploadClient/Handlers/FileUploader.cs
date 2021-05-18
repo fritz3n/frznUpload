@@ -151,7 +151,7 @@ namespace frznUpload.Client
 
 		private void Open()
 		{
-			file = File.Open(FilePath, FileMode.Open, FileAccess.Read);
+			file = File.Open(FilePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
 		}
 
 		private void Close()

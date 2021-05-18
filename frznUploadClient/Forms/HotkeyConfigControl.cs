@@ -37,6 +37,7 @@ namespace frznUpload.Client
 			InitializeComponent();
 			UpdateShareEnables();
 			UpdateButtonText();
+			FileProviderBox.SelectedIndex = 0;
 		}
 
 		public void Update(HotkeyConfig config)
