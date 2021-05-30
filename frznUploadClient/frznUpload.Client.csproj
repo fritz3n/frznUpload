@@ -91,10 +91,10 @@
 	</Target>
  
 	<ItemGroup>
-	  <None Update="App.Debug.config" Condition="'$(Configuration)'=='Debug'">
+	  <None Update="App.Debug.config.json" Condition="'$(Configuration)'=='Debug'">
 	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 	  </None> 
-	  <None Update="App.Release.config">
+	  <None Update="App.Release.config.json">
 	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 	  </None> 
 	  <None Update="Update.exe">

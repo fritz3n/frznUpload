@@ -19,7 +19,9 @@ namespace frznUpload.Client
 
 		public void LogMessage(bool outBound, Message message)
 		{
+#if DEBUG
 			log.Debug((outBound ? "<- " : "-> ") + message);
+#endif
 		}
 	}
 }

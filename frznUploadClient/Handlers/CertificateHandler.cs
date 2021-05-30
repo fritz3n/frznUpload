@@ -1,4 +1,5 @@
-﻿using Org.BouncyCastle.Asn1.X9;
+﻿using frznUpload.Client.Config;
+using Org.BouncyCastle.Asn1.X9;
 using Org.BouncyCastle.Crypto;
 using Org.BouncyCastle.Crypto.Generators;
 using Org.BouncyCastle.Crypto.Parameters;
@@ -34,7 +35,7 @@ namespace frznUpload.Client.Handlers
 		{
 			try
 			{
-				Certificate = new System.Security.Cryptography.X509Certificates.X509Certificate2(Config.AppSettings["CertFile"].Value, password);
+				Certificate = new System.Security.Cryptography.X509Certificates.X509Certificate2(ConfigHandler.Config.CertFilePath, password);
 			}
 			catch (Exception) { }
 			return ContainsCertificate;
@@ -43,7 +44,7 @@ namespace frznUpload.Client.Handlers
 		public static void Clear()
 		{
 			Certificate = null;
-			File.Delete(Config.AppSettings["CertFile"].Value);
+			File.Delete(ConfigHandler.Config.CertFilePath);
 		}
 
 		public static byte[][] GenerateKeyPair()
@@ -79,9 +80,9 @@ namespace frznUpload.Client.Handlers
 
 			Certificate = new X509Certificate2(stream.ToArray(), password, X509KeyStorageFlags.Exportable);
 			byte[] data = Certificate.Export(X509ContentType.Pfx, password);
-			File.WriteAllBytes(Config.AppSettings["CertFile"].Value, data);
+			File.WriteAllBytes(ConfigHandler.Config.CertFilePath, data);
 
-			Certificate = new X509Certificate2(Config.AppSettings["CertFile"].Value, password);
+			Certificate = new X509Certificate2(ConfigHandler.Config.CertFilePath, password);
 		}
 	}
 }

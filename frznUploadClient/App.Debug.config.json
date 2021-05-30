@@ -1,0 +1,8 @@
+﻿{
+  "CertFilePath": "client.pfx",
+  "Hotkeys": [],
+  "Port": 22340,
+  "Prerelease": true,
+  "SharePrefix": "http://localhost:5000/v/",
+  "Url": "localhost"
+}

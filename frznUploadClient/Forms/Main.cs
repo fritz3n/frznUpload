@@ -1,4 +1,5 @@
-﻿using System;
+﻿using frznUpload.Client.Config;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Configuration;
@@ -97,7 +98,7 @@ namespace frznUpload.Client
 
 
 
-					string link = Config.AppSettings["ShareGenUrl"].Value + s;
+					string link = ConfigHandler.Config.SharePrefix + s;
 					if (Created)
 					{
 						LinkText.Invoke(new Action(() => LinkText.Text = link));

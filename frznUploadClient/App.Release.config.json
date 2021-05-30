@@ -1,0 +1,8 @@
+﻿{
+  "Prerelease":false,
+  "CertFilePath":"../client.pfx",
+  "Port":22340,
+  "Url":"dyn.fritzen.xyz",
+  "SharePrefix":"https://fritzen.xyz/v/",
+  "Hotkeys":[]
+}

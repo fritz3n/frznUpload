@@ -1,4 +1,5 @@
-﻿using frznUpload.Client.Handlers;
+﻿using frznUpload.Client.Config;
+using frznUpload.Client.Handlers;
 using frznUpload.Shared;
 using System;
 using System.Collections.Generic;
@@ -119,7 +120,7 @@ namespace frznUpload.Client
 		private async Task<Client> GetNewClient()
 		{
 			var c = new Client();
-			await c.ConnectAsync(Config.AppSettings["Url"].Value, int.Parse(Config.AppSettings["Port"].Value), verbose);
+			await c.ConnectAsync(ConfigHandler.Config.Url, ConfigHandler.Config.Port, verbose);
 			return c;
 		}
 
@@ -129,7 +130,7 @@ namespace frznUpload.Client
 			LoggedIn = false;
 
 			ActiveClient = new Client();
-			await ActiveClient.ConnectAsync(Config.AppSettings["Url"].Value, int.Parse(Config.AppSettings["Port"].Value), verbose);
+			await ActiveClient.ConnectAsync(ConfigHandler.Config.Url, ConfigHandler.Config.Port, verbose);
 
 			LoggedIn = ActiveClient.IsAuthenticated;
 

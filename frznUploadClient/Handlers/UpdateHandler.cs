@@ -1,5 +1,6 @@
 ﻿using CliWrap;
 using CliWrap.Buffered;
+using frznUpload.Client.Config;
 using log4net;
 using Newtonsoft.Json;
 using System;
@@ -114,7 +115,7 @@ namespace frznUpload.Client.Handlers
 #if DEBUG
 			return @"C:\Users\fritzen\Source\Repos\frznUpload\frznUploadClient\Releases";
 #endif
-			bool pre = Config.AppSettings.AllKeys.Contains("Prerelease") && Config.AppSettings["Prerelease"].Value == "true";
+			bool pre = ConfigHandler.Config.Prerelease;
 
 			List<GithubRelease> releases = await GetReleases();
 			GithubRelease latestRelease = releases

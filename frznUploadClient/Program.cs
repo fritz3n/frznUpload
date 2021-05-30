@@ -1,4 +1,5 @@
-﻿using frznUpload.Client.Handlers;
+﻿using frznUpload.Client.Config;
+using frznUpload.Client.Handlers;
 using frznUpload.Shared;
 using log4net;
 using log4net.Appender;
@@ -56,20 +57,21 @@ namespace frznUpload.Client
 			if (HandleSquirrel(args))
 				return;
 
-			var configFileMap = new ExeConfigurationFileMap();
+			string[] configPaths;
 
 #if DEBUG
-			configFileMap.ExeConfigFilename = "App.Release.config";
+			configPaths = new[] { "../App.Debug.config.json", "App.Debug.config.json" };
 #else
-			configFileMap.ExeConfigFilename = "App.Release.config";
+			configPaths = new[] { "../App.Release.config.json", "App.Release.config.json" };
 #endif
-			Config.Configuration = ConfigurationManager.OpenMappedExeConfiguration(configFileMap, ConfigurationUserLevel.None);
-
-
+			string loaded = ConfigHandler.LoadFromPaths(configPaths);
+			ConfigHandler.Path = configPaths[0];
+			ConfigHandler.Save();
 
 			log.Info("Starting...");
 
 			log.Info("Working Directory: " + Directory.GetCurrentDirectory());
+			log.Info("Loaded config from: " + loaded);
 
 			Application.ThreadException += Application_ThreadException;
 

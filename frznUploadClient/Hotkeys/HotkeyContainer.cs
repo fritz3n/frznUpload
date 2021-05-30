@@ -1,4 +1,5 @@
-﻿using frznUpload.Client.Hotkey;
+﻿using frznUpload.Client.Config;
+using frznUpload.Client.Hotkey;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -19,15 +20,14 @@ namespace frznUpload.Client
 		public HotkeyContainer(ClientManager client, MainForm form)
 		{
 
-			string serialized = Config.AppSettings["Hotkeys"].Value;
 
-			string[] hotkeys = serialized.Split('|');
+			string[] hotkeys = ConfigHandler.Config.Hotkeys;
 
 			foreach (string hotkey in hotkeys)
 			{
 				if (hotkey != "")
 				{
-					var hc = HotkeyHandler.Deserialize(hotkey.Replace("%bar%", "|"));
+					var hc = HotkeyHandler.Deserialize(hotkey);
 					if (hc == null)
 						continue;
 					hc.Enabled = true;
@@ -45,14 +45,12 @@ namespace frznUpload.Client
 
 			for (int i = 0; i < HotKeys.Count; i++)
 			{
-				serializedStrings[i] = list[i].Serialize().Replace("|", "%bar%");
+				serializedStrings[i] = list[i].Serialize();
 			}
 
-			string serialized = string.Join("|", serializedStrings);
+			ConfigHandler.Config.Hotkeys = serializedStrings;
 
-			Config.AppSettings.Remove("Hotkeys");
-			Config.AppSettings.Add("Hotkeys", serialized);
-			Config.Configuration.Save();
+			ConfigHandler.Save();
 		}
 
 		public IEnumerator<HotkeyConfig> GetEnumerator()
