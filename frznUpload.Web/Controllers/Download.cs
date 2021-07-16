@@ -84,9 +84,9 @@ namespace frznUpload.Web.Pages
 			HttpContext.Response.Headers["Expires"] = "-1";
 
 			if (show)
-				return File(file, contentType);
+				return File(fileStream, contentType);
 			else
-				return File(file, contentType, filename, true);
+				return File(fileStream, contentType, filename, true);
 		}
 	}
 }
