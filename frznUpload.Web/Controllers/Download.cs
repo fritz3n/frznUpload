@@ -25,7 +25,7 @@ namespace frznUpload.Web.Pages
 			this.config = config;
 		}
 
-		public async Task<IActionResult> DownloadShare(string shareId)
+		public async Task<IActionResult> DownloadShare(string shareId, bool show = false)
 		{
 			if (string.IsNullOrWhiteSpace(shareId))
 				return NotFound();
@@ -51,10 +51,13 @@ namespace frznUpload.Web.Pages
 			HttpContext.Response.Headers["Cache-Control"] = "no-cache, no-store";
 			HttpContext.Response.Headers["Expires"] = "-1";
 
-			return File(file, contentType, filename, true);
+			if(show)
+				return File(file, contentType);
+			else
+				return File(file, contentType, filename, true);
 		}
 
-		public IActionResult DownloadFile(string fileId)
+		public IActionResult DownloadFile(string fileId, bool show = false)
 		{
 			Models.File file;
 			if (HttpContext.User.IsInRole("Admin"))
@@ -80,7 +83,10 @@ namespace frznUpload.Web.Pages
 			HttpContext.Response.Headers["Cache-Control"] = "no-cache, no-store";
 			HttpContext.Response.Headers["Expires"] = "-1";
 
-			return File(fileStream, contentType, filename, true);
+			if (show)
+				return File(file, contentType);
+			else
+				return File(file, contentType, filename, true);
 		}
 	}
 }
